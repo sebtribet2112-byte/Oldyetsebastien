@@ -1,0 +1,17 @@
+backend:
+  name: github
+  repo: sebtribet2112-byte/Oldyetsebastien
+  branch: principal
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "pages"
+    label: "Pages"
+    files:
+      - file: "index.html"
+        label: "Accueil"
+        name: "accueil"
+        fields:
+          - { label: "Contenu", name: "body", widget: "markdown" }
