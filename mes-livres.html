@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mes livres – Les aventures d'Oldy et Sébastien</title>
+  <meta name="description" content="Lisez en ligne les livres d'Oldy et Sébastien – sensibilisation au handicap invisible"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --vert:       #2d6a4f;
+      --vert-clair: #52b788;
+      --vert-pale:  #d8f3dc;
+      --vert-bg:    #f0faf4;
+      --beige:      #fefae0;
+      --or:         #d4a843;
+      --texte:      #1b2a1b;
+      --texte-doux: #4a5c4a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--beige); color: var(--texte); }
+
+    /* NAV */
+    nav {
+      background: var(--vert);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    }
+    .nav-logo { font-size: 17px; font-weight: 900; color: white; text-decoration: none; }
+    .nav-logo span { color: var(--or); }
+    .nav-back {
+      color: rgba(255,255,255,0.85); text-decoration: none;
+      font-size: 13px; font-weight: 700;
+      padding: 7px 16px; border-radius: 24px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      transition: all 0.2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.15); color: white; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--vert) 0%, #1b4332 100%);
+      padding: 52px 24px 44px; text-align: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: var(--vert-clair); padding: 6px 18px; border-radius: 24px;
+      font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero h1 { font-size: clamp(24px,5vw,40px); font-weight: 900; color: white; margin-bottom: 10px; }
+    .hero h1 span { color: var(--or); }
+    .hero p { font-size: 15px; color: rgba(255,255,255,0.72); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    /* LIVRES */
+    .livres-section { padding: 52px 20px; max-width: 860px; margin: 0 auto; }
+
+    .livre-card {
+      background: white; border: 2px solid var(--vert-pale);
+      border-radius: 20px; padding: 28px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 24px rgba(45,106,79,0.08);
+    }
+    .livre-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 20px;
+    }
+    .livre-num {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--vert); color: white;
+      font-size: 20px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .livre-title { font-size: 17px; font-weight: 900; color: var(--texte); }
+    .livre-sub { font-size: 12px; color: var(--texte-doux); margin-top: 2px; }
+
+    .livre-frame {
+      width: 100%;
+      height: 520px;
+      border: none;
+      border-radius: 12px;
+      background: var(--vert-bg);
+      display: block;
+    }
+    @media (max-width: 600px) {
+      .livre-frame { height: 420px; }
+      .livre-card { padding: 18px; }
+    }
+
+    .livre-note {
+      margin-top: 12px;
+      font-size: 11px; color: #aaa; font-style: italic; text-align: center;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--vert); color: rgba(255,255,255,0.7);
+      text-align: center; padding: 24px;
+      font-size: 12px; line-height: 2;
+    }
+    footer strong { color: white; }
+    footer a { color: var(--vert-clair); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">🐶 Oldy <span>&</span> Sébastien</a>
+  <a href="/" class="nav-back">← Retour au site</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">📚 Bibliothèque en ligne</div>
+  <h1>Mes <span>Livres</span></h1>
+  <p>Lisez directement en ligne les publications d'Oldy et Sébastien — sensibilisation au handicap invisible.</p>
+</div>
+
+<div class="livres-section">
+
+  <!-- LIVRE 1 -->
+  <div class="livre-card">
+    <div class="livre-header">
+      <div class="livre-num">📖</div>
+      <div>
+        <div class="livre-title">Livre 1</div>
+        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+      </div>
+    </div>
+    <iframe
+      class="livre-frame"
+      src="https://drive.google.com/file/d/1nsvjrPyH75Nxio-0umX8siCGN4Ri3rtp/preview"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+  </div>
+
+  <!-- LIVRE 2 -->
+  <div class="livre-card">
+    <div class="livre-header">
+      <div class="livre-num">📖</div>
+      <div>
+        <div class="livre-title">Livre 2</div>
+        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+      </div>
+    </div>
+    <iframe
+      class="livre-frame"
+      src="https://drive.google.com/file/d/1K3lwKSqu1B9Qj3rDOHA9supB6Ii-HIqz/preview"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+  </div>
+
+  <!-- LIVRE 3 -->
+  <div class="livre-card">
+    <div class="livre-header">
+      <div class="livre-num">📖</div>
+      <div>
+        <div class="livre-title">Livre 3</div>
+        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+      </div>
+    </div>
+    <iframe
+      class="livre-frame"
+      src="https://drive.google.com/file/d/1_VNXjpMSxlaDpCaBwQ131jIpibPTHumT/preview"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+  </div>
+
+  <!-- LIVRE 4 -->
+  <div class="livre-card">
+    <div class="livre-header">
+      <div class="livre-num">📖</div>
+      <div>
+        <div class="livre-title">Livre 4</div>
+        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+      </div>
+    </div>
+    <iframe
+      class="livre-frame"
+      src="https://drive.google.com/file/d/16udFkQlwic6c4SdB92Su9wOVtoqp8naz/preview"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Les aventures d'Oldy et Sébastien</strong><br>
+  Sensibilisation au handicap invisible · TRIBET Sébastien · 2026<br>
+  <a href="mailto:sebastien2112@gmx.com">sebastien2112@gmx.com</a>
+</footer>
+
+</body>
+</html>
