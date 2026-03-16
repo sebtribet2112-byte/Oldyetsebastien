@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oldy & le Handicap Invisible – Jeu pédagogique</title>
+  <meta name="description" content="Jeu interactif gratuit pour découvrir les handicaps invisibles – Les aventures d'Oldy et Sébastien"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Georgia,serif;background:linear-gradient(160deg,#FDF6EE 0%,#F5EDE0 100%);min-height:100vh}
+    /* LANDING */
+    #landing{display:flex;flex-direction:column;align-items:center;padding:40px 16px 60px}
+    .hero{max-width:600px;width:100%;text-align:center}
+    .hero-logo{font-size:72px;margin-bottom:12px;animation:bounce 2.5s infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .hero-tag{display:inline-block;background:#E8734A22;color:#E8734A;border:1.5px solid #E8734A44;border-radius:99px;padding:4px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+    .hero h1{font-size:28px;font-weight:700;color:#2D1A0A;line-height:1.3;margin-bottom:16px}
+    .hero-desc{color:#6B4C2A;font-size:15px;line-height:1.8;margin-bottom:28px}
+    .hero-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+    .stat-pill{background:#fff;border:1.5px solid #EDE0D0;border-radius:99px;padding:8px 18px;font-size:13px;color:#3D2B1A;box-shadow:0 2px 8px rgba(100,60,20,.07)}
+    .stat-pill strong{color:#E8734A}
+    .cta-btn{display:inline-block;background:linear-gradient(135deg,#E8734A,#F5A623);color:#fff;text-decoration:none;font-family:Georgia,serif;font-size:17px;font-weight:700;padding:18px 40px;border-radius:18px;box-shadow:0 6px 24px rgba(232,115,74,.35);border:none;cursor:pointer;transition:transform .15s,filter .15s;margin-bottom:12px}
+    .cta-btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+    .cta-btn:active{transform:scale(.97)}
+    .cta-sub{font-size:12px;color:#8B7355;margin-top:8px}
+    .conds-box{max-width:600px;width:100%;margin-top:40px;background:#fff;border-radius:22px;padding:24px 20px;border:1.5px solid #EDE0D0;box-shadow:0 4px 20px rgba(100,60,20,.08)}
+    .conds-box h2{font-size:15px;color:#2D1A0A;margin-bottom:14px;font-weight:700}
+    .conds-grid{display:flex;flex-wrap:wrap;gap:7px}
+    .cond-tag{display:inline-block;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;letter-spacing:.04em}
+    .site-footer{text-align:center;padding:32px 16px;font-size:12px;color:#B09878}
+    .site-footer a{color:#E8734A;text-decoration:none}
+    /* GAME */
+    #game{display:none}
+    #game.visible{display:flex;flex-direction:column;align-items:center;padding:16px 14px 48px;min-height:100vh}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .fade{animation:fadeInUp .35s ease}
+    .card{background:#fff;border-radius:22px;padding:24px 20px;width:100%;max-width:560px;box-shadow:0 8px 40px rgba(100,60,20,.10);border:1.5px solid #EDE0D0}
+    .g-btn{border:none;border-radius:14px;padding:13px 24px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:14px;font-family:Georgia,serif;color:#fff;transition:filter .15s,transform .1s}
+    .g-btn:hover{filter:brightness(1.08)}
+    .g-btn:active{transform:scale(.98)}
+    .g-tag{display:inline-block;border-radius:99px;padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+    .ans-btn{border-radius:13px;padding:13px 14px;margin-bottom:9px;width:100%;text-align:left;cursor:pointer;font-size:13px;font-family:Georgia,serif;display:flex;align-items:center;gap:10px;line-height:1.5;transition:filter .1s;border:2px solid #E8D5BC;background:#F8F2EB;color:#3D2B1A}
+    .ans-btn:hover{filter:brightness(.97)}
+    .lbadge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+    .pb-track{height:7px;background:#EDE0D0;border-radius:99px;overflow:hidden}
+    .pb-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#E8734A,#F5A623);transition:width .6s ease}
+    .oldy-bub{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
+    .oldy-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#F5A623,#E8734A);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 4px 12px rgba(232,115,74,.3);border:3px solid #fff}
+    .oldy-tx{background:#fff;border-radius:16px 16px 16px 4px;padding:12px 16px;box-shadow:0 2px 12px rgba(0,0,0,.08);max-width:400px;border:1.5px solid #F5E6D3}
+    .oldy-lbl{font-size:10px;font-weight:700;color:#E8734A;margin-bottom:3px;letter-spacing:.08em;text-transform:uppercase}
+    .oldy-msg{margin:0;font-size:13px;color:#3D2B1A;line-height:1.6}
+    .sc-box{border-radius:16px;padding:18px;margin-bottom:18px}
+    .ph{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .pname{font-weight:700;color:#2D1A0A;font-size:15px}
+    .hist{margin:0;color:#3D2B1A;line-height:1.8;font-size:13px;font-style:italic}
+    .q-box{background:#F8F2EB;border-radius:14px;padding:16px;margin-bottom:18px}
+    .fb-box{border-radius:14px;padding:16px;margin-bottom:16px}
+    .sv-box{border-radius:16px;padding:18px;margin-bottom:18px}
+    .sc-box2{background:linear-gradient(135deg,#FFF3E0,#FFF8E1);border:2px solid #FFD54F;border-radius:18px;padding:18px;margin:14px 0;text-align:center}
+    .tag-list{display:flex;flex-wrap:wrap;gap:6px}
+    .pm{display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;color:#8B7355;font-weight:600}
+    .ps{font-size:11px;color:#8B7355;margin-top:4px;text-align:right}
+    .back-btn{background:none;border:none;color:#8B7355;font-family:Georgia,serif;font-size:13px;cursor:pointer;padding:8px 0;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+    .back-btn:hover{color:#E8734A}
+    .gf{margin-top:16px;font-size:10px;color:#B09878;text-align:center}
+  </style>
+</head>
+<body>
+
+<div id="landing">
+  <div class="hero">
+    <div class="hero-logo">🐕</div>
+    <div class="hero-tag">Jeu pédagogique gratuit</div>
+    <h1>Oldy &amp; le Handicap Invisible</h1>
+    <p class="hero-desc">Je suis <strong>Oldy</strong>, l'Épagneul Breton de Sébastien !<br>Je t'emmène à la rencontre de <strong>20 jeunes collégiens</strong> dont la vie est un peu différente de ce qu'on voit à l'extérieur.<br><br>Ensemble, découvrons les <strong>handicaps invisibles</strong> — ces troubles qu'on ne voit pas, mais qui existent vraiment.</p>
+    <div class="hero-stats">
+      <span class="stat-pill">🧩 <strong>20</strong> handicaps invisibles</span>
+      <span class="stat-pill">❓ <strong>40</strong> questions</span>
+      <span class="stat-pill">💡 Des faits réels</span>
+      <span class="stat-pill">🎓 Dès la 6e</span>
+    </div>
+    <button class="cta-btn" onclick="startGame()">🐾 Commencer le jeu</button>
+    <p class="cta-sub">Gratuit · Sans inscription · Sur téléphone ou ordinateur</p>
+  </div>
+  <div class="conds-box">
+    <h2>🔍 Les 20 handicaps invisibles explorés :</h2>
+    <div class="conds-grid" id="condGrid"></div>
+  </div>
+  <footer class="site-footer">
+    <p>Un projet de <a href="https://oldyetsebastien.fr">Les aventures d'Oldy et Sébastien</a></p>
+    <p style="margin-top:6px">Sensibilisation au handicap invisible · Tous droits réservés</p>
+  </footer>
+</div>
+
+<div id="game"></div>
+
+<script>
+const S=[
+  {id:1,p:"Lucas, 13 ans",e:"🧒",c:"#E8734A",n:"TDAH",h:"Lucas est en cours de maths. Le prof explique une nouvelle leçon. Soudain, Lucas se met à tapoter son stylo, regarde par la fenêtre et commence à dessiner dans les marges. La prof l'interpelle : « Lucas, tu ne fais jamais attention ! » Ses camarades ricanent. Pourtant, Lucas a bien entendu la leçon… à sa façon.",q:[{q:"Pourquoi Lucas a-t-il du mal à rester concentré ?",r:[{t:"Il s'en fiche de l'école",ok:false,x:"Non ! Lucas ne fait pas exprès. Ce n'est pas une question de motivation ou de caractère."},{t:"Il a le TDAH, un trouble neurologique qui rend la concentration difficile",ok:true,x:"Le TDAH est un trouble neurologique : le cerveau de Lucas fonctionne différemment, il a besoin de mouvement et de stimulation pour se concentrer."},{t:"Il est trop intelligent et s'ennuie",ok:false,x:"Le TDAH touche toutes sortes d'élèves, quelle que soit leur intelligence."}]},{q:"Comment aider Lucas ?",r:[{t:"Le laisser travailler à son rythme sans se moquer",ok:true,x:"Respecter ses stratégies de compensation, c'est l'aider à réussir. Chacun apprend différemment !"},{t:"Lui dire de faire des efforts",ok:false,x:"Lucas fait déjà des efforts énormes. Lui dire ça, c'est comme dire à quelqu'un en fauteuil de marcher un peu."},{t:"L'ignorer complètement",ok:false,x:"L'indifférence n'aide pas. La bienveillance fait une vraie différence."}]}],s:"Le TDAH touche 5 à 8% des enfants. Justin Timberlake, Simone Biles en sont atteints. Ce trouble se gère avec du soutien et des aménagements adaptés."},
+  {id:2,p:"Yasmine, 14 ans",e:"👧",c:"#5B8DB8",n:"Dyslexie",h:"Yasmine adore les histoires et invente des aventures incroyables dans sa tête. Mais quand elle lit à voix haute, les lettres se mélangent. Elle lit « le » à la place de « les », saute des mots. Ses camarades soupirent. Son professeur pense qu'elle ne travaille pas assez.",q:[{q:"Quel est le trouble de Yasmine ?",r:[{t:"Elle est paresseuse",ok:false,x:"Yasmine travaille deux fois plus que les autres pour arriver au même résultat. C'est épuisant."},{t:"Elle a la dyslexie, un trouble du langage écrit d'origine neurologique",ok:true,x:"Le cerveau de Yasmine traite les lettres et les sons différemment. Ce n'est absolument pas un manque d'intelligence."},{t:"Elle a besoin de lunettes",ok:false,x:"La dyslexie n'est pas un problème de vue. Le cerveau a du mal à décoder les lettres."}]},{q:"Quelle aide concrète peut recevoir Yasmine ?",r:[{t:"Des cours en moins",ok:false,x:"Yasmine a droit à une scolarité complète. Réduire les cours n'est pas la solution."},{t:"Du tiers-temps et des supports adaptés",ok:true,x:"Tiers-temps, police OpenDyslexic, lecture assistée… ce sont des aménagements officiels et très efficaces."},{t:"Passer en classe spécialisée",ok:false,x:"Beaucoup d'élèves avec dyslexie réussissent très bien en classe ordinaire avec les bons aménagements."}]}],s:"10% des personnes ont la dyslexie. Agatha Christie, Einstein, Leonardo da Vinci en étaient atteints. Avec les bons outils, on réussit brillamment."},
+  {id:3,p:"Théo, 12 ans",e:"🧑",c:"#6B9E6B",n:"Diabète de type 1",h:"Pendant l'EPS, Théo commence à trembler. Il devient pâle, a du mal à courir. Son camarade lui dit : « T'es vraiment pas sportif ! » Mais son taux de sucre vient de chuter dangereusement.",q:[{q:"Que se passe-t-il pour Théo ?",r:[{t:"Il fait semblant d'être malade",ok:false,x:"Théo est en hypoglycémie — c'est une urgence médicale réelle, pas un caprice."},{t:"Il fait une hypoglycémie à cause de son diabète de type 1",ok:true,x:"Le diabète de type 1 oblige Théo à surveiller son glucose en permanence. L'effort physique peut faire chuter ce taux, causant tremblements et vertiges."},{t:"Il a juste faim",ok:false,x:"Une hypoglycémie est bien plus grave que la faim. C'est une chute du glucose sanguin qui peut devenir dangereuse."}]},{q:"Quelle est la bonne réaction ?",r:[{t:"L'encourager à continuer",ok:false,x:"Surtout pas ! En hypoglycémie, il faut s'arrêter et donner du sucre immédiatement."},{t:"Prévenir un adulte et lui donner du sucre",ok:true,x:"Jus de fruit, sucres… prévenir l'infirmière. Connaître le diabète peut sauver des vies."},{t:"Le laisser se reposer sans rien faire",ok:false,x:"Rester inactif peut aggraver l'hypoglycémie. Il faut agir et appeler un adulte."}]}],s:"Le diabète de type 1 touche 1 enfant sur 500 en France. Contrairement au type 2, il n'est pas lié au mode de vie. L'insuline est indispensable chaque jour."},
+  {id:4,p:"Inès, 15 ans",e:"👩",c:"#9B6BB5",n:"Anxiété sociale",h:"Inès est brillante mais chaque fois qu'elle doit parler devant la classe, son cœur s'emballe, elle transpire, sa gorge se serre. Ses camarades pensent qu'elle est prétentieuse. En réalité, elle souffre en silence depuis des années.",q:[{q:"Qu'est-ce qui se passe vraiment pour Inès ?",r:[{t:"Elle souffre de trouble anxieux social, une vraie condition médicale",ok:true,x:"L'anxiété sociale est bien plus que la timidité. C'est une peur intense du regard des autres qui peut paralyser. Le corps réagit comme face à un vrai danger."},{t:"Elle est trop timide, elle doit se forcer",ok:false,x:"Lui dire de se forcer revient à dire à quelqu'un qui a le vertige de sauter d'une falaise."},{t:"Elle cherche l'attention",ok:false,x:"C'est l'inverse ! Les personnes anxieuses veulent surtout ne PAS attirer l'attention."}]},{q:"Comment l'aider ?",r:[{t:"Ne pas la mettre sur la sellette, être patients",ok:true,x:"Un environnement bienveillant où les erreurs sont acceptées aide les personnes anxieuses à gagner confiance."},{t:"La forcer à parler pour qu'elle s'habitue",ok:false,x:"Forcer une personne anxieuse peut aggraver le trouble. La douceur est la clé."},{t:"Ignorer le problème, ça passera",ok:false,x:"L'anxiété sociale s'aggrave souvent sans prise en charge. Un soutien psychologique peut vraiment aider."}]}],s:"L'anxiété sociale touche 12% de la population. Elle se traite efficacement avec une thérapie cognitive et comportementale (TCC)."},
+  {id:5,p:"Mael, 13 ans",e:"🧒",c:"#D4956A",n:"Autisme (TSA)",h:"Mael mange toujours les mêmes plats, ne supporte pas le bruit de la récré et a du mal avec les blagues. On le dit « bizarre ». Pourtant Mael est passionné d'astronomie et connaît par cœur les 88 constellations.",q:[{q:"Pourquoi Mael a-t-il ces comportements ?",r:[{t:"Il est mal élevé",ok:false,x:"Mael ne choisit pas ces comportements. Son cerveau traite les informations sensorielles et sociales différemment."},{t:"Il a un TSA qui affecte ses sens et sa communication",ok:true,x:"Le TSA est un trouble neurodéveloppemental. Certains sons peuvent être douloureux pour Mael, et les codes sociaux implicites ne lui sont pas automatiques."},{t:"Il n'a pas envie d'amis",ok:false,x:"Mael voudrait peut-être des amis, mais les codes sociaux lui semblent difficiles à décoder. Ce n'est pas un choix."}]},{q:"Comment inclure Mael ?",r:[{t:"Le laisser seul",ok:false,x:"L'exclusion n'est jamais une solution. Mael a le droit de participer à la vie collective."},{t:"S'intéresser à sa passion, parler clairement et directement",ok:true,x:"S'appuyer sur ses centres d'intérêt crée un lien vrai. La communication directe facilite vraiment les échanges."},{t:"Lui faire des blagues pour qu'il rigole",ok:false,x:"L'humour indirect génère confusion et anxiété. La communication directe est bien plus adaptée."}]}],s:"Le TSA touche environ 1% de la population. C'est un spectre : chaque personne autiste est unique. Greta Thunberg a parlé ouvertement de son autisme."},
+  {id:6,p:"Emma, 14 ans",e:"👧",c:"#E84A8B",n:"Épilepsie",h:"Emma a une crise d'épilepsie en classe. Son corps se raidit, elle tombe. Quand elle reprend conscience, elle voit ses camarades filmer avec leurs téléphones. Emma fond en larmes — pas à cause de la crise, mais à cause des regards.",q:[{q:"Qu'est-ce qu'une crise d'épilepsie ?",r:[{t:"Une crise de nerfs volontaire",ok:false,x:"L'épilepsie est une maladie neurologique. Emma ne contrôle absolument pas ses crises."},{t:"Une décharge électrique anormale dans le cerveau",ok:true,x:"L'épilepsie est causée par des décharges électriques incontrôlées dans le cerveau. Emma n'y peut rien — c'est involontaire."},{t:"Un malaise dû au manque de sucre",ok:false,x:"C'est différent d'une hypoglycémie. L'épilepsie est d'origine neurologique."}]},{q:"Quelle est la bonne réaction lors d'une crise ?",r:[{t:"Filmer pour se souvenir",ok:false,x:"Filmer quelqu'un en crise, c'est porter atteinte à sa dignité. C'est même puni par la loi."},{t:"Éloigner les objets dangereux, appeler un adulte, ne pas la retenir",ok:true,x:"Il faut sécuriser l'espace, mettre Emma sur le côté, noter la durée et appeler les secours si la crise dure plus de 5 minutes."},{t:"Lui mettre quelque chose dans la bouche",ok:false,x:"Surtout pas ! C'est dangereux. On ne met jamais rien dans la bouche d'une personne en crise."}]}],s:"L'épilepsie touche 1 personne sur 100. Avec un traitement adapté, 70% des personnes épileptiques n'ont plus de crises."},
+  {id:7,p:"Romain, 12 ans",e:"🧒",c:"#4A90D9",n:"Dyspraxie (TDC)",h:"Romain renverse toujours son verre à la cantine, son cartable est en désordre et son écriture est illisible. Ses camarades l'appellent « maladroit » et « bras cassé ». Romain est humilié mais ne comprend pas lui-même pourquoi ses mains ne font jamais ce qu'il veut.",q:[{q:"Pourquoi Romain est-il si « maladroit » ?",r:[{t:"Il ne fait pas attention",ok:false,x:"Romain fait très attention ! Mais son cerveau a du mal à coordonner ses mouvements malgré ses efforts."},{t:"Il a la dyspraxie, un trouble de la coordination des gestes",ok:true,x:"La dyspraxie (ou TDC) est un trouble neurologique : le cerveau de Romain a du mal à planifier et exécuter les gestes. Ce n'est pas de la négligence."},{t:"Il est trop agité",ok:false,x:"La dyspraxie n'est pas liée à l'agitation. C'est un trouble spécifique de la coordination motrice."}]},{q:"Comment aider Romain au quotidien ?",r:[{t:"Se moquer pour qu'il soit plus prudent",ok:false,x:"Se moquer aggrave la souffrance sans rien résoudre."},{t:"L'aider sans le juger et informer un adulte",ok:true,x:"Des aménagements existent : ordinateur à la place du stylo, plus de temps, matériel adapté. Un ergothérapeute peut beaucoup l'aider."},{t:"Lui interdire les activités manuelles",ok:false,x:"L'exclusion des activités ne résout rien. Avec les bons aménagements, Romain peut participer à tout."}]}],s:"La dyspraxie touche 5 à 7% des enfants. Un suivi en ergothérapie permet de trouver des stratégies très efficaces."},
+  {id:8,p:"Léa, 13 ans",e:"👧",c:"#C0392B",n:"TOC",h:"Léa doit vérifier trois fois que son casier est fermé, se laver les mains jusqu'à ce qu'elles saignent, et recommencer ses phrases si une lettre n'est pas parfaite. Elle arrive toujours en retard. Ses profs pensent qu'elle est désorganisée. Mais Léa n'arrive pas à s'arrêter.",q:[{q:"Qu'est-ce que Léa a ?",r:[{t:"De mauvaises habitudes qu'elle devrait arrêter",ok:false,x:"Les rituels de Léa ne sont pas des habitudes volontaires. Elle souffre énormément de ne pas pouvoir s'en empêcher."},{t:"Des TOC : pensées et rituels obsessionnels incontrôlables",ok:true,x:"Les TOC sont des pensées intrusives qui génèrent une angoisse intense. Les rituels tentent de calmer cette angoisse — mais ça ne marche jamais longtemps."},{t:"Du perfectionnisme normal",ok:false,x:"Les TOC vont bien au-delà du perfectionnisme. Ils envahissent toute la vie et causent une vraie souffrance."}]},{q:"Que peut-on faire pour Léa ?",r:[{t:"L'interrompre dans ses rituels de force",ok:false,x:"Interrompre un rituel brutalement provoque une angoisse insupportable."},{t:"La comprendre et l'encourager à consulter un spécialiste",ok:true,x:"Les TOC se traitent avec une thérapie spécialisée (TCC avec exposition). Avec de l'aide, beaucoup voient leurs TOC considérablement diminuer."},{t:"Lui dire que c'est dans sa tête",ok:false,x:"Les TOC sont bien réels et ont une base neurologique. Dire que c'est imaginaire invalide sa souffrance."}]}],s:"Les TOC touchent 2 à 3% de la population. David Beckham en est atteint. Avec une thérapie adaptée, les symptômes s'améliorent significativement."},
+  {id:9,p:"Nathan, 15 ans",e:"🧑",c:"#7F8C8D",n:"Dépression",h:"Nathan était joyeux et sportif. Depuis quelques mois, il ne sort plus, ne mange presque plus, dort tout le temps ou pas du tout. Il dit que tout est « gris ». Ses amis l'ont arrêté d'inviter. Sa mère pense qu'il est juste « à l'âge bête ».",q:[{q:"Ce que Nathan vit, c'est quoi ?",r:[{t:"Une mauvaise humeur passagère d'adolescent",ok:false,x:"La dépression est une vraie maladie. Nathan n'a pas choisi de se sentir ainsi et ne peut pas « se secouer » seul."},{t:"Une dépression, une maladie qui affecte l'énergie, l'humeur et la pensée",ok:true,x:"La dépression est une maladie neurobiologique réelle. Elle modifie la chimie du cerveau et ne passe pas sans aide."},{t:"De la paresse",ok:false,x:"Confondre dépression et paresse, c'est comme confondre fracture et fainéantise. La dépression provoque une fatigue profonde et réelle."}]},{q:"Comment réagir face à Nathan ?",r:[{t:"Lui dire de se ressaisir et de penser positif",ok:false,x:"Dire « pense positif » à une personne dépressive aggrave la honte. Ça ne fonctionne pas."},{t:"Rester présent, l'écouter et l'encourager à demander de l'aide",ok:true,x:"Être là, sans juger, en l'encourageant doucement à consulter — c'est ce qui peut vraiment l'aider."},{t:"L'éviter pour ne pas « attraper » sa tristesse",ok:false,x:"La dépression ne se transmet pas. L'isolement aggrave au contraire énormément la dépression."}]}],s:"La dépression touche 300 millions de personnes dans le monde. Elle peut toucher les adolescents. Elle se soigne avec une thérapie et/ou un traitement médical adapté."},
+  {id:10,p:"Sofia, 14 ans",e:"👩",c:"#E67E22",n:"Maladie de Crohn",h:"Sofia doit souvent quitter la classe en urgence pour aller aux toilettes. Elle mange très peu à la cantine. Ses camarades la taquinent. Sofia pleure dans les toilettes. Elle souffre de douleurs abdominales violentes chaque jour.",q:[{q:"Qu'est-ce que la maladie de Crohn ?",r:[{t:"Une intolérance alimentaire qu'elle exagère",ok:false,x:"La maladie de Crohn est une maladie inflammatoire chronique de l'intestin — bien réelle et très douloureuse."},{t:"Une maladie inflammatoire chronique des intestins, très douloureuse",ok:true,x:"La maladie de Crohn provoque des inflammations dans le tube digestif. Les douleurs, les urgences aux toilettes et la fatigue sont constantes. Ce n'est pas un caprice."},{t:"Un stress qui se manifeste par des maux de ventre",ok:false,x:"Si le stress peut aggraver les symptômes, la maladie de Crohn a une cause organique bien réelle."}]},{q:"Comment se comporter avec Sofia ?",r:[{t:"Respecter ses sorties urgentes sans la juger",ok:true,x:"Sofia ne sort pas par caprice. Respecter ses besoins sans la mettre mal à l'aise, c'est simplement de la dignité."},{t:"Lui conseiller de manger mieux",ok:false,x:"L'alimentation ne guérit pas la maladie de Crohn. Donner des conseils non sollicités est blessant."},{t:"La taquiner pour qu'elle en rie aussi",ok:false,x:"Les blagues sur la maladie ajoutent de l'humiliation à la souffrance."}]}],s:"La maladie de Crohn touche 200 000 personnes en France, souvent diagnostiquée entre 15 et 30 ans. Elle n'a pas de guérison connue mais des traitements permettent de contrôler les poussées."},
+  {id:11,p:"Camille, 15 ans",e:"👧",c:"#8E44AD",n:"Endométriose",h:"Chaque mois, Camille est absente plusieurs jours. Ses règles sont tellement douloureuses qu'elle ne peut pas se lever. Ses camarades disent : « Nous aussi on a nos règles et on vient quand même. » Sa professeure pense qu'elle exagère.",q:[{q:"Qu'est-ce que l'endométriose ?",r:[{t:"Des règles douloureuses normales que toutes les filles ont",ok:false,x:"L'endométriose n'est pas des règles normales. C'est une maladie chronique gynécologique qui peut être invalidante."},{t:"Une maladie chronique où des tissus similaires à l'utérus se développent ailleurs",ok:true,x:"L'endométriose provoque des douleurs extrêmes, parfois comparées à un accouchement. Les filles qui en souffrent ne peuvent vraiment pas fonctionner normalement pendant les crises."},{t:"Un problème psychologique lié au stress",ok:false,x:"L'endométriose est une maladie physique réelle, visible à l'IRM. Elle n'est pas dans la tête."}]},{q:"Que peut-on changer pour Camille ?",r:[{t:"Arrêter de mettre en doute sa douleur",ok:true,x:"Croire la personne qui souffre est le premier pas. Les patientes sont souvent non crues pendant des années."},{t:"Lui conseiller de prendre de l'aspirine et de venir quand même",ok:false,x:"Les antidouleurs standards sont souvent inefficaces contre l'endométriose. La douleur est réelle et sévère."},{t:"Ne rien dire, c'est une affaire privée",ok:false,x:"Sensibiliser son entourage permet d'obtenir des aménagements légitimes."}]}],s:"L'endométriose touche 1 femme sur 10. Le diagnostic prend en moyenne 7 ans en France. C'est l'une des maladies gynécologiques les plus invalidantes et les moins connues."},
+  {id:12,p:"Hugo, 13 ans",e:"🧒",c:"#1ABC9C",n:"Syndrome de Tourette",h:"Hugo répète parfois des mots ou fait des petits gestes brusques sans le vouloir : il cligne des yeux, renifle fort, répète des sons. Ses camarades pouffent de rire. Un prof lui a demandé d'arrêter devant toute la classe. Hugo est mortifié — il ne peut vraiment pas s'arrêter.",q:[{q:"Qu'est-ce que le syndrome de Tourette ?",r:[{t:"Une mauvaise habitude qu'il pourrait arrêter s'il voulait",ok:false,x:"Hugo ne peut pas contrôler ses tics. Les retenir provoque une tension insupportable, comme retenir un éternuement."},{t:"Un trouble neurologique qui provoque des tics moteurs et vocaux involontaires",ok:true,x:"Le syndrome de Tourette est neurologique. Les tics sont involontaires et s'aggravent avec le stress. Demander d'arrêter ne fait qu'empirer les choses."},{t:"Une forme d'autisme",ok:false,x:"Le syndrome de Tourette est différent de l'autisme, même s'ils peuvent parfois coexister."}]},{q:"Comment réagir face aux tics d'Hugo ?",r:[{t:"Rire ou imiter ses tics pour dédramatiser",ok:false,x:"Imiter ou rire des tics est blessant et humiliant. Cela aggrave le stress d'Hugo et donc ses tics."},{t:"Ne pas y prêter attention et traiter Hugo normalement",ok:true,x:"La meilleure réaction est de ne pas réagir aux tics et de traiter Hugo comme tout le monde. Moins il est stressé, moins les tics se manifestent."},{t:"L'exclure des activités pour éviter les situations embarrassantes",ok:false,x:"L'exclusion est néfaste. Hugo a le droit de participer à tout."}]}],s:"Le syndrome de Tourette touche environ 1% des enfants. Il s'atténue souvent à l'âge adulte."},
+  {id:13,p:"Marie, 14 ans",e:"👧",c:"#F39C12",n:"Dyscalculie",h:"Marie est excellente en français et en histoire, mais les chiffres lui résistent totalement. Elle confond 6 et 9, ne comprend pas le sens des nombres et panique devant la moindre addition. Son prof de maths dit : « Elle ne fait aucun effort. » Pourtant Marie passe des heures à travailler ses maths.",q:[{q:"Qu'est-ce que la dyscalculie ?",r:[{t:"Une simple phobie des maths",ok:false,x:"La dyscalculie n'est pas une phobie ou un manque de travail. C'est un trouble neurologique du traitement des nombres."},{t:"Un trouble neurologique qui affecte la compréhension des nombres",ok:true,x:"Comme la dyslexie affecte les lettres, la dyscalculie affecte les nombres. Le cerveau de Marie traite les quantités et les symboles mathématiques différemment."},{t:"Un manque de logique général",ok:false,x:"Marie peut être très logique dans d'autres domaines ! La dyscalculie est spécifique aux chiffres."}]},{q:"Comment aider Marie en maths ?",r:[{t:"La faire travailler encore plus",ok:false,x:"Travailler plus sans méthode adaptée ne résout pas la dyscalculie. Marie a besoin de stratégies différentes."},{t:"Utiliser des supports visuels et lui permettre la calculatrice",ok:true,x:"Des outils visuels, des manipulables, la calculatrice… permettent à Marie d'accéder aux concepts mathématiques."},{t:"L'orienter vers une filière sans maths",ok:false,x:"Avec les bons aménagements, Marie peut réussir dans de nombreuses filières."}]}],s:"La dyscalculie touche 3 à 6% des enfants. Elle est moins connue que la dyslexie mais tout aussi réelle. Elle est souvent diagnostiquée tardivement."},
+  {id:14,p:"Alexis, 15 ans",e:"🧑",c:"#2980B9",n:"Fatigue chronique (SFC)",h:"Alexis était sportif et plein d'énergie. Depuis une grippe il y a un an, il est épuisé en permanence. Il ne peut plus faire de sport, s'endort en cours. Ses camarades pensent qu'il « profite ».",q:[{q:"Qu'est-ce que le SFC ?",r:[{t:"Une dépression déguisée en fatigue",ok:false,x:"Le SFC est différent de la dépression. C'est une maladie physique qui provoque une fatigue profonde et invalidante."},{t:"Une maladie qui provoque une fatigue extrême et durable, même au repos",ok:true,x:"Le Syndrome de Fatigue Chronique provoque un épuisement intense que le sommeil ne soulage pas. La moindre activité peut aggraver les symptômes pour des jours."},{t:"Une excuse pour éviter l'effort",ok:false,x:"Les personnes atteintes de SFC veulent souvent désespérément faire des activités normales. Elles ne peuvent physiquement pas."}]},{q:"Comment soutenir Alexis ?",r:[{t:"Le croire et respecter ses limites d'énergie",ok:true,x:"Croire sans minimiser est fondamental. Respecter qu'il doit gérer son énergie comme une ressource très limitée est la meilleure aide."},{t:"L'encourager à faire du sport pour reprendre de l'énergie",ok:false,x:"Dans le SFC, forcer l'activité physique aggrave les symptômes. C'est le contraire de ce qu'il faut faire."},{t:"Penser qu'il deviendra paresseux si on ne le pousse pas",ok:false,x:"La pression aggrave le SFC. Alexis a besoin de compréhension et d'un suivi médical adapté."}]}],s:"Le SFC touche entre 200 000 et 300 000 personnes en France. Depuis le COVID, le « COVID long » présente des symptômes similaires."},
+  {id:15,p:"Jade, 13 ans",e:"👧",c:"#27AE60",n:"Maladie cœliaque",h:"Jade ne peut rien manger à la cantine car tout contient du gluten. Ses camarades la trouvent « difficile » et l'excluent des goûters d'anniversaire. Quand elle mange du gluten par erreur, elle est malade plusieurs jours.",q:[{q:"Qu'est-ce que la maladie cœliaque ?",r:[{t:"Un régime alimentaire à la mode",ok:false,x:"La maladie cœliaque est une maladie auto-immune diagnostiquée médicalement. Ce n'est pas un choix de mode de vie."},{t:"Une maladie auto-immune où le gluten détruit l'intestin",ok:true,x:"Chez Jade, le gluten provoque une réaction auto-immune qui détruit les parois de l'intestin grêle. Même une infime quantité peut la rendre très malade."},{t:"Une simple intolérance bénigne",ok:false,x:"La maladie cœliaque peut avoir des conséquences graves à long terme si le régime n'est pas suivi."}]},{q:"Comment inclure Jade dans les moments conviviaux ?",r:[{t:"Lui dire qu'elle n'a qu'à faire une exception",ok:false,x:"Une infime quantité de gluten peut déclencher une crise. Lui demander de faire une exception, c'est lui demander d'accepter de tomber malade."},{t:"Prévoir des alternatives sans gluten pour les goûters collectifs",ok:true,x:"Un petit geste suffit : vérifier les étiquettes, prévoir un gâteau sans gluten. L'inclusion, c'est concret."},{t:"Éviter de manger devant elle",ok:false,x:"Jade peut voir de la nourriture sans problème. L'exclure est inutile et blessant."}]}],s:"La maladie cœliaque touche 1% de la population. Le seul traitement est un régime strict sans gluten à vie."},
+  {id:16,p:"Tom, 14 ans",e:"🧑",c:"#E74C3C",n:"Migraines chroniques",h:"Tom a des migraines violentes plusieurs fois par semaine. La lumière et le bruit le font souffrir terriblement. Son prof lui dit : « Encore mal à la tête ? T'as qu'à moins regarder les écrans. » Ses amis pensent qu'il invente.",q:[{q:"Une migraine, c'est quoi exactement ?",r:[{t:"Un simple mal de tête qu'on exagère",ok:false,x:"Une migraine est bien différente d'un mal de tête ordinaire. C'est une douleur neurologique sévère, souvent accompagnée de nausées."},{t:"Une maladie neurologique avec des crises de douleur intense",ok:true,x:"La migraine est reconnue comme l'une des maladies les plus invalidantes au monde. Pendant une crise, Tom ne peut vraiment pas fonctionner normalement."},{t:"Un symptôme de mauvaise vue",ok:false,x:"La migraine est d'origine neurologique, pas ophtalmique. Les lunettes ne règlent pas le problème."}]},{q:"Comment aider Tom pendant une crise ?",r:[{t:"L'obliger à rester en cours pour ne pas prendre de retard",ok:false,x:"Forcer Tom à rester dans un environnement lumineux et bruyant aggrave et prolonge la crise."},{t:"Lui permettre de s'isoler dans le calme et prévenir l'infirmière",ok:true,x:"Un environnement calme et sombre, un traitement adapté — c'est le protocole qui aide vraiment Tom à récupérer."},{t:"Lui recommander de boire plus d'eau",ok:false,x:"L'hydratation peut aider à prévenir certaines migraines, mais elle ne traite pas une crise déjà installée."}]}],s:"Les migraines chroniques touchent 12% de la population dont de nombreux adolescents. Des traitements préventifs et curatifs existent."},
+  {id:17,p:"Chloé, 14 ans",e:"👧",c:"#16A085",n:"Asthme sévère",h:"Chloé a une crise d'asthme violente en cours de sport. Elle halète, ne peut plus respirer et cherche son inhalateur en panique. Son prof lui dit : « Allez, souffle ! T'as qu'à t'entraîner plus. » Elle se retrouve aux urgences.",q:[{q:"L'asthme sévère, c'est quoi ?",r:[{t:"Un manque de condition physique",ok:false,x:"L'asthme est une maladie des bronches, pas un problème de forme physique. Même des athlètes de haut niveau ont de l'asthme."},{t:"Une maladie chronique des voies respiratoires avec des crises pouvant être graves",ok:true,x:"L'asthme provoque une inflammation et un rétrécissement des bronches. Une crise sévère peut mettre la vie en danger si elle n'est pas traitée rapidement."},{t:"Une allergie aux efforts physiques",ok:false,x:"L'asthme d'effort est un déclencheur mais l'asthme sévère a des causes multiples."}]},{q:"Que faire lors d'une crise d'asthme ?",r:[{t:"Donner de l'eau fraîche et attendre",ok:false,x:"Une crise d'asthme sévère nécessite l'inhalateur prescrit et potentiellement les secours. Attendre est dangereux."},{t:"Aider à trouver l'inhalateur, appeler les secours si la crise est sévère",ok:true,x:"L'inhalateur bronchodilatateur doit être utilisé immédiatement. Si ça ne s'améliore pas en quelques minutes, appeler le 15."},{t:"Lui demander de respirer calmement par le nez",ok:false,x:"Donner des instructions respiratoires pendant une crise peut aggraver la panique. Le traitement médical est prioritaire."}]}],s:"L'asthme touche 10% des enfants en France. C'est la première maladie chronique de l'enfant."},
+  {id:18,p:"Léo, 12 ans",e:"🧒",c:"#D35400",n:"Allergie sévère (anaphylaxie)",h:"Léo a une allergie mortelle aux arachides. À la cantine, un camarade lui fait avaler une cacahuète « pour rire ». En quelques minutes, Léo enfle, a du mal à respirer. L'infirmière doit lui injecter l'EpiPen d'urgence. Léo survit. Son camarade ne comprend toujours pas la gravité.",q:[{q:"Qu'est-ce que le choc anaphylactique ?",r:[{t:"Une allergie qu'on exagère",ok:false,x:"Le choc anaphylactique est une réaction allergique généralisée qui peut tuer en quelques minutes. Ce n'est jamais une exagération."},{t:"Une réaction allergique grave qui peut être mortelle",ok:true,x:"L'anaphylaxie provoque un effondrement du système immunitaire : gonflement des voies aériennes, chute de tension, arrêt cardiaque possible. L'EpiPen est le seul traitement d'urgence."},{t:"Une intolérance alimentaire bénigne",ok:false,x:"Une intolérance et une allergie anaphylactique sont totalement différentes en termes de gravité."}]},{q:"Faire manger une allergie à quelqu'un « pour rire », c'est…",r:[{t:"Une blague inoffensive si c'est une petite quantité",ok:false,x:"Il n'y a pas de petite quantité sûre pour une allergie sévère. Même une trace peut provoquer le choc anaphylactique."},{t:"Un acte grave qui peut constituer des blessures volontaires",ok:true,x:"Faire ingérer sciemment un allergène à quelqu'un est un acte grave. Légalement, cela peut être poursuivi pénalement."},{t:"Une façon de l'aider à développer sa tolérance",ok:false,x:"L'exposition à l'allergène n'augmente pas la tolérance dans le cas des allergies sévères."}]}],s:"Les allergies alimentaires sévères touchent 2 à 3% des enfants. Les personnes allergiques portent toujours une trousse d'urgence avec de l'EpiPen."},
+  {id:19,p:"Pauline, 15 ans",e:"👩",c:"#8E44AD",n:"Haut Potentiel (HPI)",h:"Pauline comprend tout très vite mais s'ennuie profondément en cours. Elle s'agite, pose des questions qui dérangent et pleure parfois sans raison apparente. Ses profs la trouvent difficile. Ses camarades la voient comme « la chouchoute ». Pourtant Pauline souffre d'un décalage entre son intellect et ses émotions.",q:[{q:"Le HPI, c'est juste être très intelligent ?",r:[{t:"Oui, HPI = tout est plus facile",ok:false,x:"Le HPI ne garantit pas la réussite scolaire ! L'ennui, le décalage avec les autres et l'hyperémotivité peuvent rendre le parcours scolaire très difficile."},{t:"Non, c'est un fonctionnement cognitif différent avec des défis spécifiques",ok:true,x:"Le HPI implique une pensée arborescente, une hypersensibilité émotionnelle et sensorielle, et souvent un décalage avec les pairs. Ce n'est pas que des avantages."},{t:"Une étiquette pour les enfants gâtés",ok:false,x:"Le HPI est diagnostiqué par des psychologues via des tests standardisés. C'est une réalité neurologique."}]},{q:"Comment aider Pauline à s'épanouir ?",r:[{t:"Lui donner plus de travail pour l'occuper",ok:false,x:"Plus de quantité sans qualité ne répond pas aux besoins de Pauline. Elle a besoin de complexité et de sens, pas de volume."},{t:"Reconnaître son fonctionnement différent et proposer des défis stimulants",ok:true,x:"Des projets d'approfondissement et du regard bienveillant de ses pairs font une vraie différence."},{t:"La laisser faire ce qu'elle veut en classe",ok:false,x:"Sans cadre, Pauline risque de se désorganiser. Elle a besoin d'encadrement adapté."}]}],s:"Le HPI touche environ 2,3% de la population (QI > 130). En France, 30% des enfants HPI seraient en situation d'échec scolaire."},
+  {id:20,p:"Antoine, 13 ans",e:"🧒",c:"#2C3E50",n:"Dysphasie",h:"Antoine comprend parfaitement tout ce qu'on lui dit, mais quand il veut parler, les mots ne viennent pas ou s'emmêlent. Il bégaie, cherche ses mots longtemps. En exposé, la classe soupire. Certains finissent ses phrases à sa place. Antoine n'ose plus lever la main.",q:[{q:"Qu'est-ce que la dysphasie ?",r:[{t:"Un bégaiement qu'on pourrait corriger avec de la volonté",ok:false,x:"La dysphasie est différente du bégaiement. C'est un trouble structurel du langage qui affecte la production et/ou la compréhension des mots."},{t:"Un trouble neurologique qui affecte le développement du langage oral",ok:true,x:"La dysphasie est d'origine neurologique. Antoine comprend tout mais son cerveau a du mal à produire les mots. C'est indépendant de son intelligence."},{t:"Un manque de confiance en soi",ok:false,x:"La dysphasie est structurelle. La confiance en soi peut aider à la communication, mais ne résout pas le trouble neurologique."}]},{q:"Quelle est la bonne attitude avec Antoine ?",r:[{t:"Finir ses phrases pour l'aider à aller plus vite",ok:false,x:"Finir les phrases d'Antoine est frustrant et humiliant. Il a besoin de temps, pas qu'on parle à sa place."},{t:"Lui laisser le temps de s'exprimer, sans le couper ni le presser",ok:true,x:"Le temps et la patience sont le meilleur cadeau qu'on puisse offrir à Antoine. L'écouter jusqu'au bout avec respect lui permet de s'exprimer pleinement."},{t:"Éviter de lui poser des questions en groupe",ok:false,x:"L'évitement n'est pas la solution. Avec un cadre bienveillant, Antoine peut et doit participer."}]}],s:"La dysphasie touche environ 1% des enfants. Des séances d'orthophonie permettent des progrès importants. Avec un accompagnement adapté, les personnes dysphasiques peuvent réussir leur scolarité."}
+];
+
+// Grille conditions landing
+(function(){
+  const g=document.getElementById("condGrid");
+  S.forEach(sc=>{
+    const sp=document.createElement("span");
+    sp.className="cond-tag";
+    sp.style.cssText=`background:${sc.c}22;color:${sc.c};border:1.5px solid ${sc.c}44`;
+    sp.textContent=sc.n;
+    g.appendChild(sp);
+  });
+})();
+
+// State
+let st={ph:"scenario",i:0,qi:0,sel:null,score:0,tot:0};
+function set(p){Object.assign(st,p);rg();}
+
+// Navigation
+function startGame(){
+  document.getElementById("landing").style.display="none";
+  const g=document.getElementById("game");
+  g.className="visible";
+  rg();window.scrollTo(0,0);
+}
+function backToLanding(){
+  document.getElementById("game").className="";
+  document.getElementById("landing").style.display="flex";
+  st={ph:"scenario",i:0,qi:0,sel:null,score:0,tot:0};
+  window.scrollTo(0,0);
+}
+
+// HTML helpers
+function oldy(m){return`<div class="oldy-bub"><div class="oldy-av">🐕</div><div class="oldy-tx"><div class="oldy-lbl">Oldy te dit…</div><p class="oldy-msg">${m}</p></div></div>`;}
+function pb(cur,tot){const p=Math.round(cur/tot*100);return`<div style="margin-bottom:20px"><div class="pm"><span>PROGRESSION</span><span>${cur}/${tot}</span></div><div class="pb-track"><div class="pb-fill" style="width:${p}%"></div></div><div class="ps">${tot-cur} scénario(s) restant(s)</div></div>`;}
+function gtag(c,l){return`<span class="g-tag" style="background:${c}22;color:${c};border:1.5px solid ${c}44">${l}</span>`;}
+function gbtn(l,f,c="#E8734A"){return`<button class="g-btn" style="background:linear-gradient(135deg,${c},${c}cc);box-shadow:0 4px 16px ${c}44" onclick="${f}">${l}</button>`;}
+
+// Renders
+function rScenario(){
+  const sc=S[st.i];
+  return`<div class="card fade">
+    <button class="back-btn" onclick="backToLanding()">← Retour à l'accueil</button>
+    ${pb(st.i,S.length)}
+    ${oldy(`Rencontre ${sc.p} ! Lis bien son histoire…`)}
+    <div class="sc-box" style="background:${sc.c}11;border:2px solid ${sc.c}33">
+      <div class="ph"><span style="font-size:34px">${sc.e}</span><div>${gtag(sc.c,sc.n)}<div class="pname">${sc.p}</div></div></div>
+      <p class="hist">« ${sc.h} »</p>
+    </div>
+    ${gbtn("Répondre aux questions →","goQ()",sc.c)}
+  </div>`;}
+
+function rQuestion(){
+  const sc=S[st.i],q=sc.q[st.qi],L=["A","B","C"];
+  const btns=q.r.map((r,i)=>`<button class="ans-btn" onclick="handleAns(${i})"><span class="lbadge" style="background:${sc.c}22;color:${sc.c}">${L[i]}</span>${r.t}</button>`).join("");
+  return`<div class="card fade">
+    ${oldy(`Question ${st.qi+1}/${sc.q.length} :`)}
+    <div class="q-box"><p style="margin:0;font-weight:700;color:#2D1A0A;font-size:15px;line-height:1.6">${q.q}</p></div>
+    ${btns}
+  </div>`;}
+
+function rFeedback(){
+  const sc=S[st.i],r=st.sel;
+  return`<div class="card fade">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:44px">${r.ok?"🎉":"🤔"}</div>
+      <div style="font-size:17px;font-weight:700;margin-top:6px;color:${r.ok?"#2E7D32":"#C62828"}">${r.ok?"Bonne réponse !":"Pas tout à fait…"}</div>
+    </div>
+    <div class="fb-box" style="background:${r.ok?"#E8F5E9":"#FFF8E1"};border:2px solid ${r.ok?"#A5D6A7":"#FFD54F"}">
+      ${oldy(r.x)}
+    </div>
+    ${gbtn("Continuer →","goNext()",sc.c)}
+  </div>`;}
+
+function rSavoir(){
+  const sc=S[st.i],last=st.i>=S.length-1;
+  return`<div class="card fade">
+    ${oldy("Le savais-tu ? Voici ce qu'il faut retenir :")}
+    <div class="sv-box" style="background:${sc.c}11;border:2px solid ${sc.c}33">
+      ${gtag(sc.c,"💡 Le savoir en +")}
+      <p style="margin:0;color:#3D2B1A;line-height:1.8;font-size:13px">${sc.s}</p>
+    </div>
+    ${gbtn(last?"Voir mon résultat 🏆":`Scénario ${st.i+2}/${S.length} →`,"goNS()",sc.c)}
+  </div>`;}
+
+function rFin(){
+  const pct=Math.round(st.score/st.tot*100);
+  const msg=pct>=80?"Waouh ! Tu es un vrai champion de l'empathie. Tu peux maintenant aider tes camarades à comprendre les handicaps invisibles.":pct>=50?`Bien joué ! Tu as appris beaucoup aujourd'hui. Ces ${S.length} personnes existent autour de toi — souviens-toi d'elles !`:"Ne te décourage pas ! L'essentiel, c'est d'avoir essayé. Tu sais maintenant des choses importantes sur la différence.";
+  const tags=S.map(sc=>`<span class="g-tag" style="background:${sc.c}22;color:${sc.c};border:1.5px solid ${sc.c}44">${sc.n}</span>`).join("");
+  return`<div class="card fade" style="text-align:center">
+    <div style="font-size:52px;margin-bottom:6px">🏆</div>
+    <h2 style="font-size:22px;font-weight:700;color:#2D1A0A;margin:0 0 8px">Félicitations !</h2>
+    <div class="sc-box2">
+      <div style="font-size:38px;font-weight:700;color:#E8734A">${st.score}<span style="font-size:16px;color:#8B7355">/${st.tot}</span></div>
+      <div style="color:#6B4C2A;font-size:13px;margin-top:4px">bonnes réponses</div>
+      <div style="margin-top:8px;font-size:12px;color:#8B7355">${pct}% de réussite</div>
+    </div>
+    ${oldy(msg)}
+    <div style="background:#F8F2EB;border-radius:14px;padding:14px;text-align:left;margin-bottom:8px">
+      <div style="font-weight:700;color:#2D1A0A;margin-bottom:8px;font-size:13px">Les ${S.length} handicaps invisibles découverts :</div>
+      <div class="tag-list">${tags}</div>
+    </div>
+    ${gbtn("🔄 Rejouer","resetG()")}
+    <button class="back-btn" style="margin-top:8px;width:100%;justify-content:center" onclick="backToLanding()">← Retour à l'accueil</button>
+  </div>`;}
+
+function rg(){
+  const el=document.getElementById("game");
+  let h="";
+  if(st.ph==="scenario")h=rScenario();
+  else if(st.ph==="question")h=rQuestion();
+  else if(st.ph==="feedback")h=rFeedback();
+  else if(st.ph==="savoir")h=rSavoir();
+  else if(st.ph==="fin")h=rFin();
+  el.innerHTML=h+`<div class="gf">Les aventures d'Oldy et Sébastien · Sensibilisation au handicap invisible</div>`;
+  window.scrollTo(0,0);
+}
+
+// Actions
+function goQ(){set({ph:"question"});}
+function goNext(){
+  const sc=S[st.i];
+  if(st.qi<sc.q.length-1)set({qi:st.qi+1,sel:null,ph:"question"});
+  else set({ph:"savoir"});
+}
+function goNS(){
+  if(st.i<S.length-1)set({i:st.i+1,qi:0,sel:null,ph:"scenario"});
+  else set({ph:"fin"});
+}
+function handleAns(i){
+  const r=S[st.i].q[st.qi].r[i];
+  set({sel:r,score:r.ok?st.score+1:st.score,tot:st.tot+1,ph:"feedback"});
+}
+function resetG(){st={ph:"scenario",i:0,qi:0,sel:null,score:0,tot:0};rg();}
+</script>
+</body>
+</html>
