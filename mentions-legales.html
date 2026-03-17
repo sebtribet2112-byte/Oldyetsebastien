@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mentions légales – Les aventures d'Oldy et Sébastien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --vert: #2d6a4f; --vert-clair: #52b788; --vert-pale: #d8f3dc;
+      --vert-bg: #f0faf4; --beige: #fefae0; --or: #d4a843;
+      --texte: #1b2a1b; --texte-doux: #4a5c4a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--beige); color: var(--texte); }
+
+    nav {
+      background: var(--vert); padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    }
+    .nav-logo { font-size: 17px; font-weight: 900; color: white; text-decoration: none; }
+    .nav-logo span { color: var(--or); }
+    .nav-back {
+      color: rgba(255,255,255,0.85); text-decoration: none;
+      font-size: 13px; font-weight: 700; padding: 7px 16px;
+      border-radius: 24px; border: 1.5px solid rgba(255,255,255,0.3);
+      transition: all 0.2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.15); }
+
+    .hero {
+      background: linear-gradient(135deg, var(--vert) 0%, #1b4332 100%);
+      padding: 48px 24px 40px; text-align: center;
+    }
+    .hero-tag {
+      display: inline-block; background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2); color: var(--vert-clair);
+      padding: 6px 18px; border-radius: 24px; font-size: 11px;
+      font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px;
+    }
+    .hero h1 { font-size: clamp(22px,4vw,36px); font-weight: 900; color: white; margin-bottom: 8px; }
+    .hero p { font-size: 13px; color: rgba(255,255,255,0.65); }
+
+    .content { max-width: 760px; margin: 0 auto; padding: 48px 20px 60px; }
+
+    .section {
+      background: white; border: 1.5px solid var(--vert-pale);
+      border-radius: 18px; padding: 28px; margin-bottom: 24px;
+    }
+    .section-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+    .section h2 {
+      font-size: 16px; font-weight: 900; color: var(--vert);
+      text-transform: uppercase; letter-spacing: 1px;
+      border-bottom: 2px solid var(--vert-pale); padding-bottom: 10px; margin-bottom: 16px;
+    }
+    .section p, .section li {
+      font-size: 14px; color: var(--texte-doux); line-height: 1.8; margin-bottom: 8px;
+    }
+    .section ul { padding-left: 20px; }
+    .section a { color: var(--vert); text-decoration: underline dotted; }
+    .section strong { color: var(--texte); }
+
+    .info-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 0; border-bottom: 1px solid var(--vert-pale);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 12px; font-weight: 800; color: var(--vert); min-width: 140px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-value { font-size: 14px; color: var(--texte-doux); line-height: 1.6; }
+
+    .badge-ia {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--vert-bg); border: 1.5px solid var(--vert-pale);
+      color: var(--vert); padding: 8px 16px; border-radius: 24px;
+      font-size: 13px; font-weight: 700; margin-top: 8px;
+    }
+
+    footer {
+      background: var(--vert); color: rgba(255,255,255,0.7);
+      text-align: center; padding: 24px; font-size: 12px; line-height: 2;
+    }
+    footer strong { color: white; }
+    footer a { color: var(--vert-clair); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">🐶 Oldy <span>&</span> Sébastien</a>
+  <a href="/" class="nav-back">← Retour au site</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">⚖️ Conformité légale</div>
+  <h1>Mentions légales</h1>
+  <p>Conformément à la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN)</p>
+</div>
+
+<div class="content">
+
+  <!-- ÉDITEUR -->
+  <div class="section">
+    <span class="section-icon">👤</span>
+    <h2>Éditeur du site</h2>
+    <div class="info-row">
+      <span class="info-label">Nom</span>
+      <span class="info-value"><strong>TRIBET Sébastien</strong></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Qualité</span>
+      <span class="info-value">Auteur créateur — Particulier</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Localisation</span>
+      <span class="info-value">Indre (36), France</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Email</span>
+      <span class="info-value"><a href="mailto:sebastien2112@gmx.com">sebastien2112@gmx.com</a></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Site web</span>
+      <span class="info-value"><a href="https://oldyetsebastien.fr">www.oldyetsebastien.fr</a></span>
+    </div>
+  </div>
+
+  <!-- HÉBERGEUR -->
+  <div class="section">
+    <span class="section-icon">🖥️</span>
+    <h2>Hébergeur</h2>
+    <div class="info-row">
+      <span class="info-label">Société</span>
+      <span class="info-value"><strong>GitHub, Inc.</strong></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Service</span>
+      <span class="info-value">GitHub Pages</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Adresse</span>
+      <span class="info-value">88 Colin P Kelly Jr St, San Francisco, CA 94107, États-Unis</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Site</span>
+      <span class="info-value"><a href="https://pages.github.com" target="_blank">pages.github.com</a></span>
+    </div>
+  </div>
+
+  <!-- PROPRIÉTÉ INTELLECTUELLE -->
+  <div class="section">
+    <span class="section-icon">©️</span>
+    <h2>Propriété intellectuelle</h2>
+    <p>L'ensemble du contenu de ce site — textes, illustrations, personnages, concept, jeux et documents — est la propriété exclusive de <strong>TRIBET Sébastien</strong>, auteur créateur.</p>
+    <p>Toute reproduction, représentation, modification ou exploitation, même partielle, sans autorisation écrite préalable est strictement interdite.</p>
+    <p>© 2026 TRIBET Sébastien — Tous droits réservés.</p>
+    <br/>
+    <div class="badge-ia">🤖 Ce site a été créé avec l'assistance de l'intelligence artificielle (Claude — Anthropic)</div>
+  </div>
+
+  <!-- DONNÉES PERSONNELLES / RGPD -->
+  <div class="section">
+    <span class="section-icon">🔒</span>
+    <h2>Données personnelles & RGPD</h2>
+    <p>Ce site <strong>ne collecte aucune donnée personnelle</strong>. Il n'y a pas de formulaire d'inscription, pas de compte utilisateur, pas de cookie de tracking propre au site.</p>
+    <p>Les seules données techniques éventuellement collectées sont :</p>
+    <ul>
+      <li>Les logs d'accès de GitHub Pages (adresse IP, navigateur) — gérés par GitHub selon leur <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">politique de confidentialité</a>.</li>
+      <li>Les cookies de Google Drive lors de la consultation des livres en ligne — gérés par Google selon leur <a href="https://policies.google.com/privacy?hl=fr" target="_blank">politique de confidentialité</a>.</li>
+    </ul>
+    <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour toute demande : <a href="mailto:sebastien2112@gmx.com">sebastien2112@gmx.com</a></p>
+  </div>
+
+  <!-- LIENS EXTERNES -->
+  <div class="section">
+    <span class="section-icon">🔗</span>
+    <h2>Liens hypertextes</h2>
+    <p>Ce site contient des liens vers des sites tiers (Google Drive). TRIBET Sébastien n'est pas responsable du contenu de ces sites externes et ne peut être tenu pour responsable des dommages résultant de leur consultation.</p>
+  </div>
+
+  <!-- DROIT APPLICABLE -->
+  <div class="section">
+    <span class="section-icon">⚖️</span>
+    <h2>Droit applicable</h2>
+    <p>Le présent site et ses mentions légales sont soumis au <strong>droit français</strong>. En cas de litige, les tribunaux français seront seuls compétents.</p>
+    <p>Pour toute réclamation : <a href="mailto:sebastien2112@gmx.com">sebastien2112@gmx.com</a></p>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Les aventures d'Oldy et Sébastien</strong><br>
+  © 2026 TRIBET Sébastien, Auteur créateur · Tous droits réservés<br>
+  <a href="/">← Retour au site</a>
+</footer>
+
+</body>
+</html>
