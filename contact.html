@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact – Les aventures d'Oldy et Sébastien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --vert:#2d6a4f; --vert-clair:#52b788; --vert-pale:#d8f3dc;
+      --vert-bg:#f0faf4; --beige:#fefae0; --or:#d4a843;
+      --texte:#1b2a1b; --texte-doux:#4a5c4a;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito',sans-serif;background:var(--beige);color:var(--texte)}
+
+    nav{background:var(--vert);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.15)}
+    .nav-logo{font-size:17px;font-weight:900;color:white;text-decoration:none}
+    .nav-logo span{color:var(--or)}
+    .nav-back{color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:700;padding:7px 16px;border-radius:24px;border:1.5px solid rgba(255,255,255,.3)}
+    .nav-back:hover{background:rgba(255,255,255,.15)}
+
+    .hero{background:linear-gradient(135deg,var(--vert) 0%,#1b4332 100%);padding:48px 24px 40px;text-align:center}
+    .hero-tag{display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--vert-clair);padding:6px 18px;border-radius:24px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+    .hero h1{font-size:clamp(22px,4vw,34px);font-weight:900;color:white;margin-bottom:8px}
+    .hero p{font-size:13px;color:rgba(255,255,255,.7);max-width:480px;margin:0 auto;line-height:1.6}
+
+    .content{max-width:600px;margin:0 auto;padding:40px 20px 60px}
+
+    .form-card{background:white;border:2px solid var(--vert-pale);border-radius:22px;padding:32px;box-shadow:0 4px 24px rgba(45,106,79,.08)}
+
+    .form-group{margin-bottom:20px}
+    label{display:block;font-size:13px;font-weight:800;color:var(--vert);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+    input, textarea, select{
+      width:100%;padding:13px 16px;
+      border:2px solid var(--vert-pale);border-radius:12px;
+      font-family:'Nunito',sans-serif;font-size:14px;color:var(--texte);
+      background:var(--vert-bg);transition:border 0.2s;outline:none;
+    }
+    input:focus, textarea:focus{border-color:var(--vert-clair);background:white}
+    textarea{resize:vertical;min-height:140px}
+
+    .submit-btn{
+      width:100%;padding:16px;border:none;border-radius:14px;
+      background:linear-gradient(135deg,var(--vert),var(--vert-clair));
+      color:white;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+      cursor:pointer;transition:all 0.2s;
+      box-shadow:0 4px 16px rgba(45,106,79,.3);
+      margin-top:8px;
+    }
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(45,106,79,.4)}
+    .submit-btn:active{transform:scale(0.98)}
+
+    .info-row{display:flex;align-items:center;gap:12px;background:var(--vert-bg);border:1.5px solid var(--vert-pale);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+    .info-icon{font-size:22px;flex-shrink:0}
+    .info-text{font-size:13px;color:var(--texte-doux);line-height:1.6}
+    .info-text strong{color:var(--texte)}
+
+    .success-msg{display:none;background:#E8F5E9;border:2px solid #A5D6A7;border-radius:14px;padding:20px;text-align:center;margin-top:16px}
+    .success-msg .emoji{font-size:36px;margin-bottom:8px;display:block}
+    .success-msg p{font-size:14px;color:#2E7D32;font-weight:700}
+
+    footer{background:var(--vert);color:rgba(255,255,255,.7);text-align:center;padding:24px;font-size:12px;line-height:2}
+    footer strong{color:white}
+    footer a{color:var(--vert-clair);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">🐶 Oldy <span>&</span> Sébastien</a>
+  <a href="/" class="nav-back">← Retour au site</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">📬 Nous contacter</div>
+  <h1>Une question ? Un partenariat ?</h1>
+  <p>Pour toute demande concernant la BD, le jeu, un projet pédagogique ou une collaboration, écrivez-nous !</p>
+</div>
+
+<div class="content">
+
+  <div class="info-row">
+    <span class="info-icon">⏱️</span>
+    <div class="info-text"><strong>Réponse rapide</strong> — Nous répondons généralement sous 48h.</div>
+  </div>
+
+  <div class="form-card">
+    <form action="https://formspree.io/f/mkoqkwoe" method="POST" id="contactForm">
+
+      <div class="form-group">
+        <label for="name">👤 Votre nom</label>
+        <input type="text" id="name" name="name" placeholder="Prénom et nom" required/>
+      </div>
+
+      <div class="form-group">
+        <label for="email">✉️ Votre email</label>
+        <input type="email" id="email" name="email" placeholder="votre@email.fr" required/>
+      </div>
+
+      <div class="form-group">
+        <label for="sujet">📋 Sujet</label>
+        <select id="sujet" name="sujet">
+          <option value="">-- Choisissez un sujet --</option>
+          <option value="BD">La Bande Dessinée</option>
+          <option value="Jeu">Le jeu Invisible Visible</option>
+          <option value="Jeu numérique">Jeux numériques</option>
+          <option value="Partenariat">Partenariat / Collaboration</option>
+          <option value="Pédagogie">Projet pédagogique</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="message">💬 Votre message</label>
+        <textarea id="message" name="message" placeholder="Écrivez votre message ici…" required></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">📨 Envoyer le message</button>
+
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      <span class="emoji">🎉</span>
+      <p>Message envoyé avec succès !<br>Nous vous répondrons sous 48h. Merci !</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Les aventures d'Oldy et Sébastien</strong><br>
+  © 2026 TRIBET Sébastien, Auteur créateur – Tous droits réservés<br>
+  <a href="/">← Retour au site</a> · <a href="/mentions-legales.html">⚖️ Mentions légales</a>
+</footer>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (response.ok) {
+      form.style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  } catch(err) {
+    alert('Erreur lors de l\'envoi. Réessayez.');
+  }
+});
+</script>
+
+</body>
+</html>
