@@ -22,6 +22,7 @@
   --chronic:  #F97316;  --chronic-bg:#2A1200;
   --sensory:  #4ADE80;  --sensory-bg:#0A2010;
   --other:    #F472B6;  --other-bg: #2A0A18;
+  --cardiac:  #F43F5E;  --cardiac-bg:#2A0A10;
 
   --r1:#3ECFCF; --r2:#B57BEE; --r3:#F97316; --r4:#4ADE80; --r5:#F472B6;
   --r6:#60A5FA; --r7:#FBBF24; --r8:#A78BFA;
@@ -245,6 +246,12 @@ body{
 .cat-chronic .path-card::before{background:var(--chronic);}
 .cat-sensory .path-card::before{background:var(--sensory);}
 .cat-other   .path-card::before{background:var(--other);}
+
+.cat-cardiac .cat-header{background:linear-gradient(90deg,rgba(244,63,94,.25),rgba(244,63,94,.08));}
+.cat-cardiac .cat-title{color:var(--cardiac);}
+.cat-cardiac .path-card::before{background:var(--cardiac);}
+.cat-cardiac .path-tag{background:rgba(244,63,94,.12);color:var(--cardiac);}
+
 
 .path-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
 .path-icon{font-size:22px;flex-shrink:0;}
@@ -748,7 +755,7 @@ body{
       <div class="cat-header">
         <div class="cat-icon">🧠</div>
         <div class="cat-title">Troubles neurodéveloppementaux</div>
-        <div class="cat-count" style="color:var(--neuro)">8 pathologies</div>
+        <div class="cat-count" style="color:var(--neuro)">13 pathologies</div>
       </div>
       <div class="path-grid">
         <div class="path-card" onclick="openModal('tsa')">
@@ -786,6 +793,32 @@ body{
           <div class="path-desc">Difficultés persistantes à s'exprimer et/ou à comprendre le langage parlé, sans cause neurologique acquise. Souvent confondu avec un manque d'effort.</div>
           <div class="path-tags"><span class="path-tag">Langage</span><span class="path-tag">DYS</span></div>
         </div>
+
+        <div class="path-card" onclick="openModal('avc')">
+          <div class="path-top"><div class="path-icon">🧠</div><div><div class="path-name">AVC — Séquelles</div><div class="path-aka">Accident Vasculaire Cérébral</div></div></div>
+          <div class="path-desc">Après un AVC, des séquelles invisibles peuvent persister : troubles de la mémoire, de la parole, de la concentration. La personne "a l'air normale" mais souffre.</div>
+          <div class="path-tags"><span class="path-tag">Neurologie</span><span class="path-tag">Séquelles</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('tremblements')">
+          <div class="path-top"><div class="path-icon">🫳</div><div><div class="path-name">Tremblements essentiels</div><div class="path-aka">Tremblement neurologique chronique</div></div></div>
+          <div class="path-desc">Tremblements involontaires des mains, de la tête ou de la voix. Non liés à Parkinson. Invisibles au repos mais très handicapants dans les gestes quotidiens.</div>
+          <div class="path-tags"><span class="path-tag">Neurologie</span><span class="path-tag">Motricité</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('trouble_cognitif')">
+          <div class="path-top"><div class="path-icon">💭</div><div><div class="path-name">Troubles cognitifs / mémoire</div><div class="path-aka">Trouble cognitif léger, troubles mnésiques</div></div></div>
+          <div class="path-desc">Oublis fréquents, difficultés à se concentrer ou à traiter l'information. Peuvent survenir à tout âge, souvent invisibles et incompris par l'entourage.</div>
+          <div class="path-tags"><span class="path-tag">Mémoire</span><span class="path-tag">Cognition</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('post_commotionnel')">
+          <div class="path-top"><div class="path-icon">⚡</div><div><div class="path-name">Syndrome post-commotionnel</div><div class="path-aka">Séquelles d'un traumatisme crânien</div></div></div>
+          <div class="path-desc">Après un choc à la tête, maux de tête persistants, sensibilité à la lumière, troubles de la mémoire et de l'humeur. Souvent sous-estimé car rien ne se voit.</div>
+          <div class="path-tags"><span class="path-tag">Trauma</span><span class="path-tag">Neurologie</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('paralysie_partielle')">
+          <div class="path-top"><div class="path-icon">🦾</div><div><div class="path-name">Paralysie partielle</div><div class="path-aka">Parésie, faiblesse musculaire localisée</div></div></div>
+          <div class="path-desc">Perte partielle de la force ou du contrôle musculaire dans un membre. Pas toujours visible mais limitant au quotidien pour écrire, marcher, saisir des objets.</div>
+          <div class="path-tags"><span class="path-tag">Motricité</span><span class="path-tag">Neurologie</span></div>
+        </div>
         <div class="path-card" onclick="openModal('hpi')">
           <div class="path-top"><div class="path-icon">✨</div><div><div class="path-name">HPI / Haut Potentiel</div><div class="path-aka">Hypersensibilité, pensée en arborescence</div></div></div>
           <div class="path-desc">Intelligence élevée souvent associée à une hypersensibilité émotionnelle et sensorielle, un ennui scolaire et une souffrance sociale invisibilisée.</div>
@@ -799,7 +832,7 @@ body{
       <div class="cat-header">
         <div class="cat-icon">💜</div>
         <div class="cat-title">Santé mentale & troubles psychiques</div>
-        <div class="cat-count" style="color:var(--mental)">10 pathologies</div>
+        <div class="cat-count" style="color:var(--mental)">15 pathologies</div>
       </div>
       <div class="path-grid">
         <div class="path-card" onclick="openModal('depression')">
@@ -852,6 +885,32 @@ body{
           <div class="path-desc">Perturbations de la pensée, de la perception, du comportement. Très stigmatisée et très mal comprise. La personne peut paraître « normale » la plupart du temps.</div>
           <div class="path-tags"><span class="path-tag">Psychose</span><span class="path-tag">Stigma</span></div>
         </div>
+
+        <div class="path-card" onclick="openModal('stress_chronique')">
+          <div class="path-top"><div class="path-icon">😤</div><div><div class="path-name">Stress chronique</div><div class="path-aka">Hyperréactivité au stress persistante</div></div></div>
+          <div class="path-desc">Un stress prolongé et soutenu détériore la santé physique et mentale. Invisible mais réel : tension permanente, troubles du sommeil, irritabilité, épuisement.</div>
+          <div class="path-tags"><span class="path-tag">Stress</span><span class="path-tag">Chronique</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('estime_soi')">
+          <div class="path-top"><div class="path-icon">💔</div><div><div class="path-name">Trouble de l'estime de soi</div><div class="path-aka">Dysmorphophobie, honte corporelle chronique</div></div></div>
+          <div class="path-desc">Image de soi très négative et persistante pouvant paralyser socialement et professionnellement. Pas un caprice — une vraie souffrance psychologique invisible.</div>
+          <div class="path-tags"><span class="path-tag">Psychique</span><span class="path-tag">Social</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('addiction')">
+          <div class="path-top"><div class="path-icon">🔗</div><div><div class="path-name">Addiction</div><div class="path-aka">Dépendances : alcool, médicaments, comportements</div></div></div>
+          <div class="path-desc">Dépendance physique ou psychologique souvent invisible car dissimulée. Touche toutes les classes sociales. Maladie, pas faiblesse morale.</div>
+          <div class="path-tags"><span class="path-tag">Dépendance</span><span class="path-tag">Stigma</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('deuil')">
+          <div class="path-top"><div class="path-icon">🕊️</div><div><div class="path-name">Deuil compliqué</div><div class="path-aka">Douleur du deuil persistante et invalidante</div></div></div>
+          <div class="path-desc">La perte d'un être cher peut provoquer une souffrance profonde et durable, invisible de l'extérieur. « T'as l'air d'aller mieux » ne signifie pas que la personne va bien.</div>
+          <div class="path-tags"><span class="path-tag">Deuil</span><span class="path-tag">Émotionnel</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('borderline')">
+          <div class="path-top"><div class="path-icon">🌊</div><div><div class="path-name">Trouble de la personnalité borderline</div><div class="path-aka">TPL — Trouble Borderline</div></div></div>
+          <div class="path-desc">Instabilité émotionnelle intense, peur de l'abandon, relations tumultueuses. Souvent confondu avec la manipulation ou le caractère. Très souffrant.</div>
+          <div class="path-tags"><span class="path-tag">Émotionnel</span><span class="path-tag">Identité</span></div>
+        </div>
       </div>
     </div>
 
@@ -860,7 +919,7 @@ body{
       <div class="cat-header">
         <div class="cat-icon">🔥</div>
         <div class="cat-title">Maladies chroniques invisibles</div>
-        <div class="cat-count" style="color:var(--chronic)">10 pathologies</div>
+        <div class="cat-count" style="color:var(--chronic)">27 pathologies</div>
       </div>
       <div class="path-grid">
         <div class="path-card" onclick="openModal('fibro')">
@@ -913,6 +972,92 @@ body{
           <div class="path-desc">Hyperlaxité articulaire, douleurs chroniques, fatigue. Souvent invisible, parfois surprenant (la personne semble souple et en bonne santé).</div>
           <div class="path-tags"><span class="path-tag">Douleur</span><span class="path-tag">Articulaire</span></div>
         </div>
+        <div class="path-card" onclick="openModal('asthme')">
+          <div class="path-top"><div class="path-icon">💨</div><div><div class="path-name">Asthme sévère</div><div class="path-aka">Trouble respiratoire chronique</div></div></div>
+          <div class="path-desc">Crises de difficultés respiratoires imprévisibles. Entre les crises, rien ne se voit. Les déclencheurs sont partout : effort, froid, stress, allergènes.</div>
+          <div class="path-tags"><span class="path-tag">Respiratoire</span><span class="path-tag">Crises</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('coeliaque')">
+          <div class="path-top"><div class="path-icon">🌾</div><div><div class="path-name">Maladie cœliaque</div><div class="path-aka">Intolérance au gluten auto-immune</div></div></div>
+          <div class="path-desc">Réaction auto-immune au gluten détruisant la muqueuse intestinale. Douleurs, fatigue, carences. Régime sans gluten strict à vie. Invisible pour l'entourage.</div>
+          <div class="path-tags"><span class="path-tag">Digestif</span><span class="path-tag">Auto-immune</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('rein')">
+          <div class="path-top"><div class="path-icon">🫘</div><div><div class="path-name">Insuffisance rénale</div><div class="path-aka">Maladie rénale chronique</div></div></div>
+          <div class="path-desc">Perte progressive de la fonction des reins. Fatigue intense, contraintes alimentaires et médicales lourdes. Dialyse possible. Totalement invisible.</div>
+          <div class="path-tags"><span class="path-tag">Rénale</span><span class="path-tag">Fatigue</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('polyarthrite')">
+          <div class="path-top"><div class="path-icon">🤲</div><div><div class="path-name">Polyarthrite rhumatoïde</div><div class="path-aka">Maladie inflammatoire des articulations</div></div></div>
+          <div class="path-desc">Inflammation chronique des articulations provoquant douleur, raideur et fatigue. Peut toucher les jeunes. En dehors des poussées, rien ne se voit.</div>
+          <div class="path-tags"><span class="path-tag">Douleur</span><span class="path-tag">Auto-immune</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('hemophilie')">
+          <div class="path-top"><div class="path-icon">🩸</div><div><div class="path-name">Hémophilie</div><div class="path-aka">Trouble de la coagulation sanguine</div></div></div>
+          <div class="path-desc">Incapacité à coaguler normalement. Un choc banal peut provoquer des hémorragies internes graves. Invisible mais impose des précautions permanentes.</div>
+          <div class="path-tags"><span class="path-tag">Sang</span><span class="path-tag">Risque</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('mucoviscidose')">
+          <div class="path-top"><div class="path-icon">🫁</div><div><div class="path-name">Mucoviscidose</div><div class="path-aka">Maladie génétique des sécrétions</div></div></div>
+          <div class="path-desc">Mucus épais obstruant les poumons et le système digestif. Soins quotidiens intensifs, kinésithérapie, médicaments. Espérance de vie améliorée mais vie contraignante.</div>
+          <div class="path-tags"><span class="path-tag">Respiratoire</span><span class="path-tag">Génétique</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('narcolepsie')">
+          <div class="path-top"><div class="path-icon">😪</div><div><div class="path-name">Narcolepsie</div><div class="path-aka">Hypersomnolence diurne incontrôlable</div></div></div>
+          <div class="path-desc">Endormissements soudains et incontrôlables pendant la journée. Cataplexies (perte de tonus musculaire). Pris pour de la paresse ou du désintérêt.</div>
+          <div class="path-tags"><span class="path-tag">Sommeil</span><span class="path-tag">Neurologie</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('parkinson')">
+          <div class="path-top"><div class="path-icon">🧠</div><div><div class="path-name">Maladie de Parkinson</div><div class="path-aka">Maladie neurodégénérative progressive</div></div></div>
+          <div class="path-desc">Tremblements, rigidité, lenteur des mouvements. Peut toucher des personnes jeunes. Entre les prises de médicaments, les symptômes sont souvent invisibles.</div>
+          <div class="path-tags"><span class="path-tag">Neurologie</span><span class="path-tag">Motricité</span></div>
+        </div>
+
+        <div class="path-card" onclick="openModal('spondylarthrite')">
+          <div class="path-top"><div class="path-icon">🦴</div><div><div class="path-name">Spondylarthrite ankylosante</div><div class="path-aka">Rhumatisme inflammatoire chronique du dos</div></div></div>
+          <div class="path-desc">Inflammation chronique de la colonne vertébrale et des articulations sacro-iliaques. Douleurs nocturnes intenses, raideur matinale. Invisible mais très invalidant.</div>
+          <div class="path-tags"><span class="path-tag">Douleur</span><span class="path-tag">Auto-immune</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('hepatique')">
+          <div class="path-top"><div class="path-icon">🫀</div><div><div class="path-name">Maladie hépatique chronique</div><div class="path-aka">Hépatite chronique, cirrhose débutante</div></div></div>
+          <div class="path-desc">Fatigue intense, douleurs abdominales, troubles digestifs. Le foie travaille mais est abîmé. Rien ne se voit de l'extérieur — souvent associé à tort à l'alcool.</div>
+          <div class="path-tags"><span class="path-tag">Foie</span><span class="path-tag">Fatigue</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('arthrose')">
+          <div class="path-top"><div class="path-icon">🦿</div><div><div class="path-name">Arthrose invalidante</div><div class="path-aka">Dégénérescence articulaire chronique</div></div></div>
+          <div class="path-desc">Usure progressive du cartilage provoquant des douleurs quotidiennes. Souvent associée aux personnes âgées mais touche aussi les jeunes. Invisible mais limitante.</div>
+          <div class="path-tags"><span class="path-tag">Douleur</span><span class="path-tag">Articulaire</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('lombalgie')">
+          <div class="path-top"><div class="path-icon">🔙</div><div><div class="path-name">Lombalgie chronique / Sciatique</div><div class="path-aka">Douleur lombaire et radiculopathie</div></div></div>
+          <div class="path-desc">Douleurs du bas du dos persistantes, irradiant parfois dans la jambe. Pas visibles de l'extérieur. La personne peut marcher mais souffre constamment.</div>
+          <div class="path-tags"><span class="path-tag">Douleur</span><span class="path-tag">Dos</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('amylose')">
+          <div class="path-top"><div class="path-icon">🔬</div><div><div class="path-name">Amylose</div><div class="path-aka">Maladie rare des dépôts protéiques</div></div></div>
+          <div class="path-desc">Accumulation de protéines anormales dans les organes. Fatigue, engourdissements, troubles cardiaques ou rénaux. Maladie rare, souvent diagnostiquée très tardivement.</div>
+          <div class="path-tags"><span class="path-tag">Rare</span><span class="path-tag">Organes</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('bpco')">
+          <div class="path-top"><div class="path-icon">💨</div><div><div class="path-name">BPCO / Bronchite chronique</div><div class="path-aka">Bronchopneumopathie Chronique Obstructive</div></div></div>
+          <div class="path-desc">Essoufflement progressif à l'effort, toux chronique, mucosités. Souvent lié au tabac mais pas toujours. Invisible au repos mais très handicapant à l'effort.</div>
+          <div class="path-tags"><span class="path-tag">Respiratoire</span><span class="path-tag">Chronique</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('obesite')">
+          <div class="path-top"><div class="path-icon">⚖️</div><div><div class="path-name">Obésité — handicap invisible</div><div class="path-aka">Discriminations et souffrances associées</div></div></div>
+          <div class="path-desc">Au-delà du poids visible, l'obésité entraîne des douleurs articulaires, essoufflement, fatigue et une discrimination quotidienne. Les causes sont complexes et souvent méconnues.</div>
+          <div class="path-tags"><span class="path-tag">Discrimination</span><span class="path-tag">Douleur</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('sensibilite_chimique')">
+          <div class="path-top"><div class="path-icon">🧪</div><div><div class="path-name">Sensibilité chimique multiple</div><div class="path-aka">SEM — hypersensibilité aux substances chimiques</div></div></div>
+          <div class="path-desc">Réactions invalidantes à des substances chimiques ordinaires : parfums, produits ménagers, peintures. Invisible mais peut conditionner toute la vie sociale et professionnelle.</div>
+          <div class="path-tags"><span class="path-tag">Chimique</span><span class="path-tag">Sensoriel</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('allergie_severe')">
+          <div class="path-top"><div class="path-icon">🌿</div><div><div class="path-name">Allergies sévères</div><div class="path-aka">Anaphylaxie, allergies alimentaires graves</div></div></div>
+          <div class="path-desc">Réactions allergiques pouvant engager le pronostic vital (choc anaphylactique). Entre les crises, rien ne se voit. Nécessite de porter un stylo auto-injecteur en permanence.</div>
+          <div class="path-tags"><span class="path-tag">Allergie</span><span class="path-tag">Urgence</span></div>
+        </div>
       </div>
     </div>
 
@@ -921,7 +1066,7 @@ body{
       <div class="cat-header">
         <div class="cat-icon">👁️</div>
         <div class="cat-title">Troubles sensoriels & perceptifs</div>
-        <div class="cat-count" style="color:var(--sensory)">5 pathologies</div>
+        <div class="cat-count" style="color:var(--sensory)">7 pathologies</div>
       </div>
       <div class="path-grid">
         <div class="path-card" onclick="openModal('hyperacousie')">
@@ -949,6 +1094,16 @@ body{
           <div class="path-desc">Sensations douloureuses intenses sans blessure visible : brûlures, décharges électriques, fourmillements. Difficiles à croire car rien ne se voit.</div>
           <div class="path-tags"><span class="path-tag">Douleur</span><span class="path-tag">Neurologie</span></div>
         </div>
+        <div class="path-card" onclick="openModal('acouphenes')">
+          <div class="path-top"><div class="path-icon">🔔</div><div><div class="path-name">Acouphènes</div><div class="path-aka">Sifflements ou bourdonnements permanents</div></div></div>
+          <div class="path-desc">Bruits perçus en permanence (sifflements, bourdonnements) sans source sonore extérieure. Invisibles mais épuisants. Peuvent entraîner anxiété et dépression.</div>
+          <div class="path-tags"><span class="path-tag">Auditif</span><span class="path-tag">Chronique</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('hypersens')">
+          <div class="path-top"><div class="path-icon">🌡️</div><div><div class="path-name">Hypersensibilité sensorielle</div><div class="path-aka">Traitement atypique des stimuli sensoriels</div></div></div>
+          <div class="path-desc">Réaction exacerbée aux textures, sons, lumières, odeurs. Peut coexister avec l'autisme ou apparaître isolément. Invisible mais épuisant à gérer chaque jour.</div>
+          <div class="path-tags"><span class="path-tag">Sensoriel</span><span class="path-tag">Neurologie</span></div>
+        </div>
       </div>
     </div>
 
@@ -957,7 +1112,7 @@ body{
       <div class="cat-header">
         <div class="cat-icon">🌸</div>
         <div class="cat-title">Autres situations invalidantes invisibles</div>
-        <div class="cat-count" style="color:var(--other)">5 pathologies</div>
+        <div class="cat-count" style="color:var(--other)">14 pathologies</div>
       </div>
       <div class="path-grid">
         <div class="path-card" onclick="openModal('apnee')">
@@ -984,6 +1139,87 @@ body{
           <div class="path-top"><div class="path-icon">🌟</div><div><div class="path-name">Précocité mal gérée</div><div class="path-aka">HPE avec souffrance scolaire / sociale</div></div></div>
           <div class="path-desc">Ennui, incompréhension des pairs, hypersensibilité. Un enfant à haut potentiel peut être en grande souffrance invisible derrière d'excellents résultats ou des comportements perturbateurs.</div>
           <div class="path-tags"><span class="path-tag">Scolaire</span><span class="path-tag">Social</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('albinisme')">
+          <div class="path-top"><div class="path-icon">☀️</div><div><div class="path-name">Albinisme</div><div class="path-aka">Absence de mélanine — complications invisibles</div></div></div>
+          <div class="path-desc">Au-delà de l'apparence, l'albinisme entraîne des troubles visuels sévères souvent méconnus. La personne peut paraître bien voyante alors qu'elle est malvoyante.</div>
+          <div class="path-tags"><span class="path-tag">Visuel</span><span class="path-tag">Génétique</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('psoriasis')">
+          <div class="path-top"><div class="path-icon">🔶</div><div><div class="path-name">Psoriasis sévère</div><div class="path-aka">Maladie inflammatoire cutanée chronique</div></div></div>
+          <div class="path-desc">Plaques cutanées douloureuses ou prurigineuses, souvent cachées sous les vêtements. Retentissement psychologique majeur. Maladie systémique, pas seulement esthétique.</div>
+          <div class="path-tags"><span class="path-tag">Peau</span><span class="path-tag">Auto-immune</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('seropositivite')">
+          <div class="path-top"><div class="path-icon">🎗️</div><div><div class="path-name">Séropositivité VIH</div><div class="path-aka">VIH sous traitement antirétroviral</div></div></div>
+          <div class="path-desc">Avec un traitement efficace, la charge virale est indétectable. La personne est en bonne santé mais doit gérer une prise en charge médicale lourde et une stigmatisation persistante.</div>
+          <div class="path-tags"><span class="path-tag">Stigma</span><span class="path-tag">Traitement</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('maladie_orpheline')">
+          <div class="path-top"><div class="path-icon">🔮</div><div><div class="path-name">Maladies orphelines</div><div class="path-aka">Maladies rares sans traitement établi</div></div></div>
+          <div class="path-desc">Plus de 7 000 maladies rares existent. Errance diagnostique de plusieurs années, peu de médecins spécialisés, souffrance incomprise. Souvent invisibles.</div>
+          <div class="path-tags"><span class="path-tag">Rare</span><span class="path-tag">Errance</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('aidant')">
+          <div class="path-top"><div class="path-icon">🤲</div><div><div class="path-name">Aidant proche</div><div class="path-aka">Épuisement de l'aidant invisible</div></div></div>
+          <div class="path-desc">L'aidant qui accompagne un proche handicapé ou malade souffre aussi, en silence. Épuisement, isolement, abandon de sa propre vie. Une souffrance souvent totalement invisible.</div>
+          <div class="path-tags"><span class="path-tag">Épuisement</span><span class="path-tag">Social</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('handicap_moteur')">
+          <div class="path-top"><div class="path-icon">🚶</div><div><div class="path-name">Handicap moteur partiel</div><div class="path-aka">Limitation motrice non appareillée</div></div></div>
+          <div class="path-desc">Difficultés de déplacement ou de motricité non visibles au premier regard. La personne peut marcher mais avec douleur ou lenteur. Souvent mal comprise aux places réservées.</div>
+          <div class="path-tags"><span class="path-tag">Motricité</span><span class="path-tag">Douleur</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('longcovid')">
+          <div class="path-top"><div class="path-icon">🦠</div><div><div class="path-name">Covid long</div><div class="path-aka">Séquelles post-Covid persistantes</div></div></div>
+          <div class="path-desc">Fatigue profonde, troubles cognitifs (« brouillard »), douleurs persistant des mois après l'infection. Souvent non reconnu médicalement. Touche toutes les tranches d'âge.</div>
+          <div class="path-tags"><span class="path-tag">Fatigue</span><span class="path-tag">Post-viral</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('hypothyroidie')">
+          <div class="path-top"><div class="path-icon">🦋</div><div><div class="path-name">Hypothyroïdie</div><div class="path-aka">Insuffisance de la glande thyroïde</div></div></div>
+          <div class="path-desc">Fatigue chronique, prise de poids, déprime, difficultés de concentration. Sous traitement, la personne semble aller bien mais doit gérer la maladie à vie.</div>
+          <div class="path-tags"><span class="path-tag">Hormonal</span><span class="path-tag">Fatigue</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDIAQUES -->
+    <div class="cat-section cat-cardiac">
+      <div class="cat-header">
+        <div class="cat-icon">💗</div>
+        <div class="cat-title">Troubles cardiaques & circulatoires</div>
+        <div class="cat-count" style="color:var(--cardiac)">6 pathologies</div>
+      </div>
+      <div class="path-grid">
+        <div class="path-card" onclick="openModal('arythmie')">
+          <div class="path-top"><div class="path-icon">💓</div><div><div class="path-name">Arythmie / Troubles du rythme</div><div class="path-aka">Tachycardie, bradycardie, fibrillation</div></div></div>
+          <div class="path-desc">Rythme cardiaque irrégulier pouvant causer malaises, fatigue et angoisse. Invisible mais potentiellement grave. La personne semble normale mais vit dans l'appréhension.</div>
+          <div class="path-tags"><span class="path-tag">Cardiaque</span><span class="path-tag">Rythme</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('cardiopathie')">
+          <div class="path-top"><div class="path-icon">❤️</div><div><div class="path-name">Cardiopathie congénitale</div><div class="path-aka">Malformation cardiaque de naissance</div></div></div>
+          <div class="path-desc">Malformation cardiaque présente depuis la naissance, opérée ou non. La personne peut paraître en bonne santé mais porte des contraintes médicales lourdes toute sa vie.</div>
+          <div class="path-tags"><span class="path-tag">Cardiaque</span><span class="path-tag">Congénital</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('insuffisance_cardiaque')">
+          <div class="path-top"><div class="path-icon">💔</div><div><div class="path-name">Insuffisance cardiaque</div><div class="path-aka">Cœur affaibli, faible capacité d'effort</div></div></div>
+          <div class="path-desc">Le cœur ne pompe pas suffisamment. Fatigue intense, essoufflement à l'effort, rétention d'eau. Peut toucher des personnes jeunes. Invisible mais très limitant.</div>
+          <div class="path-tags"><span class="path-tag">Cardiaque</span><span class="path-tag">Fatigue</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('hypertension')">
+          <div class="path-top"><div class="path-icon">📊</div><div><div class="path-name">Hypertension / Hypotension</div><div class="path-aka">Trouble de la pression artérielle chronique</div></div></div>
+          <div class="path-desc">Pression artérielle anormale (trop haute ou trop basse) pouvant causer maux de tête, vertiges, malaises. Invisible mais nécessite un suivi médical rigoureux.</div>
+          <div class="path-tags"><span class="path-tag">Vasculaire</span><span class="path-tag">Chronique</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('malaise_vagal')">
+          <div class="path-top"><div class="path-icon">😵</div><div><div class="path-name">Malaise vagal récurrent</div><div class="path-aka">Syncope vasovagale, perte de connaissance</div></div></div>
+          <div class="path-desc">Chutes brutales de la tension provoquant malaises ou pertes de connaissance imprévisibles. Entre les épisodes : rien ne se voit. Mais l'appréhension est permanente.</div>
+          <div class="path-tags"><span class="path-tag">Vasculaire</span><span class="path-tag">Syncope</span></div>
+        </div>
+        <div class="path-card" onclick="openModal('pacemaker')">
+          <div class="path-top"><div class="path-icon">🔋</div><div><div class="path-name">Porteur de pacemaker</div><div class="path-aka">Stimulateur cardiaque implanté</div></div></div>
+          <div class="path-desc">Le pacemaker régule le rythme cardiaque. Invisible sous la peau, il impose des précautions quotidiennes (IRM, champs magnétiques, sport) souvent méconnues de l'entourage.</div>
+          <div class="path-tags"><span class="path-tag">Cardiaque</span><span class="path-tag">Implant</span></div>
         </div>
       </div>
     </div>
@@ -1701,6 +1937,438 @@ const pathologies = {
     idees:['« S\'il/elle est bon(ne), il/elle n\'a pas de problème »  → Souffrance réelle mais invisible'],
     tips:'Proposer de l\'enrichissement. Valoriser sans pression. Prendre au sérieux le mal-être.',
     cmi: false
+  },
+  addiction: {
+    icon:'🔗', cat:'Santé mentale & troubles psychiques', catColor:'#B57BEE',
+    name:'Addiction', aka:'Dépendances : alcool, médicaments, comportements',
+    desc:"L'addiction est une maladie cérébrale chronique, pas un manque de volonté. Elle peut toucher n'importe qui et rester totalement invisible.",
+    signes:["Consommation compulsive malgré les conséquences","Perte de contrôle","Dissimulation des comportements","Syndrome de sevrage","Double vie souvent maintenue"],
+    vecu:"« Je savais que c'était une maladie. Personne ne le voyait. Je fonctionnais normalement — en apparence. »",
+    idees:["« C'est une question de volonté »  → Non, c'est neurologique","« Ça se voit »  → Souvent invisible pendant des années"],
+    tips:"Ne jamais juger. Orienter sans forcer. La honte aggrave l'addiction.",
+    cmi: true
+  },
+  deuil: {
+    icon:'🕊️', cat:'Santé mentale & troubles psychiques', catColor:'#B57BEE',
+    name:'Deuil compliqué', aka:'Douleur du deuil persistante et invalidante',
+    desc:"La perte d'un être cher peut provoquer une souffrance profonde et durable, invisible une fois la période normale du deuil passée.",
+    signes:["Tristesse persistante au-delà de quelques mois","Incapacité à reprendre une vie normale","Pensées intrusives liées à la perte","Isolement social","Perte de sens"],
+    vecu:"« Tout le monde a continué à vivre. Pour moi, rien n'avait changé. J'avais l'air d'aller mieux — je ne me reconnaissais plus. »",
+    idees:["« Ça fait combien de temps ? »  → Le deuil n'a pas de calendrier","« Fais ton deuil »  → Le deuil compliqué est un vrai trouble"],
+    tips:"Ne pas fixer de délai. Être présent sans minimiser. Orienter vers un professionnel si besoin.",
+    cmi: false
+  },
+  borderline: {
+    icon:'🌊', cat:'Santé mentale & troubles psychiques', catColor:'#B57BEE',
+    name:'Trouble de la personnalité borderline', aka:'TPL — Trouble Borderline de la Personnalité',
+    desc:"Instabilité émotionnelle intense, peur de l'abandon, impulsivité. Souffrance profonde souvent incomprise ou assimilée à de la manipulation.",
+    signes:["Émotions très intenses et changeantes","Peur intense de l'abandon","Relations intenses et instables","Impulsivité","Sentiment chronique de vide"],
+    vecu:"« Mes émotions sont comme des tsunamis. Ce n'est pas de la manipulation — c'est de la douleur. »",
+    idees:["« Elle/il est manipulateur »  → Comportements liés à une souffrance profonde, pas à une intention de nuire"],
+    tips:"Ne jamais accuser de manipulation. Stabilité et prévisibilité aident. Thérapie dialectique (DBT) très efficace.",
+    cmi: true
+  },
+  asthme: {
+    icon:'💨', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Asthme sévère', aka:'Trouble respiratoire chronique',
+    desc:"L'asthme sévère provoque des crises de détresse respiratoire imprévisibles. Entre les crises, la personne semble totalement normale.",
+    signes:["Crises de toux, sifflement, essoufflement","Déclencheurs multiples (effort, froid, allergie, stress)","Traitement quotidien et d'urgence","Appréhension permanente","Crises nocturnes épuisantes"],
+    vecu:"« On me dit de juste respirer. Pendant une crise, je ne peux pas. »",
+    idees:["« C'est juste de l'essoufflement »  → Une crise grave peut être mortelle"],
+    tips:"Toujours savoir où est le Ventoline. Ne pas minimiser une crise. Adapter l'activité physique.",
+    cmi: true
+  },
+  coeliaque: {
+    icon:'🌾', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Maladie cœliaque', aka:'Intolérance au gluten auto-immune',
+    desc:"Maladie auto-immune déclenchée par l'ingestion de gluten, détruisant la muqueuse intestinale et provoquant de multiples carences.",
+    signes:["Douleurs abdominales après gluten","Diarrhées, ballonnements","Fatigue par carences","Régime sans gluten strict à vie","Contaminations croisées dangereuses"],
+    vecu:"« Une miette de pain peut me mettre hors service plusieurs jours. Les gens pensent que c'est un choix de mode de vie. »",
+    idees:["« C'est juste une mode sans gluten »  → La maladie cœliaque est une maladie auto-immune sérieuse"],
+    tips:"Respecter le régime sans gluten. Ne jamais proposer « juste un tout petit peu ».",
+    cmi: true
+  },
+  rein: {
+    icon:'🫘', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Insuffisance rénale', aka:'Maladie rénale chronique',
+    desc:"La dégradation progressive de la fonction rénale impose une prise en charge médicale très lourde, tout en restant totalement invisible.",
+    signes:["Fatigue intense","Contraintes alimentaires et hydriques strictes","Dialyse (3 fois/semaine pour certains)","Traitement médicamenteux lourd","Risques d'hospitalisation d'urgence"],
+    vecu:"« Je passe 4h sous dialyse 3 fois par semaine. Personne ne le voit. »",
+    idees:["« T'as l'air en forme »  → Apparence trompeuse"],
+    tips:"Respecter les contraintes alimentaires. Ne pas banaliser la fatigue.",
+    cmi: true
+  },
+  polyarthrite: {
+    icon:'🤲', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Polyarthrite rhumatoïde', aka:'Maladie inflammatoire des articulations',
+    desc:"Maladie auto-immune attaquant les articulations. Douleur, raideur, fatigue. Peut toucher des personnes très jeunes.",
+    signes:["Articulations douloureuses et raides le matin","Fatigue intense","Poussées imprévisibles","Traitement immunosuppresseur","Invisible entre les poussées"],
+    vecu:"« Le matin je ne peux pas ouvrir un robinet. L'après-midi, je semble normale. Personne ne comprend. »",
+    idees:["« T'as l'air bien aujourd'hui »  → Les symptômes fluctuent énormément"],
+    tips:"Ne pas juger les jours difficiles. Adapter les tâches physiques. Éviter les poignées de main fermes.",
+    cmi: true
+  },
+  hemophilie: {
+    icon:'🩸', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Hémophilie', aka:'Trouble de la coagulation sanguine',
+    desc:"L'hémophilie empêche la coagulation normale. Un choc anodin peut provoquer des hémorragies internes graves. Invisible mais impose une vigilance permanente.",
+    signes:["Saignements prolongés","Hématomes importants pour chocs mineurs","Hémarthroses (saignements articulaires)","Traitement préventif régulier","Interdiction de nombreux sports"],
+    vecu:"« Un coup ordinaire pour les autres peut m'hospitaliser. »",
+    idees:["« Prends juste du Doliprane »  → Certains médicaments sont contre-indiqués"],
+    tips:"Ne jamais donner d'aspirine ou ibuprofène. Appeler les secours en cas de choc important.",
+    cmi: true
+  },
+  mucoviscidose: {
+    icon:'🫁', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Mucoviscidose', aka:'Maladie génétique des sécrétions',
+    desc:"Produit un mucus épais obstruant les poumons et le système digestif. Soins quotidiens intensifs mais maladie totalement invisible.",
+    signes:["Kinésithérapie respiratoire quotidienne obligatoire","Toux chronique","Problèmes digestifs","Médicaments nombreux","Risque d'infections graves"],
+    vecu:"« Je passe 2h chaque matin à faire ma kiné avant l'école. Personne ne le voit. »",
+    idees:["« Il tousse beaucoup »  → Pas une simple toux — c'est vital de dégager les poumons"],
+    tips:"Comprendre les contraintes des soins quotidiens. Éviter de répandre des infections.",
+    cmi: true
+  },
+  narcolepsie: {
+    icon:'😪', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Narcolepsie', aka:'Hypersomnolence diurne incontrôlable',
+    desc:"Endormissements soudains et incontrôlables en pleine journée, parfois avec cataplexie (perte brutale de tonus musculaire).",
+    signes:["Endormissements brutaux involontaires","Cataplexies sous l'émotion","Paralysie du sommeil","Hallucinations à l'endormissement","Somnolence diurne permanente"],
+    vecu:"« Je peux m'endormir en classe sans m'en rendre compte. Ce n'est pas de la paresse. »",
+    idees:["« Dors mieux la nuit »  → Le problème n'est pas la quantité de sommeil"],
+    tips:"Autoriser de courtes siestes. Ne pas pénaliser les endormissements.",
+    cmi: true
+  },
+  parkinson: {
+    icon:'🧠', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Maladie de Parkinson', aka:'Maladie neurodégénérative progressive',
+    desc:"Tremblements, rigidité, lenteur des mouvements. Peut toucher des personnes jeunes. Variable selon les prises de médicaments.",
+    signes:["Tremblements au repos","Rigidité musculaire","Lenteur des mouvements","Troubles de l'équilibre","Fluctuations on/off liées au traitement"],
+    vecu:"« Quand mon traitement fait effet, j'ai l'air normal. Quand il s'arrête, je peux à peine bouger. »",
+    idees:["« Tu trembles moins aujourd'hui »  → Les fluctuations sont liées au traitement"],
+    tips:"Ne pas presser la personne dans ses gestes. Comprendre les fluctuations.",
+    cmi: true
+  },
+  acouphenes: {
+    icon:'🔔', cat:'Troubles sensoriels & perceptifs', catColor:'#4ADE80',
+    name:'Acouphènes', aka:'Sifflements ou bourdonnements permanents',
+    desc:"Bruits perçus en permanence sans source extérieure. Invisibles mais épuisants. Souvent associés à anxiété et dépression.",
+    signes:["Sifflements ou bourdonnements constants","Aggravation dans le silence","Troubles du sommeil","Anxiété et dépression associées","Hypersensibilité aux bruits"],
+    vecu:"« Il y a un sifflement dans ma tête 24h/24. Certains jours je ne pense qu'à ça. »",
+    idees:["« Fais abstraction »  → Impossible de ne pas entendre quelque chose dans sa propre tête"],
+    tips:"Éviter les environnements trop bruyants. Ne pas minimiser. Thérapies sonores disponibles.",
+    cmi: true
+  },
+  hypersens: {
+    icon:'🌡️', cat:'Troubles sensoriels & perceptifs', catColor:'#4ADE80',
+    name:'Hypersensibilité sensorielle', aka:'Traitement atypique des stimuli sensoriels',
+    desc:"Réaction exacerbée aux textures, sons, lumières, odeurs. Peut coexister avec l'autisme, le TDAH ou apparaître isolément.",
+    signes:["Réaction disproportionnée aux stimuli ordinaires","Intolérance à certains vêtements, aliments, odeurs","Surcharge sensorielle dans les lieux animés","Fatigue importante après stimulation","Besoin de pauses sensorielles"],
+    vecu:"« Une étiquette dans mon T-shirt peut me rendre fou/folle toute la journée. »",
+    idees:["« C'est dans la tête »  → Réponse neurologique réelle, pas comportementale"],
+    tips:"Permettre les adaptations (casque, vêtements confortables). Ne pas forcer le contact physique.",
+    cmi: false
+  },
+  albinisme: {
+    icon:'☀️', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Albinisme', aka:'Absence de mélanine — complications visuelles méconnues',
+    desc:"Au-delà de l'apparence, l'albinisme entraîne des troubles visuels sévères méconnus. La personne peut sembler bien voir alors qu'elle est malvoyante.",
+    signes:["Malvoyance partielle","Nystagmus (oscillation des yeux)","Photosensibilité intense","Risque élevé de brûlures solaires","Stigmatisation liée à l'apparence"],
+    vecu:"« Tout le monde voit ma peau mais personne ne sait que je lis difficilement et que le soleil me fait mal. »",
+    idees:["« Il/elle voit puisqu'il/elle marche normalement »  → La malvoyance n'empêche pas de se déplacer"],
+    tips:"Adapter les documents. Éviter les expositions solaires. Ne pas faire de remarques sur l'apparence.",
+    cmi: true
+  },
+  psoriasis: {
+    icon:'🔶', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Psoriasis sévère', aka:'Maladie inflammatoire cutanée chronique',
+    desc:"Plaques cutanées douloureuses ou prurigineuses souvent cachées. Au-delà de la peau, c'est une maladie systémique avec fort impact psychologique.",
+    signes:["Plaques rouges squameuses parfois cachées","Démangeaisons ou douleurs","Rhumatisme psoriasique possible","Retentissement psychologique fort","Traitement lourd"],
+    vecu:"« Je porte des manches longues même en été. J'ai honte d'être en piscine. »",
+    idees:["« C'est contagieux »  → FAUX, le psoriasis n'est absolument pas contagieux"],
+    tips:"Ne jamais reculer devant une personne avec du psoriasis. Ne pas fixer ni commenter.",
+    cmi: true
+  },
+  seropositivite: {
+    icon:'🎗️', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Séropositivité VIH', aka:'VIH sous traitement antirétroviral',
+    desc:"Avec un traitement efficace, la charge virale est indétectable. La personne est en bonne santé mais gère une prise en charge lourde et une stigmatisation persistante.",
+    signes:["Traitement médicamenteux à vie","Effets secondaires possibles","Charge psychologique liée au secret","Stigmatisation sociale forte","Suivi médical régulier"],
+    vecu:"« Je suis en bonne santé. Mais si je le dis, je sais comment les gens me regardent. »",
+    idees:["« C'est contagieux par contact »  → FAUX : uniquement voie sanguine, sexuelle ou maternelle","« Indétectable = encore contagieux »  → FAUX : indétectable = intransmissible"],
+    tips:"Ne jamais stigmatiser. Informer pour déconstruire les peurs. La confidentialité est primordiale.",
+    cmi: true
+  },
+  maladie_orpheline: {
+    icon:'🔮', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Maladies orphelines', aka:'Maladies rares sans traitement établi',
+    desc:"Plus de 7 000 maladies rares touchent 3 millions de Français. Errance diagnostique longue, peu de spécialistes, souffrance incomprise.",
+    signes:["Symptômes multiples inexpliqués pendant des années","Errance diagnostique (5 à 10 ans en moyenne)","Peu ou pas de traitement disponible","Isolement fort","Incompréhension médicale"],
+    vecu:"« J'ai consulté 12 spécialistes en 7 ans. Chacun disait que ce n'était pas son domaine. »",
+    idees:["« Si les médecins ne trouvent rien, c'est psychologique »  → Une maladie rare peut rester non diagnostiquée des années"],
+    tips:"Croire la personne. Ne pas suggérer que c'est dans sa tête. La valider dans sa recherche.",
+    cmi: true
+  },
+  aidant: {
+    icon:'🤲', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Aidant proche', aka:"Épuisement invisible de l'aidant",
+    desc:"L'aidant qui accompagne un proche handicapé ou malade souffre aussi, en silence. Son épuisement est rarement reconnu.",
+    signes:["Épuisement physique et émotionnel","Abandon progressif de sa vie personnelle","Isolement social","Sentiment de culpabilité permanent","Santé propre négligée"],
+    vecu:"« Je soigne ma mère depuis 3 ans. Tout le monde demande comment elle va. Personne ne demande comment je vais, moi. »",
+    idees:["« C'est normal, c'est ta famille »  → L'aidance a un coût humain énorme"],
+    tips:"Demander comment va l'aidant, pas seulement l'aidé. Orienter vers les associations d'aidants.",
+    cmi: false
+  },
+  handicap_moteur: {
+    icon:'🚶', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Handicap moteur partiel', aka:'Limitation motrice non visible au premier regard',
+    desc:"Certaines limitations motrices ne se voient pas : douleur à la marche, fatigue musculaire, difficultés à certains gestes.",
+    signes:["Démarche douloureuse non visible","Difficultés dans les escaliers","Fatigue après de courtes distances","Incompréhension aux places réservées"],
+    vecu:"« Je marche, donc les gens pensent que je n'ai pas besoin de la place handicapé. Mais chaque pas me fait mal. »",
+    idees:["« Si tu marches, t'as pas besoin de la place »  → Le handicap moteur ne nécessite pas d'être en fauteuil"],
+    tips:"Ne jamais remettre en question l'utilisation de la CMI ou des places réservées.",
+    cmi: true
+  },
+  longcovid: {
+    icon:'🦠', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Covid long', aka:'Séquelles post-Covid persistantes',
+    desc:"Des mois après l'infection, des symptômes persistants invalidants touchent une partie des personnes, quelle que soit la gravité initiale.",
+    signes:["Fatigue profonde et persistante","Brouillard cognitif","Essoufflement à l'effort","Douleurs diffuses","Malaise post-exertionnel"],
+    vecu:"« J'ai eu un Covid léger. Un an après, je ne peux pas traverser ma maison sans m'asseoir. »",
+    idees:["« T'as plus le Covid, t'as pas de raison d'être fatigué »  → Le Covid long est une réalité médicale reconnue"],
+    tips:"Respecter les limites énergétiques. Ne pas pousser à se forcer.",
+    cmi: true
+  },
+
+  avc: {
+    icon:'🧠', cat:'Troubles neurodéveloppementaux', catColor:'#3ECFCF',
+    name:'AVC — Séquelles', aka:'Accident Vasculaire Cérébral',
+    desc:"Après un AVC, des séquelles invisibles peuvent persister des années : troubles de la mémoire, de la parole, difficultés de concentration. La personne semble normale mais souffre.",
+    signes:["Troubles de la mémoire et de l'attention","Fatigue cognitive intense","Difficultés d'élocution ou de compréhension","Changements de personnalité","Difficultés à trouver ses mots"],
+    vecu:"« J'ai eu mon AVC il y a 2 ans. Je marche, je parle. Mais je ne suis plus le même. Personne ne voit les séquelles. »",
+    idees:["« T'as l'air bien rétabli »  → Les séquelles cognitives et émotionnelles sont souvent invisibles"],
+    tips:"Ne pas brusquer. Laisser le temps de finir les phrases. Adapter le rythme.",
+    cmi: true
+  },
+  tremblements: {
+    icon:'🫳', cat:'Troubles neurodéveloppementaux', catColor:'#3ECFCF',
+    name:'Tremblements essentiels', aka:'Tremblement neurologique chronique',
+    desc:"Tremblements involontaires des mains, de la tête ou de la voix non liés à Parkinson. Invisibles au repos mais très handicapants dans les gestes du quotidien.",
+    signes:["Tremblements déclenchés par l'action (écrire, tenir un verre)","Voix chevrotante","Difficultés pour les tâches de précision","Aggravation par le stress","Gêne sociale importante"],
+    vecu:"« Je ne peux plus tenir une tasse de café sans en renverser la moitié. Les gens pensent que j'ai bu. »",
+    idees:["« Il/elle a bu »  → Réflexe injuste et blessant","« C'est comme Parkinson »  → Ce sont deux maladies différentes"],
+    tips:"Ne pas fixer les tremblements. Proposer de l'aide discrètement. Ne pas devancer sans demander.",
+    cmi: true
+  },
+  trouble_cognitif: {
+    icon:'💭', cat:'Troubles neurodéveloppementaux', catColor:'#3ECFCF',
+    name:'Troubles cognitifs / mémoire', aka:'Trouble cognitif léger, troubles mnésiques',
+    desc:"Oublis fréquents, difficultés à se concentrer ou à traiter l'information. Peuvent survenir à tout âge, souvent invisibles et incompris par l'entourage.",
+    signes:["Oublis fréquents et gênants","Difficultés à suivre une conversation","Lenteur de traitement de l'information","Problèmes d'orientation","Fatigue mentale intense"],
+    vecu:"« Je cherche mes mots constamment. J'oublie ce que je voulais dire. Les gens pensent que je ne fais pas attention. »",
+    idees:["« Tout le monde oublie »  → Les troubles cognitifs vont bien au-delà des oublis ordinaires"],
+    tips:"Écrire les informations importantes. Ne pas mettre en difficulté en public. Être patient.",
+    cmi: true
+  },
+  post_commotionnel: {
+    icon:'⚡', cat:'Troubles neurodéveloppementaux', catColor:'#3ECFCF',
+    name:'Syndrome post-commotionnel', aka:'Séquelles d'un traumatisme crânien',
+    desc:"Après un choc à la tête, des symptômes peuvent persister des mois : maux de tête, sensibilité à la lumière, troubles de la mémoire et de l'humeur.",
+    signes:["Maux de tête persistants","Sensibilité à la lumière et au bruit","Troubles de la mémoire","Irritabilité, anxiété","Fatigue intense"],
+    vecu:"« J'ai eu un choc au foot. Trois mois après, j'ai encore des maux de tête et je n'arrive pas à me concentrer en classe. »",
+    idees:["« T'as juste besoin de te reposer »  → Le syndrome peut durer des mois et nécessite un suivi"],
+    tips:"Éviter les écrans en phase aiguë. Respecter le retour progressif à l'activité. Ne pas minimiser.",
+    cmi: false
+  },
+  paralysie_partielle: {
+    icon:'🦾', cat:'Troubles neurodéveloppementaux', catColor:'#3ECFCF',
+    name:'Paralysie partielle', aka:'Parésie, faiblesse musculaire localisée',
+    desc:"Perte partielle de la force ou du contrôle musculaire dans un membre. Pas toujours visible mais limitant pour écrire, marcher ou saisir des objets.",
+    signes:["Faiblesse musculaire dans un membre","Maladresse accrue","Difficultés à certains gestes","Douleurs associées parfois","Fatigue musculaire rapide"],
+    vecu:"« Ma main droite est plus faible depuis mon accident. Je compense, les gens ne voient rien. Mais écrire 10 minutes m'épuise. »",
+    idees:["« Tu te sers de ta main donc t'as pas de problème »  → La faiblesse partielle est réelle même sans paralysie totale"],
+    tips:"Adapter les outils. Autoriser le numérique. Ne pas imposer des tâches manuelles prolongées.",
+    cmi: true
+  },
+  stress_chronique: {
+    icon:'😤', cat:'Santé mentale & troubles psychiques', catColor:'#B57BEE',
+    name:'Stress chronique', aka:'Hyperréactivité au stress persistante',
+    desc:"Un stress prolongé et soutenu détériore durablement la santé physique et mentale. Invisible mais réel : tension permanente, troubles du sommeil, épuisement.",
+    signes:["Tension musculaire permanente","Troubles du sommeil","Irritabilité chronique","Maux de tête fréquents","Système immunitaire fragilisé"],
+    vecu:"« Je suis stressé(e) depuis si longtemps que je ne sais plus ce que c'est que d'être détendu(e). »",
+    idees:["« Tout le monde est stressé »  → Le stress chronique est une pathologie avec des effets physiologiques réels"],
+    tips:"Ne pas minimiser. Identifier les sources. Orienter vers des techniques de gestion du stress ou un professionnel.",
+    cmi: false
+  },
+  estime_soi: {
+    icon:'💔', cat:'Santé mentale & troubles psychiques', catColor:'#B57BEE',
+    name:"Trouble de l'estime de soi", aka:'Dysmorphophobie, honte corporelle chronique',
+    desc:"Image de soi très négative et persistante pouvant paralyser socialement et professionnellement. Pas un caprice — une vraie souffrance psychologique invisible.",
+    signes:["Image de soi très négative et résistante","Évitement des situations sociales","Comparaison constante aux autres","Difficultés à accepter les compliments","Impact sur la vie professionnelle et affective"],
+    vecu:"« Je sais que c'est irationnel. Mais quand je me vois dans un miroir, je ne supporte pas ce que je vois. »",
+    idees:["« T'es belle/beau, arrête »  → Invalide la souffrance réelle","« C'est de la coquetterie »  → La dysmorphophobie est un trouble psychiatrique reconnu"],
+    tips:"Ne pas minimiser. Valider la souffrance sans renforcer les croyances négatives. Orienter vers un professionnel.",
+    cmi: false
+  },
+  spondylarthrite: {
+    icon:'🦴', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Spondylarthrite ankylosante', aka:'Rhumatisme inflammatoire chronique du dos',
+    desc:"Inflammation chronique de la colonne vertébrale et des articulations sacro-iliaques. Douleurs nocturnes intenses, raideur matinale. Totalement invisible.",
+    signes:["Douleurs lombaires nocturnes et matinales","Raideur matinale prolongée (> 30 min)","Amélioration à l'exercice (contrairement à l'arthrose)","Fatigue inflammatoire","Atteinte des hanches parfois"],
+    vecu:"« Je me réveille la nuit avec des douleurs intenses dans le dos. Le matin, je mets 1h avant de pouvoir me lever normalement. »",
+    idees:["« Le sport c'est mauvais pour le dos »  → Pour cette maladie, bouger est au contraire essentiel"],
+    tips:"Respecter les douleurs nocturnes et matinales. Ne pas confondre avec une simple lombalgie.",
+    cmi: true
+  },
+  hepatique: {
+    icon:'🫀', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Maladie hépatique chronique', aka:'Hépatite chronique, cirrhose débutante',
+    desc:"Fatigue intense, douleurs abdominales, troubles digestifs. Le foie est abîmé mais rien ne se voit de l'extérieur. Souvent associé à tort à l'alcool.",
+    signes:["Fatigue intense et persistante","Douleurs sous les côtes droites","Troubles digestifs","Jaunisse épisodique possible","Sensibilité aux médicaments et à l'alcool"],
+    vecu:"« Mon hépatite C est d'origine transfusionnelle. Mais dès que je dis hépatite, les gens pensent que c'est ma faute. »",
+    idees:["« C'est à cause de l'alcool »  → Les maladies hépatiques ont de nombreuses causes autres que l'alcool"],
+    tips:"Ne pas supposer la cause. Respecter les régimes et contre-indications médicamenteuses.",
+    cmi: true
+  },
+  arthrose: {
+    icon:'🦿', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Arthrose invalidante', aka:'Dégénérescence articulaire chronique',
+    desc:"Usure progressive du cartilage provoquant des douleurs quotidiennes. Souvent associée aux personnes âgées mais peut toucher des personnes jeunes.",
+    signes:["Douleurs articulaires aggravées à l'effort","Raideur après le repos","Craquements articulaires","Déformation progressive","Limitation des mouvements"],
+    vecu:"« J'ai 35 ans et de l'arthrose aux genoux. Descendre les escaliers est douloureux. Personne ne comprend. »",
+    idees:["« C'est pour les vieux »  → L'arthrose peut toucher des personnes de tous âges"],
+    tips:"Ne pas minimiser les douleurs. Adapter les activités physiques. Respecter les limitations.",
+    cmi: true
+  },
+  lombalgie: {
+    icon:'🔙', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Lombalgie chronique / Sciatique', aka:'Douleur lombaire et radiculopathie',
+    desc:"Douleurs du bas du dos persistantes, irradiant parfois dans la jambe. La personne peut marcher mais souffre constamment. Première cause d'invalidité en France.",
+    signes:["Douleur lombaire permanente ou récurrente","Irradiation dans la fesse ou la jambe (sciatique)","Limitation des mouvements","Troubles du sommeil","Fatigabilité accrue"],
+    vecu:"« Je peux marcher, donc les gens pensent que je vais bien. Mais je suis assis à compter les minutes tellement j'ai mal. »",
+    idees:["« Marche, ça te fera du bien »  → Vrai à petite dose mais non si douleur intense"],
+    tips:"Ne pas pousser à l'effort. Respecter les positions antalgiques. Ne pas minimiser la douleur chronique.",
+    cmi: true
+  },
+  amylose: {
+    icon:'🔬', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Amylose', aka:'Maladie rare des dépôts protéiques',
+    desc:"Accumulation de protéines anormales dans les organes. Fatigue, engourdissements, troubles cardiaques ou rénaux. Maladie rare, souvent diagnostiquée très tardivement.",
+    signes:["Fatigue profonde","Engourdissements des extrémités","Troubles cardiaques ou rénaux","Prise de poids inexpliquée","Errance diagnostique longue"],
+    vecu:"« On a mis 6 ans à trouver ce que j'avais. Entre-temps, j'avais l'air bien mais je me dégradais. »",
+    idees:["« C'est rare donc peu probable »  → Raison exacte pour laquelle le diagnostic tarde"],
+    tips:"Croire la personne. Ne pas minimiser. Orienter vers des centres de référence maladies rares.",
+    cmi: true
+  },
+  bpco: {
+    icon:'💨', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'BPCO / Bronchite chronique', aka:'Bronchopneumopathie Chronique Obstructive',
+    desc:"Essoufflement progressif à l'effort, toux chronique, mucosités. Souvent lié au tabac mais pas toujours. Invisible au repos mais très handicapant à l'effort.",
+    signes:["Essoufflement à l'effort progressif","Toux chronique productive","Mucosités matinales","Fatigabilité à l'effort","Exacerbations infectieuses"],
+    vecu:"« Je ne peux plus monter les escaliers sans m'arrêter. Mais en bas, j'ai l'air normal. »",
+    idees:["« Arrête de fumer et ça ira »  → Vrai pour l'évolution mais les lésions sont irréversibles"],
+    tips:"Adapter les efforts. Respecter les pauses. Éviter les environnements poussiéreux ou enfumés.",
+    cmi: true
+  },
+  obesite: {
+    icon:'⚖️', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Obésité — discriminations invisibles', aka:'Grossophobie et souffrances associées',
+    desc:"Au-delà du poids visible, l'obésité entraîne des douleurs articulaires, essoufflement, fatigue et une discrimination quotidienne. Les causes sont complexes et souvent méconnues.",
+    signes:["Douleurs articulaires des membres inférieurs","Essoufflement à l'effort","Fatigue chronique","Discrimination sociale et médicale","Retentissement psychologique fort"],
+    vecu:"« On me dit d'arrêter de manger. Personne ne voit les genoux qui font mal, la honte à chaque repas au restaurant. »",
+    idees:["« C'est une question de volonté »  → L'obésité est multifactorielle : génétique, hormonal, psychologique, social"],
+    tips:"Ne jamais commenter le poids ou l'alimentation. Adapter le matériel. Lutter contre la grossophobie.",
+    cmi: true
+  },
+  sensibilite_chimique: {
+    icon:'🧪', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Sensibilité chimique multiple', aka:'SEM — hypersensibilité aux substances chimiques',
+    desc:"Réactions invalidantes à des substances chimiques ordinaires : parfums, produits ménagers, peintures. Invisible mais peut conditionner toute la vie sociale et professionnelle.",
+    signes:["Maux de tête ou nausées après exposition chimique","Fatigue et brouillard mental","Réactions respiratoires","Évitement de nombreux lieux","Isolement social"],
+    vecu:"« Je ne peux pas aller dans un magasin si quelqu'un porte du parfum. Les gens pensent que j'exagère. »",
+    idees:["« C'est dans ta tête »  → La SEM est une réponse physique réelle, pas psychosomatique"],
+    tips:"Éviter les parfums forts en présence de la personne. Aérer les espaces. Prendre au sérieux.",
+    cmi: true
+  },
+  allergie_severe: {
+    icon:'🌿', cat:'Maladies chroniques invisibles', catColor:'#F97316',
+    name:'Allergies sévères', aka:'Anaphylaxie, allergies alimentaires graves',
+    desc:"Réactions allergiques pouvant engager le pronostic vital. Entre les crises, rien ne se voit. Nécessite de porter un auto-injecteur (EpiPen) en permanence.",
+    signes:["Réactions rapides et sévères","Urticaire, œdème, détresse respiratoire","Risque de choc anaphylactique","Port permanent de l'EpiPen","Vigilance alimentaire totale"],
+    vecu:"« Un repas chez des amis peut me tuer si quelqu'un n'a pas vérifié les ingrédients. Personne ne réalise l'enjeu. »",
+    idees:["« Un peu ça ne peut pas faire de mal »  → En cas d'allergie sévère, une trace peut suffire à provoquer un choc"],
+    tips:"Toujours lire les étiquettes. Ne jamais minimiser. Savoir où est l'EpiPen et comment l'utiliser.",
+    cmi: true
+  },
+  arythmie: {
+    icon:'💓', cat:'Troubles cardiaques & circulatoires', catColor:'#F43F5E',
+    name:'Arythmie / Troubles du rythme cardiaque', aka:'Tachycardie, bradycardie, fibrillation',
+    desc:"Rythme cardiaque irrégulier causant malaises, fatigue et angoisse. Invisible mais potentiellement grave. La personne vit dans l'appréhension d'une crise.",
+    signes:["Palpitations, cœur qui s'emballe ou s'arrête","Vertiges et malaises","Fatigue inexpliquée","Essoufflement soudain","Anxiété liée à l'imprévisibilité"],
+    vecu:"« Mon cœur peut s'emballer brutalement à n'importe quel moment. Ça dure quelques secondes. Personne autour ne voit rien. »",
+    idees:["« C'est juste du stress »  → Les arythmies sont des troubles cardiaques réels nécessitant suivi médical"],
+    tips:"Ne pas minimiser les malaises. En cas de perte de connaissance appeler le 15. Éviter les excitants.",
+    cmi: true
+  },
+  cardiopathie: {
+    icon:'❤️', cat:'Troubles cardiaques & circulatoires', catColor:'#F43F5E',
+    name:'Cardiopathie congénitale', aka:'Malformation cardiaque de naissance',
+    desc:"Malformation cardiaque présente depuis la naissance. La personne peut paraître en bonne santé mais porte des contraintes médicales lourdes toute sa vie.",
+    signes:["Fatigue à l'effort","Limitations dans certains sports ou activités","Suivi cardiologique régulier","Risque d'arythmies","Cicatrice opératoire parfois cachée"],
+    vecu:"« J'ai été opéré à 2 ans. Aujourd'hui j'ai 20 ans et un cœur fragile. Personne ne le sait. »",
+    idees:["« T'as l'air en forme »  → La cardiopathie impose des limitations invisibles"],
+    tips:"Connaître les limitations médicales. Ne pas pousser à l'effort physique intense. Respecter les contre-indications.",
+    cmi: true
+  },
+  insuffisance_cardiaque: {
+    icon:'💔', cat:'Troubles cardiaques & circulatoires', catColor:'#F43F5E',
+    name:'Insuffisance cardiaque', aka:'Cœur affaibli, faible capacité d'effort',
+    desc:"Le cœur ne pompe pas suffisamment. Fatigue intense, essoufflement à l'effort, rétention d'eau. Peut toucher des personnes jeunes. Invisible mais très limitant.",
+    signes:["Essoufflement à l'effort minime","Fatigue intense et rapide","Rétention d'eau (œdèmes des chevilles)","Difficulté à monter les escaliers","Médicaments quotidiens"],
+    vecu:"« Je m'essouffle en montant 2 étages. À 40 ans. J'ai l'air normal mais mon cœur est à 30% de capacité. »",
+    idees:["« L'insuffisance cardiaque, c'est pour les vieux »  → Peut toucher des personnes de tous âges"],
+    tips:"Adapter les efforts. Surveiller les signes d'aggravation (œdèmes, essoufflement nocturne). Ne pas minimiser.",
+    cmi: true
+  },
+  hypertension: {
+    icon:'📊', cat:'Troubles cardiaques & circulatoires', catColor:'#F43F5E',
+    name:'Hypertension / Hypotension chronique', aka:'Trouble de la pression artérielle',
+    desc:"Pression artérielle anormalement haute ou basse, chronique. Invisible mais nécessite un suivi médical rigoureux et peut provoquer malaises ou complications graves.",
+    signes:["Maux de tête (hypertension)","Vertiges et étourdissements (hypotension)","Malaises à la position debout","Traitement médicamenteux à vie","Risque d'AVC ou de malaise grave"],
+    vecu:"« Quand je me lève trop vite, je vois noir et je peux tomber. Ça ne se voit pas mais ça arrive tous les jours. »",
+    idees:["« Un peu de tension c'est normal »  → L'hypertension chronique non traitée abîme les organes"],
+    tips:"Éviter les changements de position brusques. Avoir toujours de l'eau. Respecter les traitements.",
+    cmi: true
+  },
+  malaise_vagal: {
+    icon:'😵', cat:'Troubles cardiaques & circulatoires', catColor:'#F43F5E',
+    name:'Malaise vagal récurrent', aka:'Syncope vasovagale',
+    desc:"Chutes brutales de la tension provoquant malaises ou pertes de connaissance imprévisibles. Entre les épisodes : rien ne se voit. L'appréhension est permanente.",
+    signes:["Malaises soudains (chaleur, nausée, vue qui se brouille)","Perte de connaissance brève","Déclencheurs variés (chaleur, douleur, stress, station debout)","Fatigue post-malaise","Évitement de certaines situations"],
+    vecu:"« Je peux m'évanouir dans la file d'attente. Après je suis fatigué(e) une journée entière. »",
+    idees:["« C'est du cinéma »  → La syncope vasovagale est un phénomène physiologique réel et involontaire"],
+    tips:"Faire asseoir ou allonger la personne. Ne jamais la relever trop vite. Appeler le 15 si la perte de connaissance dure.",
+    cmi: true
+  },
+  pacemaker: {
+    icon:'🔋', cat:'Troubles cardiaques & circulatoires', catColor:'#F43F5E',
+    name:'Porteur de pacemaker', aka:'Stimulateur cardiaque implanté',
+    desc:"Le pacemaker régule le rythme cardiaque. Invisible sous la peau, il impose des précautions souvent méconnues de l'entourage : IRM, champs magnétiques, activité physique.",
+    signes:["Cicatrice sous la clavicule (parfois)","Précautions avec les appareils électromagnétiques","Interdiction ou adaptation de l'IRM","Suivi cardiologique régulier","Carte de porteur à conserver"],
+    vecu:"« À 16 ans, j'ai un pacemaker. Quand je dis que je peux pas faire d'IRM, les gens ne comprennent pas. »",
+    idees:["« C'est juste un petit appareil »  → Un pacemaker impose des contraintes médicales et des risques réels"],
+    tips:"Ne pas approcher d'aimants puissants. Informer le personnel médical. Respecter les contre-indications.",
+    cmi: true
+  }
+};
+  hypothyroidie: {
+    icon:'🦋', cat:'Autres situations invalidantes invisibles', catColor:'#F472B6',
+    name:'Hypothyroïdie', aka:'Insuffisance de la glande thyroïde',
+    desc:"L'hypothyroïdie ralentit le métabolisme : fatigue chronique, prise de poids, déprime, difficultés cognitives. Sous traitement, la personne semble aller bien.",
+    signes:["Fatigue chronique même traitée","Prise de poids difficile à contrôler","Difficultés de concentration","Frilosité excessive","Dépression associée fréquente"],
+    vecu:"« Je prends mon traitement depuis 5 ans. Je reste fatiguée. Les gens pensent que je ne fais pas d'efforts. »",
+    idees:["« Avec les hormones tu devrais être bien »  → L'équilibre thyroïdien est complexe et variable"],
+    tips:"Respecter la fatigue même sous traitement. Ne pas confondre avec un manque de motivation.",
+    cmi: true
   }
 };
 
