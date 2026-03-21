@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Les aventures d'Oldy et Sébastien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: #fefae0; color: #1b2a1b; }
+
+    /* SPLASH */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #2d6a4f, #0d2b1f);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+    }
+    #splash img { max-width: 500px; width: 90%; border-radius: 20px; margin-bottom: 28px; }
+    #splash button {
+      background: #d4a843; color: #1b2a1b; border: none; cursor: pointer;
+      padding: 16px 48px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+    }
+
+    /* NAV */
+    nav {
+      background: #2d6a4f; padding: 0 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2); gap: 8px;
+    }
+    .nav-logo { font-size: 15px; font-weight: 900; color: white; text-decoration: none; white-space: nowrap; }
+    .nav-logo span { color: #d4a843; }
+    .nav-links { display: flex; gap: 4px; overflow-x: auto; flex-shrink: 1; }
+    .nav-links a {
+      color: rgba(255,255,255,0.85); text-decoration: none;
+      font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,0.15); }
+    .nav-or { background: rgba(212,168,67,0.3); color: #f5c842 !important; }
+
+    /* HERO */
+    .hero { background: linear-gradient(135deg, #2d6a4f, #0d2b1f); padding: 60px 20px 50px; text-align: center; }
+    .hero h1 { font-size: clamp(26px, 6vw, 48px); font-weight: 900; color: white; margin-bottom: 10px; }
+    .hero h1 span { color: #d4a843; }
+    .hero-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 16px 0 28px; }
+    .hero-badge { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 7px 16px; border-radius: 24px; font-size: 13px; font-weight: 700; }
+    .hero-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 36px; }
+    .btn-or { display: inline-block; background: #d4a843; color: #1b2a1b; padding: 13px 30px; border-radius: 50px; font-size: 14px; font-weight: 800; text-decoration: none; }
+    .btn-blanc { display: inline-block; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 11px 28px; border-radius: 50px; font-size: 14px; font-weight: 800; text-decoration: none; }
+    .hero img { max-width: 300px; width: 80%; border-radius: 18px; box-shadow: 0 16px 50px rgba(0,0,0,0.4); }
+
+    /* SECTIONS */
+    section { padding: 60px 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .label { display: inline-block; background: #d8f3dc; color: #2d6a4f; padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    h2 { font-size: clamp(22px, 4vw, 32px); font-weight: 900; margin-bottom: 10px; }
+    .desc { font-size: 14px; color: #4a5c4a; line-height: 1.7; max-width: 580px; }
+    .btn-vert { display: inline-block; background: #2d6a4f; color: white; padding: 10px 22px; border-radius: 50px; font-size: 13px; font-weight: 800; text-decoration: none; }
+    .card { background: #f0faf4; border: 2px solid #d8f3dc; border-radius: 16px; padding: 24px; }
+    .feature { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+    .feature span:first-child { font-size: 20px; flex-shrink: 0; }
+    .feature p { font-size: 13px; color: #4a5c4a; margin: 0; line-height: 1.6; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .tag { background: white; border: 1.5px solid #d8f3dc; color: #4a5c4a; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+    .tag-vert { background: #2d6a4f; color: white; border-color: #2d6a4f; }
+
+    /* BD */
+    #bd { background: white; }
+    .bd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 32px; }
+    @media(max-width:640px){ .bd-grid { grid-template-columns: 1fr; } }
+
+    /* CONDITIONS */
+    #conditions { background: #f0faf4; }
+
+    /* JEU */
+    #jeu { background: white; }
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+    .stat { background: #f0faf4; border: 2px solid #d8f3dc; border-radius: 12px; padding: 12px 18px; text-align: center; flex: 1; min-width: 70px; }
+    .stat b { display: block; font-size: 22px; color: #2d6a4f; }
+    .stat span { font-size: 11px; color: #4a5c4a; font-weight: 700; }
+
+    /* TRACAS */
+    #tracas { background: #f5edd8; }
+    .tracas-card { background: white; border: 2px solid #d8f3dc; border-radius: 20px; padding: 32px 24px; text-align: center; margin-top: 24px; }
+    .tracas-card.or { border-color: #d4a843; background: #fffdf5; }
+    .btn-tracas { display: inline-block; background: #2d6a4f; color: white; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 800; text-decoration: none; }
+    .btn-kit { display: inline-block; background: #7a4f2b; color: white; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 800; text-decoration: none; }
+
+    /* AUTEUR */
+    #sebastien { background: white; }
+    .auteur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 32px; }
+    @media(max-width:640px){ .auteur-grid { grid-template-columns: 1fr; } }
+    .auteur-card { background: #f0faf4; border: 2px solid #d8f3dc; border-radius: 16px; padding: 24px; text-align: center; }
+    .auteur-card img { width: 100%; max-width: 240px; border-radius: 14px; margin-bottom: 14px; display: block; margin-left: auto; margin-right: auto; }
+    .auteur-card blockquote { border-left: 4px solid #52b788; padding: 10px 14px; background: white; border-radius: 0 10px 10px 0; font-style: italic; font-size: 13px; color: #4a5c4a; margin-bottom: 12px; text-align: left; }
+    .auteur-card p { font-size: 13px; color: #4a5c4a; line-height: 1.7; margin-bottom: 12px; }
+
+    /* CONTACT */
+    #contact { background: #f0faf4; }
+    .contact-box { background: white; border: 2px solid #d8f3dc; border-radius: 16px; padding: 40px 24px; max-width: 500px; margin: 28px auto 0; text-align: center; }
+
+    /* HÉROS */
+    #mes-heros { background: linear-gradient(135deg, #1a2440, #2a3a5c); padding: 60px 20px; text-align: center; }
+    #mes-heros h2 { color: white; margin-bottom: 8px; }
+    .badge-heros { display: inline-block; background: rgba(184,150,62,0.2); border: 1px solid rgba(184,150,62,0.4); color: #d4af6a; padding: 5px 16px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+    .couv-btn {
+      display: block; width: 100%; max-width: 260px; margin: 0 auto 24px;
+      background: none; padding: 0; border: 2px solid rgba(184,150,62,0.4);
+      border-radius: 14px; overflow: hidden; cursor: pointer;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+      -webkit-tap-highlight-color: rgba(184,150,62,0.3);
+    }
+    .couv-haut { background: linear-gradient(160deg, #f5efe6, #e8ddd0); padding: 28px 20px; text-align: center; }
+    .couv-bas { background: #1a2440; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .couv-bas span { color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 700; }
+    .btn-heros {
+      display: block; width: 100%; max-width: 260px; margin: 0 auto 10px;
+      background: #b8963e; color: white; border: none; cursor: pointer;
+      padding: 14px 32px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+      box-shadow: 0 4px 18px rgba(184,150,62,0.4);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* MODAL */
+    #modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 8000;
+      background: rgba(10,16,30,0.9);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-box { background: white; border-radius: 16px; padding: 32px 24px; max-width: 340px; width: 100%; text-align: center; }
+
+    /* FOOTER */
+    footer { background: #2d6a4f; color: rgba(255,255,255,0.7); text-align: center; padding: 28px 20px; font-size: 12px; line-height: 2; }
+    footer strong { color: white; }
+    footer a { color: #52b788; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <img src="kart.png" alt="Oldy et Sébastien" />
+  <button onclick="document.getElementById('splash').style.display='none'">Suivez nous 🐶</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">🐶 Oldy <span>&</span> Sébastien</a>
+  <div class="nav-links">
+    <a href="#bd">La BD</a>
+    <a href="#conditions">73 Conditions</a>
+    <a href="#jeu">Le Jeu</a>
+    <a href="#tracas">Mini-jeu</a>
+    <a href="#sebastien">L'auteur</a>
+    <a href="#contact">Contact</a>
+    <a href="/mes-livres.html" class="nav-or">📚 Livres</a>
+    <a href="/coloriage.html" class="nav-or">🎨 Coloriage</a>
+    <a href="/sensibilisation-pathologies.html" class="nav-or">🩺 Pathologies</a>
+    <a href="/kit_intervention_oldy_sebastien.html" class="nav-or">🎓 Kit</a>
+    <a href="#mes-heros" class="nav-or">💌 Mes Héros</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="label">🌿 BD jeunesse &amp; sensibilisation</div>
+  <h1>Les aventures d'<span>Oldy</span> et Sébastien</h1>
+  <p style="font-style:italic;color:rgba(255,255,255,0.75);margin-bottom:12px;">« Rendons visible l'invisible »</p>
+  <p style="font-size:15px;color:rgba(255,255,255,0.65);max-width:520px;margin:0 auto;line-height:1.7;">Une BD pour les enfants de 6 à 10 ans qui aborde avec douceur 73 conditions de santé invisibles.</p>
+  <div class="hero-badges">
+    <div class="hero-badge">🎨 73 pages illustrées</div>
+    <div class="hero-badge">♿ Handicap invisible</div>
+    <div class="hero-badge">📚 6 – 10 ans</div>
+    <div class="hero-badge">🏫 Usage pédagogique</div>
+  </div>
+  <div class="hero-btns">
+    <a href="#bd" class="btn-or">Découvrir la BD</a>
+    <a href="#jeu" class="btn-blanc">Le jeu Invisible Visible</a>
+    <a href="/contact.html" class="btn-blanc">Nous contacter</a>
+  </div>
+  <img src="sebastien.jpg" alt="Sébastien et Oldy" />
+</section>
+
+<!-- BD -->
+<section id="bd">
+  <div class="container">
+    <div class="label">📖 La bande dessinée</div>
+    <h2>La Bande Dessinée</h2>
+    <p class="desc">Une aventure pleine de tendresse pour parler de ce qu'on ne voit pas toujours.</p>
+    <div class="bd-grid">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:36px;margin-bottom:10px;">📖</div>
+        <h3 style="font-size:17px;font-weight:900;margin-bottom:6px;">Les aventures d'Oldy et Sébastien</h3>
+        <p style="font-size:12px;color:#4a5c4a;margin-bottom:16px;">73 pages · BD Jeunesse</p>
+        <a href="https://drive.google.com/file/d/1AzxT-h3zBlKf-hcva7GhVum4YT5nqLgA/view?usp=drivesdk" target="_blank" rel="noopener" class="btn-vert">📖 Lire la BD en ligne</a>
+      </div>
+      <div class="card">
+        <div class="feature"><span>📚</span><p><strong>73 pages</strong> illustrées, une condition par page.</p></div>
+        <div class="feature"><span>🐶</span><p>Oldy incarne la <strong>bienveillance sans jugement</strong>.</p></div>
+        <div class="feature"><span>🏫</span><p>Conçu pour un <strong>usage pédagogique</strong> en classe ou à la maison.</p></div>
+        <div class="feature"><span>🌈</span><p>Favorise l'<strong>empathie et l'inclusion</strong> dès le plus jeune âge.</p></div>
+        <div class="feature"><span>✍️</span><p>Créé par <strong>TRIBET Sébastien</strong>, auteur créateur — 03/2026.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONDITIONS -->
+<section id="conditions">
+  <div class="container">
+    <div class="label">🩺 73 conditions</div>
+    <h2>Les 73 conditions abordées</h2>
+    <p class="desc">Chaque page de la BD est dédiée à une condition ou situation de vie particulière.</p>
+    <div class="tags">
+      <span class="tag">Diabète</span><span class="tag">Autisme (TSA)</span>
+      <span class="tag">Épilepsie</span><span class="tag">TDAH</span>
+      <span class="tag">Fibromyalgie</span><span class="tag">Dyslexie</span>
+      <span class="tag">Dépression</span><span class="tag">Endométriose</span>
+      <span class="tag">Sclérose en plaques</span><span class="tag">Anxiété</span>
+      <span class="tag">Asthme</span><span class="tag">Lupus</span>
+      <span class="tag">Dyscalculie</span><span class="tag">Bipolarité</span>
+      <span class="tag">Maladie cœliaque</span><span class="tag">Dyspraxie</span>
+      <span class="tag">Insuffisance rénale</span><span class="tag">Maladie de Crohn</span>
+      <span class="tag">Surdité partielle</span><span class="tag">Albinisme</span>
+      <span class="tag">TOC</span><span class="tag">Polyarthrite</span>
+      <span class="tag">Schizophrénie</span><span class="tag">Hémophilie</span>
+      <span class="tag">Mucoviscidose</span><span class="tag">Hypersensibilité</span>
+      <span class="tag">Dépendance</span><span class="tag">Obésité</span>
+      <span class="tag">Maladie orpheline</span><span class="tag">Traumatisme crânien</span>
+      <span class="tag">Douleurs chroniques</span><span class="tag">Syndrome de fatigue</span>
+      <span class="tag">Troubles du sommeil</span><span class="tag">Précarité</span>
+      <span class="tag">Haut potentiel</span><span class="tag">Phobie sociale</span>
+      <span class="tag">Migraine chronique</span><span class="tag">Troubles alimentaires</span>
+      <span class="tag">VIH / Sida</span><span class="tag">Daltonisme</span>
+      <span class="tag tag-vert">+ 33 autres conditions →</span>
+    </div>
+  </div>
+</section>
+
+<!-- JEU -->
+<section id="jeu">
+  <div class="container">
+    <div class="label">🎲 Le jeu de plateau</div>
+    <h2>Invisible Visible</h2>
+    <p class="desc">Un jeu coopératif et éducatif pour sensibiliser aux handicaps invisibles.</p>
+    <div class="card" style="margin-top:28px;">
+      <h3 style="font-size:18px;font-weight:900;margin-bottom:8px;">🎲 Jeu de plateau « Invisible Visible »</h3>
+      <p style="font-size:13px;color:#4a5c4a;margin-bottom:16px;">Conçu pour être imprimé et joué en famille ou en classe.</p>
+      <div class="stats">
+        <div class="stat"><b>2–6</b><span>Joueurs</span></div>
+        <div class="stat"><b>7+</b><span>Ans</span></div>
+        <div class="stat"><b>45'</b><span>Par partie</span></div>
+        <div class="stat"><b>73</b><span>Conditions</span></div>
+      </div>
+      <div class="feature"><span>🎯</span><p><strong>Coopératif</strong> — on joue ensemble.</p></div>
+      <div class="feature"><span>📚</span><p><strong>Éducatif</strong> — chaque carte explique une condition.</p></div>
+      <div class="feature"><span>🖨️</span><p><strong>Imprimable</strong> — fichiers PDF prêts à l'emploi.</p></div>
+      <div class="feature"><span>🏫</span><p><strong>Pédagogique</strong> — idéal pour les classes et associations.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACAS -->
+<section id="tracas">
+  <div class="container" style="max-width:680px;">
+    <div class="label">🎮 Mini-jeu en ligne</div>
+    <h2>Le Jeu des Tracas Administratifs</h2>
+    <p class="desc">Vivez de l'intérieur le parcours d'une personne en situation de handicap invisible.</p>
+    <div class="tracas-card">
+      <div style="font-size:48px;margin-bottom:12px;">🗂️</div>
+      <h3 style="font-size:clamp(20px,4vw,26px);font-weight:900;margin-bottom:10px;">Le Labyrinthe Administratif</h3>
+      <p style="font-size:14px;color:#4a5c4a;line-height:1.8;margin-bottom:20px;">Formulaires, délais, cases à cocher… saurez-vous trouver la sortie ?</p>
+      <div class="tags" style="justify-content:center;margin-bottom:24px;">
+        <span class="tag">🧩 Sensibilisation</span>
+        <span class="tag">🖥️ En ligne</span>
+        <span class="tag">⏱️ ~10 min</span>
+      </div>
+      <a href="/jeu-tracas.html" class="btn-tracas">🎮 Jouer maintenant</a>
+    </div>
+    <div class="tracas-card or">
+      <div style="display:inline-block;background:#d4a843;color:#1b2a1b;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:12px;">🎓 Intervenants &amp; enseignants</div>
+      <div style="font-size:48px;margin-bottom:12px;">📦</div>
+      <h3 style="font-size:clamp(20px,4vw,26px);font-weight:900;margin-bottom:10px;">Kit d'Intervention Clé en Main</h3>
+      <p style="font-size:14px;color:#4a5c4a;line-height:1.8;margin-bottom:20px;">Guide animateur, fiches élèves, activités, supports visuels — tout pour animer une séance de sensibilisation.</p>
+      <a href="/kit_intervention_oldy_sebastien.html" class="btn-kit">📦 Accéder au kit</a>
+      <p style="margin-top:12px;font-size:11px;color:#aaa;font-style:italic;">Gratuit — usage pédagogique non commercial</p>
+    </div>
+  </div>
+</section>
+
+<!-- AUTEUR -->
+<section id="sebastien">
+  <div class="container">
+    <div class="label">👤 L'auteur</div>
+    <h2>Sébastien &amp; Oldy</h2>
+    <p class="desc">Derrière ce projet, une histoire vraie et un engagement profond.</p>
+    <div class="auteur-grid">
+      <div class="auteur-card">
+        <img src="sebastien.jpg" alt="Sébastien et Oldy" />
+        <h3 style="font-size:18px;font-weight:900;margin-bottom:8px;">TRIBET Sébastien</h3>
+        <blockquote>« Debout… mais handicapé. Oldy ne me juge pas, il m'aide. »</blockquote>
+        <p>Auteur créateur basé en Indre (36), Sébastien vit avec plusieurs handicaps invisibles. Son projet est né d'un besoin personnel : rendre visible ce que personne ne voit.</p>
+        <div class="tags" style="justify-content:center;">
+          <span class="tag">✍️ Auteur</span><span class="tag">♿ CMI</span><span class="tag">📍 Indre (36)</span>
+        </div>
+      </div>
+      <div class="auteur-card">
+        <img src="logo_officiel.png" alt="Logo officiel Oldy et Sébastien" />
+        <h3 style="font-size:18px;font-weight:900;margin-bottom:8px;">Oldy</h3>
+        <blockquote>« Je ne juge pas, j'accompagne. »</blockquote>
+        <p>Épagneul Breton roux et blanc. Dans la BD comme dans la vie, compagnon fidèle qui incarne la bienveillance et le soutien sans condition.</p>
+        <div class="tags" style="justify-content:center;">
+          <span class="tag">🐾 Épagneul Breton</span><span class="tag">💛 Roux et blanc</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="label">✉️ Contact</div>
+    <h2>Nous contacter</h2>
+    <div class="contact-box">
+      <div style="font-size:44px;margin-bottom:14px;">✉️</div>
+      <h3 style="font-size:18px;font-weight:900;margin-bottom:8px;">Une question, un projet ?</h3>
+      <p style="font-size:14px;color:#4a5c4a;line-height:1.7;margin-bottom:20px;">Pour toute demande de partenariat, d'intervention en milieu scolaire, ou simplement pour échanger sur le projet.</p>
+      <a href="/cdn-cgi/l/email-protection#e2918780cc96908b808796d0d3d3d0a2858f838b8ecc818d8f" class="btn-vert">Envoyer un message</a>
+      <p style="margin-top:12px;font-size:12px;color:#aaa;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d3e282f63393f242f28397f7c7c7f0d2a202c2421632e2220">[email&#160;protected]</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- MES HÉROS -->
+<section id="mes-heros">
+  <div class="container">
+    <div class="badge-heros">💛 Témoignage personnel</div>
+    <h2>Survivant, Miraculé,<br>revenu d'ailleurs</h2>
+    <p style="font-size:15px;color:rgba(255,255,255,0.55);font-style:italic;margin-bottom:32px;">Ce livret est réservé à remercier mes héros.</p>
+
+    <button type="button" class="couv-btn" onclick="ouvrirModal()">
+      <div class="couv-haut">
+        <div style="font-size:12px;font-weight:800;color:#b8963e;letter-spacing:0.1rem;text-transform:uppercase;margin-bottom:6px;">Oldy &amp; Sébastien</div>
+        <div style="font-size:16px;font-weight:900;color:#1a2440;line-height:1.3;margin-bottom:6px;">Survivant, Miraculé,<br>revenu d'ailleurs</div>
+        <div style="font-size:12px;color:#6b5a4a;font-style:italic;margin-bottom:14px;">sans mes héros je ne serais plus là !</div>
+        <div style="font-size:44px;margin-bottom:10px;">🐶🤝</div>
+        <div style="background:#1a2440;color:#d4af6a;padding:5px 12px;border-radius:18px;font-size:11px;font-weight:800;display:inline-block;">TRIBET Sébastien</div>
+      </div>
+      <div class="couv-bas">
+        <span>🔒</span>
+        <span>Accès privé — appuyer pour consulter</span>
+      </div>
+    </button>
+
+    <button type="button" class="btn-heros" onclick="ouvrirModal()">🔒 Consulter le livret</button>
+    <p style="font-size:12px;color:rgba(255,255,255,0.3);font-style:italic;">Code communiqué uniquement aux personnes concernées</p>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div id="modal-code" class="modal-box">
+    <div style="font-size:40px;margin-bottom:10px;">🔒</div>
+    <h3 style="font-size:19px;font-weight:900;color:#1a2440;margin-bottom:8px;">Accès réservé</h3>
+    <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:20px;">Ce livret est un témoignage personnel et privé.<br>Entrez le code qui vous a été communiqué.</p>
+    <input type="password" id="code-input" placeholder="· · · · · ·" maxlength="20" autocomplete="off"
+           style="width:100%;padding:13px;border:2px solid #d4af6a;border-radius:10px;background:#fdf9f3;font-family:'Nunito',sans-serif;font-size:22px;text-align:center;letter-spacing:0.3rem;color:#1a2440;outline:none;margin-bottom:12px;" />
+    <button type="button" onclick="validerCode()"
+            style="width:100%;padding:13px;background:#1a2440;color:white;border:none;cursor:pointer;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px;">
+      Ouvrir le livret
+    </button>
+    <div id="msg-erreur" style="display:none;color:#c0392b;font-size:13px;margin-bottom:10px;">❌ Code incorrect, veuillez réessayer.</div>
+    <button type="button" onclick="fermerModal()"
+            style="background:none;border:none;cursor:pointer;color:#aaa;font-size:12px;text-decoration:underline;font-family:'Nunito',sans-serif;">
+      Annuler
+    </button>
+  </div>
+
+  <div id="modal-succes" class="modal-box" style="display:none;">
+    <div style="font-size:40px;margin-bottom:10px;">💛</div>
+    <h3 style="font-size:19px;font-weight:900;color:#1a2440;margin-bottom:8px;">Code accepté !</h3>
+    <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:20px;">Appuyez sur le bouton pour ouvrir le livret.<br>Il s'ouvrira dans un nouvel onglet.</p>
+    <a id="lien-pdf" href="/livret_remerciement.pdf" target="_blank" rel="noopener"
+       style="display:inline-block;background:#b8963e;color:white;padding:13px 28px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;text-decoration:none;margin-bottom:14px;">
+      📄 Ouvrir le livret
+    </a><br>
+    <button type="button" onclick="fermerModal()"
+            style="background:none;border:none;cursor:pointer;color:#aaa;font-size:12px;text-decoration:underline;font-family:'Nunito',sans-serif;">
+      Fermer
+    </button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Les aventures d'Oldy et Sébastien</strong><br>
+  TRIBET Sébastien — auteur créateur — 03/2026<br>
+  <a href="/cdn-cgi/l/email-protection#275442450953554e4542531516161567404a464e4b0944484a"><span class="__cf_email__" data-cfemail="cfbcaaade1bbbda6adaabbfdfefefd8fa8a2aea6a3e1aca0a2">[email&#160;protected]</span></a> · <a href="https://oldyetsebastien.fr">oldyetsebastien.fr</a><br>
+  Handicaps invisibles, nous existons.
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  var CODE = "MERCI2014"; // ◀ Change le code ici
+
+  function ouvrirModal() {
+    var o = document.getElementById('modal-overlay');
+    o.style.display = 'flex';
+    document.getElementById('modal-code').style.display = 'block';
+    document.getElementById('modal-succes').style.display = 'none';
+    document.getElementById('msg-erreur').style.display = 'none';
+    document.getElementById('code-input').value = '';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function(){ document.getElementById('code-input').focus(); }, 150);
+  }
+
+  function fermerModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function validerCode() {
+    var saisie = document.getElementById('code-input').value.trim().toUpperCase();
+    if (saisie === CODE) {
+      document.getElementById('modal-code').style.display = 'none';
+      document.getElementById('modal-succes').style.display = 'block';
+      window.open('/livret_remerciement.pdf', '_blank');
+    } else
