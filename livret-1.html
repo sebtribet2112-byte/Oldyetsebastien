@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Livret — Accès privé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a2440, #2a3a5c);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .boite {
+      background: white; border-radius: 20px;
+      padding: 40px 28px; max-width: 360px; width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .emoji { font-size: 48px; margin-bottom: 16px; display: block; }
+    h1 { font-size: 20px; font-weight: 900; color: #1a2440; margin-bottom: 8px; }
+    p { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
+    input {
+      width: 100%; padding: 14px;
+      border: 2px solid #d4af6a; border-radius: 10px;
+      background: #fdf9f3;
+      font-family: 'Nunito', sans-serif;
+      font-size: 22px; text-align: center;
+      letter-spacing: 0.3rem; color: #1a2440;
+      outline: none; margin-bottom: 14px;
+    }
+    .btn-valider {
+      width: 100%; padding: 14px;
+      background: #1a2440; color: white;
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .erreur { display: none; color: #c0392b; font-size: 13px; margin-bottom: 12px; }
+    .retour {
+      display: inline-block; color: #aaa;
+      font-size: 12px; text-decoration: none;
+      margin-top: 4px;
+    }
+    /* Écran succès */
+    .succes { display: none; }
+    .btn-ouvrir {
+      display: block; background: #b8963e; color: white;
+      padding: 14px 28px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 800;
+      text-decoration: none; margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+<div class="boite">
+
+  <!-- Écran code -->
+  <div id="ecran-code">
+    <span class="emoji">🔒</span>
+    <h1>Accès réservé</h1>
+    <p>Ce livret est un témoignage personnel et privé.<br>Entrez le code qui vous a été communiqué.</p>
+    <input type="password" id="code" placeholder="· · · · · ·" maxlength="20" autocomplete="off"/>
+    <div class="erreur" id="erreur">❌ Code incorrect, veuillez réessayer.</div>
+    <button type="button" class="btn-valider" onclick="valider()">Ouvrir le livret</button>
+    <a href="/" class="retour">← Retour au site</a>
+  </div>
+
+  <!-- Écran succès -->
+  <div class="succes" id="ecran-succes">
+    <span class="emoji">💛</span>
+    <h1>Code accepté !</h1>
+    <p>Appuyez sur le bouton pour ouvrir le livret.</p>
+    <a href="/livret_remerciement.pdf"
+       target="_blank" rel="noopener" class="btn-ouvrir">
+      📄 Ouvrir le livret
+    </a>
+    <a href="/" class="retour">← Retour au site</a>
+  </div>
+
+</div>
+<script>
+  var CODE = "MERCI2014";
+
+  document.getElementById('code').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') valider();
+  });
+
+  function valider() {
+    var s = document.getElementById('code').value.trim().toUpperCase();
+    if (s === CODE) {
+      document.getElementById('ecran-code').style.display = 'none';
+      document.getElementById('ecran-succes').style.display = 'block';
+      window.open('/livret_remerciement.pdf', '_blank');
+    } else {
+      document.getElementById('erreur').style.display = 'block';
+      document.getElementById('code').value = '';
+    }
+  }
+</script>
+</body>
+</html>
