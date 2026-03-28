@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Les Handicaps Invisibles avec Oldy</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF8C42;
+    --yellow: #FFD166;
+    --green: #06D6A0;
+    --blue: #118AB2;
+    --red: #EF476F;
+    --purple: #7B5EA7;
+    --bg: #FFF8F0;
+    --card: #FFFFFF;
+    --text: #2D2D2D;
+    --soft: #F5EFE6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-image: radial-gradient(circle at 20% 20%, #FFE8D6 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, #D6EAF8 0%, transparent 50%);
+  }
+  .screen { display: none; width: 100%; max-width: 680px; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+  .header { text-align: center; margin-bottom: 24px; animation: fadeDown 0.6s ease; }
+  .logo-title { font-family: 'Baloo 2', cursive; font-size: 2.2rem; font-weight: 800; color: var(--orange); line-height: 1.1; }
+  .logo-sub { font-size: 1rem; color: var(--purple); font-weight: 600; margin-top: 4px; }
+  .oldy-wrap { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 20px; animation: fadeUp 0.5s ease; }
+  .oldy-dog { font-size: 5rem; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.1)); flex-shrink: 0; }
+  .oldy-bubble { background: white; border: 3px solid var(--orange); border-radius: 20px 20px 20px 4px; padding: 14px 18px; font-size: 1rem; color: var(--text); line-height: 1.5; box-shadow: 4px 4px 0px var(--orange); max-width: 380px; }
+  .oldy-bubble strong { color: var(--orange); }
+  .level-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; margin-bottom: 20px; }
+  .level-card { background: white; border-radius: 20px; padding: 24px 16px; text-align: center; cursor: pointer; border: 3px solid transparent; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .level-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+  .level-card.l1 { border-color: var(--green); }
+  .level-card.l1:hover { background: #E8FDF6; }
+  .level-card.l2 { border-color: var(--blue); }
+  .level-card.l2:hover { background: #E8F4FD; }
+  .level-card.l3 { border-color: var(--purple); }
+  .level-card.l3:hover { background: #F0EBF8; }
+  .level-emoji { font-size: 2.8rem; margin-bottom: 10px; }
+  .level-age { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+  .level-card.l1 .level-age { color: var(--green); }
+  .level-card.l2 .level-age { color: var(--blue); }
+  .level-card.l3 .level-age { color: var(--purple); }
+  .level-label { font-size: 0.8rem; color: #888; font-weight: 600; }
+  .level-count { font-size: 0.75rem; color: #AAA; margin-top: 4px; }
+  .question-card { background: white; border-radius: 24px; padding: 28px; width: 100%; box-shadow: 0 6px 24px rgba(0,0,0,0.1); animation: fadeUp 0.4s ease; }
+  .q-progress-bar { width: 100%; height: 8px; background: #EEE; border-radius: 99px; margin-bottom: 20px; overflow: hidden; }
+  .q-progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--yellow)); border-radius: 99px; transition: width 0.5s ease; }
+  .q-counter { font-size: 0.85rem; color: #AAA; margin-bottom: 10px; font-weight: 600; }
+  .q-tag { display: inline-block; background: var(--soft); color: var(--orange); font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; margin-bottom: 10px; border: 1px solid #FFD166; }
+  .q-text { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 20px; line-height: 1.4; }
+  .q-options { display: flex; flex-direction: column; gap: 12px; }
+  .q-option { background: var(--soft); border: 2px solid transparent; border-radius: 14px; padding: 14px 18px; cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--text); text-align: left; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; }
+  .q-option:hover:not(:disabled) { background: #FFE8D6; border-color: var(--orange); transform: translateX(4px); }
+  .q-option.correct { background: #E8FDF6; border-color: var(--green); color: #1A7A5E; }
+  .q-option.wrong { background: #FEE8EE; border-color: var(--red); color: #C0305A; }
+  .q-option:disabled { cursor: default; }
+  .q-option-letter { width: 32px; height: 32px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; border: 2px solid #DDD; }
+  .q-option.correct .q-option-letter { background: var(--green); color: white; border-color: var(--green); }
+  .q-option.wrong .q-option-letter { background: var(--red); color: white; border-color: var(--red); }
+  .q-feedback { margin-top: 16px; padding: 14px 18px; border-radius: 14px; font-size: 0.95rem; font-weight: 600; line-height: 1.5; display: none; animation: fadeUp 0.3s ease; }
+  .q-feedback.show { display: block; }
+  .q-feedback.correct-fb { background: #E8FDF6; color: #1A7A5E; border: 2px solid var(--green); }
+  .q-feedback.wrong-fb { background: #FEE8EE; color: #C0305A; border: 2px solid var(--red); }
+  .btn { margin-top: 20px; padding: 14px 36px; background: var(--orange); color: white; border: none; border-radius: 99px; font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 #C45E00; transition: all 0.15s ease; display: none; }
+  .btn.show { display: inline-block; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #C45E00; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #C45E00; }
+  .score-circle { width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--yellow)); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; box-shadow: 0 8px 32px rgba(255,140,66,0.4); animation: pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+  .score-num { font-family: 'Baloo 2', cursive; font-size: 3rem; font-weight: 800; color: white; line-height: 1; }
+  .score-denom { font-size: 1rem; color: rgba(255,255,255,0.8); font-weight: 600; }
+  .score-msg { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 700; color: var(--text); text-align: center; margin: 10px 0; }
+  .score-detail { background: white; border-radius: 16px; padding: 16px 20px; width: 100%; margin-top: 10px; max-height: 300px; overflow-y: auto; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #F0F0F0; font-size: 0.88rem; gap: 10px; }
+  .score-row:last-child { border: none; }
+  .score-row .ok { color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .score-row .ko { color: var(--red); font-weight: 700; flex-shrink: 0; }
+  .score-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+  .btn-secondary { padding: 12px 28px; background: white; color: var(--purple); border: 2px solid var(--purple); border-radius: 99px; font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s ease; }
+  .btn-secondary:hover { background: var(--purple); color: white; }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pop { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+  footer { margin-top: 30px; font-size: 0.8rem; color: #BBB; text-align: center; }
+  @media (max-width: 500px) {
+    .level-grid { grid-template-columns: 1fr; }
+    .logo-title { font-size: 1.6rem; }
+    .q-text { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screen-home">
+  <div class="header">
+    <div class="logo-title">🐾 Quiz avec Oldy</div>
+    <div class="logo-sub">Les Handicaps Invisibles – Édition complète</div>
+  </div>
+  <div class="oldy-wrap">
+    <div class="oldy-dog">🐕</div>
+    <div class="oldy-bubble">
+      Salut ! Je m'appelle <strong>Oldy</strong> ! 🐾<br>
+      Ce quiz couvre <strong>toutes les pathologies</strong> des handicaps invisibles.<br>
+      10 questions tirées au sort à chaque partie. Choisis ton niveau !
+    </div>
+  </div>
+  <div class="level-grid">
+    <div class="level-card l1" onclick="startQuiz(1)">
+      <div class="level-emoji">🌱</div>
+      <div class="level-age">6 – 8 ans</div>
+      <div class="level-label">Je ressens</div>
+      <div class="level-count" id="count1"></div>
+    </div>
+    <div class="level-card l2" onclick="startQuiz(2)">
+      <div class="level-emoji">🌿</div>
+      <div class="level-age">9 – 12 ans</div>
+      <div class="level-label">Je comprends</div>
+      <div class="level-count" id="count2"></div>
+    </div>
+    <div class="level-card l3" onclick="startQuiz(3)">
+      <div class="level-emoji">🌳</div>
+      <div class="level-age">13 ans +</div>
+      <div class="level-label">J'agis</div>
+      <div class="level-count" id="count3"></div>
+    </div>
+  </div>
+  <footer>© Les aventures d'Oldy et Sébastien – oldyetsebastien.fr</footer>
+</div>
+
+<div class="screen" id="screen-quiz">
+  <div class="header">
+    <div class="logo-title">🐾 Quiz avec Oldy</div>
+  </div>
+  <div class="oldy-wrap">
+    <div class="oldy-dog">🐕</div>
+    <div class="oldy-bubble" id="oldy-quiz-text">Lis bien la question !</div>
+  </div>
+  <div class="question-card">
+    <div class="q-progress-bar"><div class="q-progress-fill" id="progress-fill"></div></div>
+    <div class="q-counter" id="q-counter">Question 1 / 10</div>
+    <div class="q-tag" id="q-tag">Thème</div>
+    <div class="q-text" id="q-text">...</div>
+    <div class="q-options" id="q-options"></div>
+    <div class="q-feedback" id="q-feedback"></div>
+    <button class="btn" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
+  </div>
+</div>
+
+<div class="screen" id="screen-score">
+  <div class="header"><div class="logo-title">🐾 Résultats !</div></div>
+  <div class="oldy-wrap">
+    <div class="oldy-dog">🐕</div>
+    <div class="oldy-bubble" id="score-oldy-text">Bravo !</div>
+  </div>
+  <div class="score-circle">
+    <div class="score-num" id="score-num">0</div>
+    <div class="score-denom" id="score-denom">/ 10</div>
+  </div>
+  <div class="score-msg" id="score-msg"></div>
+  <div class="score-detail" id="score-detail"></div>
+  <div class="score-actions">
+    <button class="btn-secondary" onclick="goHome()">🏠 Accueil</button>
+    <button class="btn" style="display:inline-block;margin-top:0;" onclick="retryQuiz()">🔄 Rejouer</button>
+  </div>
+  <footer style="margin-top:20px;">© Les aventures d'Oldy et Sébastien – oldyetsebastien.fr</footer>
+</div>
+
+<script>
+const QUESTIONS = {
+1: [
+  // TROUBLES DU NEURODÉVELOPPEMENT
+  { tag:"Dyslexie", q:"Tom a du mal à lire depuis tout petit. Les lettres se mélangent dans sa tête. Comment s'appelle ce trouble ?", options:["La paresse","La dyslexie","Un caprice","La timidité"], correct:1, feedback:"✅ Tom a la dyslexie ! Son cerveau fonctionne différemment pour lire. Il n'est pas paresseux du tout !", oldy:"La dyslexie touche beaucoup d'enfants très intelligents ! 📚" },
+  { tag:"TDAH", q:"Emma a du mal à rester assise et à se concentrer en classe. Elle a un TDAH. Qu'est-ce que c'est ?", options:["Un trouble de la concentration","Un virus","Une allergie","Un problème de vue"], correct:0, feedback:"✅ Le TDAH, c'est un trouble de la concentration. Emma n'est pas mal élevée, son cerveau a juste besoin d'aide !", oldy:"Le TDAH se voit pas, mais ça complique vraiment la vie à l'école 🎒" },
+  { tag:"Dyspraxie", q:"Luc renverse souvent son verre, trébuche et a du mal à s'habiller. On dit qu'il est maladroit. Mais en fait il a une dyspraxie. Qu'est-ce que c'est ?", options:["Il ne fait pas attention","Son cerveau a du mal à coordonner ses mouvements","Il est paresseux","Il a peur de tout"], correct:1, feedback:"✅ La dyspraxie, c'est un trouble de la coordination. Le cerveau de Luc a du mal à organiser les gestes — ce n'est pas de la maladresse !", oldy:"La dyspraxie touche 5 à 7% des enfants 🙌" },
+  { tag:"Dysgraphie", q:"Ton ami Lucas a du mal à écrire. Ses lettres sont dans tous les sens. C'est la dysgraphie. Comment l'aider en classe ?", options:["Copier à sa place","Se moquer de son écriture","Lui laisser plus de temps ou utiliser un ordinateur","Lui dire de mieux faire"], correct:2, feedback:"✅ Parfait ! Avec la dysgraphie, écrire est très difficile. Un peu plus de temps ou un ordinateur, ça change tout !", oldy:"Chaque cerveau est différent et c'est beau ! ✏️" },
+  { tag:"Dyscalculie", q:"Aïcha a beaucoup de mal avec les chiffres et les calculs, même les plus simples. Elle a la dyscalculie. Que dois-tu faire ?", options:["Rire d'elle quand elle se trompe","L'aider patiemment sans la juger","Lui dire que c'est facile","Lui donner les réponses à sa place"], correct:1, feedback:"✅ La dyscalculie rend les maths très difficiles. Être patient et bienveillant, c'est la meilleure aide !", oldy:"La dyscalculie n'a rien à voir avec l'intelligence 🔢" },
+  { tag:"Dysorthographie", q:"Samir fait beaucoup de fautes d'orthographe même après avoir beaucoup travaillé. Il a la dysorthographie. C'est quoi ?", options:["Il n'apprend pas ses leçons","Son cerveau a du mal à mémoriser les règles d'orthographe","Il est distrait","Il ne lit pas assez"], correct:1, feedback:"✅ La dysorthographie est un trouble neurologique. Samir peut travailler très dur et continuer à faire des fautes malgré lui.", oldy:"La dysorthographie va souvent avec la dyslexie 📝" },
+  { tag:"Dysphasie", q:"Nina a du mal à parler et à trouver ses mots. Elle comprend tout, mais s'exprimer est difficile. Elle a une dysphasie. Comment l'écouter ?", options:["Finir ses phrases à sa place pour aller plus vite","L'interrompre souvent","Lui laisser le temps de s'exprimer sans se moquer","Faire semblant de la comprendre"], correct:2, feedback:"✅ Laisser le temps à Nina de s'exprimer, c'est lui montrer qu'elle est importante. La patience, c'est le meilleur cadeau !", oldy:"La dysphasie touche la parole, pas l'intelligence 💬" },
+  { tag:"TSA / Autisme", q:"Sofia est autiste. Elle n'aime pas les bruits forts et les endroits très animés lui font mal aux oreilles. Que dois-tu faire ?", options:["Lui mettre de la musique forte pour qu'elle s'habitue","Respecter sa sensibilité et parler doucement","Se moquer d'elle","L'obliger à venir dans les endroits bruyants"], correct:1, feedback:"✅ Sofia a une hypersensibilité sensorielle. Respecter ses besoins, c'est une vraie marque de bienveillance !", oldy:"Les personnes autistes peuvent percevoir le monde très différemment 🎧" },
+  { tag:"HPI", q:"Théo apprend très vite et s'ennuie en classe. Parfois il fait des crises car il se sent différent. On dit qu'il a un Haut Potentiel Intellectuel (HPI). Le HPI peut-il être un handicap invisible ?", options:["Non, être très intelligent c'est toujours facile","Oui, ça peut causer une vraie souffrance","Non, il n'a qu'à travailler plus","Non, ce n'est pas réel"], correct:1, feedback:"✅ Le HPI peut causer une grande souffrance : ennui, décalage avec les autres, incompréhension. C'est bien un handicap invisible quand il est mal accompagné.", oldy:"HPI ne veut pas dire 'sans problèmes' 🧩" },
+  // MALADIES CHRONIQUES
+  { tag:"Diabète", q:"Juliette a un diabète. Elle doit parfois manger du sucre rapidement. En récréation, tu la vois chercher dans son sac. Que fais-tu ?", options:["Tu lui dis qu'elle est gourmande","Tu lui demandes si elle a besoin d'aide","Tu l'ignores","Tu lui prends son goûter"], correct:1, feedback:"✅ Proposer son aide, c'est le bon réflexe. Une hypoglycémie peut être grave et rapide !", oldy:"Aider quelqu'un ça peut faire une grande différence 🍊" },
+  { tag:"Épilepsie", q:"Un camarade a une crise d'épilepsie en classe. Que fais-tu en premier ?", options:["Tu le tiens fort pour qu'il ne bouge pas","Tu appelles un adulte et tu éloignes les objets dangereux","Tu lui mets quelque chose dans la bouche","Tu lui donnes de l'eau"], correct:1, feedback:"✅ Appeler un adulte et sécuriser l'espace, c'est le bon réflexe ! Ne jamais tenir quelqu'un en crise ni mettre quoi que ce soit dans sa bouche.", oldy:"Savoir les bons gestes peut sauver une vie ! 🆘" },
+  { tag:"Fibromyalgie", q:"La maman de ton ami a mal partout tout le temps, mais elle a l'air normale. Elle a une fibromyalgie. C'est quoi ?", options:["Elle fait semblant d'avoir mal","Elle a une maladie qui cause des douleurs partout, invisibles de l'extérieur","Elle est trop fragile","Elle n'aime pas travailler"], correct:1, feedback:"✅ La fibromyalgie cause des douleurs réelles et intenses, mais elles ne se voient pas. Elle a besoin qu'on la croie !", oldy:"Ne jamais douter de la douleur de quelqu'un 💜" },
+  { tag:"Fatigue chronique", q:"Léa est très fatiguée chaque jour, même quand elle dort bien. Elle a le syndrome de fatigue chronique. Comment l'aider ?", options:["Lui dire qu'elle est paresseuse","La croire et adapter les activités à son énergie","Se moquer d'elle","Lui dire de faire plus de sport"], correct:1, feedback:"✅ La fatigue chronique est une vraie maladie. La croire et l'aider à gérer son énergie, c'est la meilleure aide.", oldy:"La fatigue invisible est tout aussi réelle ! 💛" },
+  { tag:"Crohn / MICI", q:"Baptiste doit souvent aller aux toilettes en urgence à cause de sa maladie de Crohn. Ses camarades se moquent de lui. C'est juste ?", options:["Oui, c'est drôle","Non, il souffre vraiment d'une maladie intestinale sérieuse","Oui s'il le prend bien","Non mais c'est pas grave"], correct:1, feedback:"✅ La maladie de Crohn provoque des douleurs intenses et des urgences réelles. Se moquer, c'est cruel et injuste !", oldy:"Les maladies intestinales sont douloureuses et invisibles 🤎" },
+  { tag:"Endométriose", q:"La grande sœur de ton amie manque souvent l'école à cause de très fortes douleurs. Les médecins ont mis longtemps à trouver : elle a une endométriose. Que retiens-tu ?", options:["Elle exagère ses douleurs","Certaines maladies invisibles sont difficiles à détecter et très douloureuses","Elle devrait faire plus d'efforts","Elle devrait prendre plus d'antidouleurs seule"], correct:1, feedback:"✅ L'endométriose provoque des douleurs intenses et est souvent diagnostiquée tardivement. Croire les personnes qui souffrent est primordial.", oldy:"L'endométriose touche 1 femme sur 10 en France 💛" },
+  { tag:"Cancer", q:"Le papa d'un ami a guéri d'un cancer mais est encore très fatigué. Son patron dit 'tu es guéri, tu peux travailler normalement'. Est-ce juste ?", options:["Oui, guéri veut dire que tout va bien","Non, les traitements laissent des séquelles qui durent longtemps","Oui s'il n'a plus de chimio","Oui s'il a l'air bien"], correct:1, feedback:"✅ Même après un cancer, les séquelles (fatigue, troubles cognitifs) peuvent durer très longtemps. 'Guéri' ne veut pas dire 'comme avant'.", oldy:"L'après-cancer, c'est aussi une épreuve invisible 🎗️" },
+  { tag:"AVC", q:"Le grand-père de Sasha a eu un AVC. Il a l'air normal mais oublie beaucoup de choses et se fatigue vite. C'est normal ?", options:["Non, il fait semblant","Oui, un AVC peut laisser des séquelles invisibles sur la mémoire et l'énergie","Non, il devrait aller mieux maintenant","Non, il faut juste lui parler plus fort"], correct:1, feedback:"✅ Un AVC peut laisser des séquelles invisibles durables : mémoire, concentration, fatigue. C'est bien réel !", oldy:"Les séquelles d'un AVC ne se voient pas toujours 🧠" },
+  // TROUBLES PSY
+  { tag:"Dépression", q:"Ton ami ne veut plus jouer, mange peu et pleure souvent depuis plusieurs semaines. Il dit qu'il est triste. Que fais-tu ?", options:["Tu lui dis 'arrête de faire la tête'","Tu l'écoutes et tu en parles à un adulte de confiance","Tu l'ignores","Tu lui dis que c'est pas grave"], correct:1, feedback:"✅ Écouter et alerter un adulte, c'est exactement ce qu'il faut faire. Une tristesse qui dure peut être une dépression, et ça se soigne !", oldy:"Parler à un adulte de confiance, c'est courageux ! 💙" },
+  { tag:"Anxiété", q:"Chaque matin, Camille a très mal au ventre avant d'aller à l'école. Elle a peur de tout. C'est quoi ?", options:["Elle fait semblant pour rester à la maison","Elle peut avoir un trouble anxieux — une vraie maladie","Elle n'aime pas l'école","Elle n'a pas bien dormi"], correct:1, feedback:"✅ Les troubles anxieux peuvent provoquer de vraies douleurs physiques. Camille ne fait pas semblant — elle a besoin d'aide !", oldy:"L'anxiété, ça fait vraiment mal au corps 🫶" },
+  { tag:"TOC", q:"Mathis se lave les mains plus de 30 fois par jour. Il sait que c'est trop mais ne peut pas s'en empêcher. C'est quoi ?", options:["Une bonne hygiène","Un TOC (Trouble Obsessionnel-Compulsif) — une vraie maladie","De la peur du Covid","Un caprice"], correct:1, feedback:"✅ Le TOC, c'est quand le cerveau envoie des signaux d'alarme qu'on ne peut pas contrôler. Ce n'est pas un caprice, c'est une maladie !", oldy:"Un TOC prend souvent des heures de la journée des personnes qui en souffrent 🔄" },
+  // MALADIES RARES
+  { tag:"Mucoviscidose", q:"Clément a une maladie qui remplit ses poumons de mucus. Il tousse beaucoup mais veut jouer avec toi. C'est quoi ?", options:["Un simple rhume","La mucoviscidose — une maladie génétique sérieuse","De l'asthme","La grippe"], correct:1, feedback:"✅ La mucoviscidose est une maladie génétique grave qui touche les poumons. Clément mérite de jouer et d'être traité normalement !", oldy:"Les enfants avec mucoviscidose ont besoin d'amitié comme tout le monde 💚" },
+  // SENSORIELS
+  { tag:"Acouphènes", q:"Mamie entend tout le temps un sifflement dans les oreilles. Personne d'autre ne l'entend. Elle a des acouphènes. C'est réel ?", options:["Non, elle imagine","Oui, les acouphènes sont une vraie souffrance même si on ne les entend pas","Non, elle est trop âgée","Oui mais ce n'est pas grave"], correct:1, feedback:"✅ Les acouphènes sont réels et peuvent être très fatigants. Entendre un bruit constant que personne ne partage, c'est épuisant !", oldy:"Les acouphènes touchent 10% de la population 👂" },
+  { tag:"Malvoyance", q:"Inès voit très mal mais sans lunettes épaisses qui se voient. Elle a une basse vision. En classe, elle a du mal à lire le tableau. Que faire ?", options:["Rien, elle n'a qu'à se rapprocher","Demander à la maîtresse qu'elle ait une place devant","Se moquer de ses yeux","Lui lire le tableau à voix haute pendant le cours"], correct:1, feedback:"✅ Une place devant, c'est simple et efficace. La malvoyance ne se voit pas toujours, mais elle complique vraiment les apprentissages.", oldy:"Voir mal sans que ça se voie, c'est un handicap invisible 👁️" },
+  // RESPIRATOIRE
+  { tag:"Asthme sévère", q:"Pendant le sport, Noa doit s'arrêter et utiliser son inhalateur. Ses camarades lui disent qu'il fait semblant. C'est juste ?", options:["Oui, il cherche à se reposer","Non, l'asthme sévère peut être dangereux et douloureux","Oui, tout le monde peut courir","Non mais c'est pas si grave"], correct:1, feedback:"✅ L'asthme sévère est une vraie maladie. Une crise peut être très grave. Noa a besoin de son traitement, pas de moqueries !", oldy:"L'asthme peut tuer si on ne le respecte pas 🌬️" },
+  // HANDICAP INVISIBLE EN GÉNÉRAL
+  { tag:"Handicap invisible", q:"Un handicap invisible, c'est quoi exactement ?", options:["Un handicap qu'on ne peut pas voir mais qui complique la vie","Un handicap imaginaire","Un handicap uniquement des bras ou des jambes","Une maladie contagieuse"], correct:0, feedback:"✅ Un handicap invisible est réel, mais ne se devine pas en regardant la personne. Il faut écouter et croire !", oldy:"Invisible ne veut pas dire inexistant ! 🌟" }
+],
+2: [
+  // NEURODÉVELOPPEMENT
+  { tag:"Dyslexie", q:"La dyslexie touche la lecture. Quelle affirmation est vraie ?", options:["C'est un manque de travail","C'est un trouble neurologique qui dure toute la vie","Ça se guérit avec de la lecture intensive","Seuls les enfants peu intelligents sont dyslexiques"], correct:1, feedback:"✅ La dyslexie est neurologique et permanente. Elle n'a rien à voir avec l'intelligence — de nombreux grands esprits sont dyslexiques !", oldy:"Einstein, Léonard de Vinci étaient probablement dyslexiques ! 🧠" },
+  { tag:"TDAH", q:"Un élève avec TDAH ne peut pas 'faire un effort pour se concentrer' car :", options:["Il est trop gâté","Son cerveau manque de dopamine, un neurotransmetteur régulateur","Il n'a pas envie","Ses parents ne l'encadrent pas"], correct:1, feedback:"✅ Le TDAH est lié à un déficit en dopamine. C'est biologique — pas une question de volonté !", oldy:"Le TDAH se traite avec un accompagnement adapté et parfois des médicaments 💊" },
+  { tag:"Dyspraxie", q:"Un enfant avec dyspraxie a souvent du mal à :", options:["Parler","Voir les couleurs","Coordonner ses gestes (écrire, s'habiller, faire du vélo)","Entendre les sons aigus"], correct:2, feedback:"✅ La dyspraxie touche la coordination motrice. Les gestes du quotidien qui semblent automatiques pour les autres demandent un effort énorme.", oldy:"La dyspraxie = trouble DYS de la coordination 🤹" },
+  { tag:"TSA / Autisme", q:"Le 'masking' chez les personnes autistes, c'est quoi ?", options:["Un jeu de rôle","Cacher son autisme pour s'intégrer, ce qui est très épuisant","Un traitement médical","Un type particulier d'autisme"], correct:1, feedback:"✅ Le masking consiste à cacher son autisme pour paraître 'normal'. C'est épuisant et peut mener au burn-out autistique.", oldy:"Le masking coûte énormément d'énergie aux personnes autistes 🎭" },
+  { tag:"HPI", q:"Un enfant HPI (Haut Potentiel Intellectuel) peut souffrir de :", options:["Manque d'intelligence","Décalage social, ennui intense, hypersensibilité émotionnelle","Problèmes de vue","Difficultés à apprendre"], correct:1, feedback:"✅ Le HPI peut entraîner une vraie souffrance : incompréhension des autres, hypersensibilité, ennui en classe. C'est un handicap invisible quand il n'est pas accompagné.", oldy:"HPI ne veut pas dire 'tout facile' — souvent c'est le contraire 💡" },
+  // MALADIES CHRONIQUES
+  { tag:"Sclérose en plaques", q:"La sclérose en plaques (SEP) est une maladie invisible qui touche :", options:["Uniquement les os","Le système nerveux, provoquant fatigue, douleurs et troubles variés","Uniquement les yeux","Uniquement les personnes de plus de 60 ans"], correct:1, feedback:"✅ La SEP attaque la myéline des nerfs. Elle provoque des symptômes variés et imprévisibles, souvent invisibles de l'extérieur.", oldy:"La SEP est l'une des maladies neurologiques les plus fréquentes chez les jeunes adultes 🧠" },
+  { tag:"Lupus", q:"Le lupus est une maladie auto-immune. Qu'est-ce que ça veut dire ?", options:["Le corps attaque ses propres organes par erreur","C'est une infection contagieuse","C'est causé par le soleil uniquement","C'est une maladie des os"], correct:0, feedback:"✅ Dans une maladie auto-immune, le système immunitaire attaque le corps lui-même par erreur. Le lupus peut toucher de nombreux organes.", oldy:"Le lupus touche 9 femmes pour 1 homme, souvent invisiblement 🦋" },
+  { tag:"Polyarthrite rhumatoïde", q:"La polyarthrite rhumatoïde provoque des douleurs articulaires qui :", options:["Se voient toujours clairement","Peuvent être invisibles de l'extérieur mais très invalidantes","Touchent seulement les personnes âgées","Se guérissent facilement"], correct:1, feedback:"✅ La polyarthrite peut rendre impossible des gestes simples (ouvrir un pot, écrire) sans que ça se voie de l'extérieur.", oldy:"La polyarthrite touche aussi des personnes très jeunes 🦴" },
+  { tag:"Fatigue chronique", q:"Le syndrome de fatigue chronique (SFC) : quelle affirmation est correcte ?", options:["C'est juste de la paresse","C'est une fatigue intense qui ne passe pas avec le repos","Ça se soigne avec du café","Ça touche seulement les personnes âgées"], correct:1, feedback:"✅ Le SFC est une maladie réelle. La fatigue ne disparaît pas avec le sommeil — elle peut durer des mois ou des années.", oldy:"Le SFC peut rendre impossible les activités les plus simples 💙" },
+  { tag:"Fibromyalgie", q:"La fibromyalgie est invisible car :", options:["Les médecins l'ont inventée","Elle ne se voit pas dans les analyses de sang habituelles","Elle n'existe pas vraiment","La personne ment"], correct:1, feedback:"✅ La fibromyalgie ne se détecte pas avec les analyses classiques. Les douleurs sont bien réelles !", oldy:"Invisible aux examens ne veut pas dire imaginaire ! 💜" },
+  { tag:"Crohn / MICI", q:"La maladie de Crohn est une MICI (Maladie Inflammatoire Chronique de l'Intestin). Elle provoque :", options:["Uniquement des douleurs au dos","Des douleurs abdominales, diarrhées et fatigue sévère, souvent invisibles","Uniquement de la fièvre","Des douleurs aux articulations uniquement"], correct:1, feedback:"✅ La maladie de Crohn peut être très invalidante au quotidien tout en étant invisible de l'extérieur.", oldy:"Les MICI obligent parfois à rester près des toilettes en permanence 🤎" },
+  { tag:"Endométriose", q:"L'endométriose touche 1 femme sur 10 en France. Pourquoi est-elle souvent diagnostiquée très tard ?", options:["Parce que les femmes n'en parlent pas","Parce que les douleurs sont souvent minimisées et les examens standards ne la détectent pas","Parce qu'elle n'est pas grave","Parce que c'est une maladie rare"], correct:1, feedback:"✅ Les douleurs de l'endométriose sont souvent banalisées. Il faut en moyenne 7 ans pour obtenir un diagnostic !", oldy:"7 ans de souffrance non reconnue en moyenne en France 💛" },
+  { tag:"AVC", q:"Quelles séquelles invisibles peut laisser un AVC ?", options:["Aucune si on récupère bien","Fatigue cérébrale, troubles de la mémoire, aphasie, dépression","Seulement des problèmes moteurs visibles","Des problèmes de vision uniquement"], correct:1, feedback:"✅ Les séquelles d'un AVC sont souvent invisibles : fatigue intense, troubles cognitifs, difficultés de langage. Elles peuvent durer longtemps.", oldy:"Un AVC peut changer une vie entièrement, même sans séquelles visibles 🧠" },
+  { tag:"Rupture d'anévrisme", q:"Une rupture d'anévrisme cérébral peut laisser comme séquelle invisible :", options:["Aucune séquelle","Des maux de tête chroniques, troubles de la mémoire et fatigue cognitive","Seulement des problèmes de marche","Des problèmes de vue uniquement"], correct:1, feedback:"✅ Les séquelles d'une rupture d'anévrisme ressemblent à celles d'un AVC : fatigue cognitive, troubles de la mémoire, hypersensibilités. Elles sont souvent invisibles.", oldy:"Le cerveau peut être très fragile après une rupture d'anévrisme 🫀" },
+  // TROUBLES PSY
+  { tag:"Dépression", q:"Une personne dépressive ne peut pas 'juste se secouer' car :", options:["Elle est faible de caractère","La dépression modifie la chimie du cerveau — c'est une vraie maladie","Elle n'a pas envie de faire des efforts","Elle cherche l'attention"], correct:1, feedback:"✅ La dépression change la chimie du cerveau. Ce n'est pas une question de volonté — c'est une maladie qui se traite.", oldy:"On ne dirait pas à quelqu'un avec une jambe cassée 'fais un effort pour marcher' ! 💙" },
+  { tag:"Trouble bipolaire", q:"Une personne bipolaire alterne entre des périodes de grande énergie (manie) et de grande tristesse (dépression). Pourquoi est-ce invisible ?", options:["Parce que ça n'existe pas vraiment","Parce qu'entre les épisodes elle semble tout à fait 'normale'","Parce qu'elle cache ses émotions","Parce que ça ne dure pas longtemps"], correct:1, feedback:"✅ Entre les épisodes, une personne bipolaire peut paraître parfaitement bien. Ce trouble invisible peut pourtant être très invalidant.", oldy:"Le trouble bipolaire touche environ 1% de la population 🌊" },
+  { tag:"TOC", q:"Le TOC (Trouble Obsessionnel-Compulsif) se caractérise par :", options:["Une grande propreté volontaire","Des pensées intrusives et des rituels impossibles à contrôler","Une peur normale du danger","Un manque de discipline"], correct:1, feedback:"✅ Le TOC impose des rituels épuisants que la personne ne peut pas contrôler. Ce n'est pas de la coquetterie ou un caprice.", oldy:"Le TOC peut prendre 3 à 8 heures de la journée dans les cas sévères ! 🔄" },
+  { tag:"TSPT", q:"Le TSPT (Trouble de Stress Post-Traumatique) peut survenir après :", options:["Un examen raté","Un événement traumatisant comme un accident, une agression ou une catastrophe","Un manque de sommeil","Une mauvaise alimentation"], correct:1, feedback:"✅ Le TSPT est une réponse du cerveau à un trauma. Il peut causer des flashbacks, cauchemars et évitements très invalidants.", oldy:"Le TSPT peut toucher tout le monde, y compris les enfants 🕊️" },
+  { tag:"Anxiété", q:"Un trouble anxieux généralisé (TAG) se distingue du stress normal car :", options:["Il n'y a aucune différence","L'anxiété est permanente, excessive, et empêche de fonctionner normalement","Il touche seulement les personnes timides","Il dure maximum quelques jours"], correct:1, feedback:"✅ Le TAG est une anxiété chronique et envahissante, très différente du stress ponctuel de la vie quotidienne.", oldy:"Le TAG peut provoquer des douleurs physiques réelles 🫶" },
+  { tag:"Schizophrénie", q:"La schizophrénie est souvent mal comprise. Quelle affirmation est vraie ?", options:["Les personnes schizophrènes sont toujours dangereuses","C'est une maladie cérébrale qui perturbe la perception de la réalité","Ça se guérit facilement","Ça touche seulement les personnes âgées"], correct:1, feedback:"✅ La schizophrénie perturbe la perception de la réalité mais les personnes qui en souffrent ne sont PAS plus dangereuses que les autres.", oldy:"La schizophrénie est souvent stigmatisée injustement 💜" },
+  // MALADIES RARES ET GÉNÉTIQUES
+  { tag:"Drépanocytose", q:"La drépanocytose est une maladie génétique du sang. Elle provoque :", options:["Uniquement de l'anémie visible","Des crises de douleurs intenses et invisibles, surtout par le froid ou le stress","Seulement de la fatigue","Des problèmes de peau visibles"], correct:1, feedback:"✅ Les crises drépanocytaires sont extrêmement douloureuses et peuvent survenir à tout moment. Elles sont totalement invisibles de l'extérieur.", oldy:"La drépanocytose est la maladie génétique la plus fréquente en France 🩸" },
+  { tag:"Hémophilie", q:"Une personne hémophile doit éviter certains sports car :", options:["Elle est trop fragile psychologiquement","Son sang ne coagule pas normalement — une blessure peut être très grave","Elle est allergique à l'effort","Elle est trop maigre"], correct:1, feedback:"✅ L'hémophilie empêche la coagulation normale du sang. Une petite blessure invisible à l'intérieur peut devenir dangereuse.", oldy:"L'hémophilie peut provoquer des hémorragies internes invisibles ❤️" },
+  { tag:"Maladies rares", q:"Il existe plus de 7 000 maladies rares en France. La plupart sont :", options:["Facilement diagnostiquées","Invisibles et souvent diagnostiquées très tardivement","Toutes contagieuses","Guérissables facilement"], correct:1, feedback:"✅ La majorité des maladies rares sont invisibles et prennent des années à être diagnostiquées. Les patients peuvent errer longtemps sans réponse.", oldy:"1 Français sur 17 est touché par une maladie rare 🧬" },
+  // SENSORIELS
+  { tag:"Acouphènes", q:"Des acouphènes sévères peuvent provoquer :", options:["Rien de grave, juste un bruit de fond","Troubles du sommeil, anxiété, dépression et isolement social","Seulement de la gêne légère","Des problèmes de vision"], correct:1, feedback:"✅ Les acouphènes intenses peuvent complètement perturber la vie quotidienne, le sommeil et la santé mentale.", oldy:"Les acouphènes sévères sont reconnus comme handicap invisible 👂" },
+  // RESPIRATOIRE
+  { tag:"Apnée du sommeil", q:"L'apnée du sommeil provoque des arrêts respiratoires la nuit. La personne est souvent :", options:["Très reposée le matin","Épuisée toute la journée car son sommeil n'est pas récupérateur","En forme grâce à sa respiration","Anxieuse uniquement la nuit"], correct:1, feedback:"✅ L'apnée du sommeil empêche un sommeil réparateur. La personne est épuisée en permanence malgré de nombreuses heures au lit.", oldy:"L'apnée du sommeil non traitée augmente le risque cardiovasculaire ⚡" },
+  // DROITS
+  { tag:"RQTH / CMI", q:"Qu'est-ce que la RQTH en France ?", options:["Un médicament pour les maladies rares","La Reconnaissance de la Qualité de Travailleur Handicapé — elle ouvre des droits au travail","Un remboursement de la Sécurité Sociale","Un test médical"], correct:1, feedback:"✅ La RQTH permet d'obtenir des aménagements au travail. Elle est accessible même pour les handicaps invisibles.", oldy:"En France, des droits existent pour tous les handicaps, même invisibles 🇫🇷" }
+],
+3: [
+  // NEURODÉVELOPPEMENT
+  { tag:"TSA – Masking", q:"Une personne autiste adulte cache son autisme au travail pour s'intégrer. Quelles peuvent être les conséquences ?", options:["Aucune, c'est une bonne adaptation","Burn-out autistique : effondrement total après des semaines d'effort surhumain","Guérison progressive","Meilleure intégration durable"], correct:1, feedback:"✅ Le masking demande une énergie considérable et peut mener à un effondrement complet. L'acceptation de la différence est bien plus saine.", oldy:"S'accepter tel qu'on est est la base de la santé mentale 🌿" },
+  { tag:"TDAH – Droits", q:"Un élève avec TDAH se voit refuser des aménagements scolaires. Quel recours existe ?", options:["Aucun recours légal","Saisir la MDPH pour obtenir un PPS (Projet Personnalisé de Scolarisation)","Changer d'école obligatoirement","Porter plainte pénale directement"], correct:1, feedback:"✅ La MDPH peut établir un PPS qui oblige l'établissement à mettre en place des aménagements. C'est un droit garanti par la loi de 2005.", oldy:"La loi du 11 février 2005 protège la scolarisation de tous ! 📚" },
+  { tag:"HPI – Souffrance", q:"Un enfant HPI en souffrance à l'école peut bénéficier :", options:["De rien — il n'a pas de handicap reconnu","D'un PAP ou d'un PPRE et d'un suivi psychologique adapté","D'un redoublement pour ralentir","D'aucune aide car il est trop intelligent"], correct:1, feedback:"✅ Le HPI avec souffrance associée peut donner accès à des aménagements scolaires. La reconnaissance de la souffrance est la première étape.", oldy:"Être HPI ne protège pas de la souffrance — au contraire 💡" },
+  // MALADIES CHRONIQUES – COMPLEXITÉS
+  { tag:"SEP – Imprévisibilité", q:"Une personne avec sclérose en plaques peut parfois marcher normalement et d'autres jours ne plus pouvoir se lever. Son employeur dit qu'elle 'fait des caprices'. Que lui répondre ?", options:["Il a peut-être raison","La SEP est imprévisible par nature — les symptômes varient d'un jour à l'autre sans que la personne le contrôle","Elle devrait mieux gérer son agenda","Elle devrait prévenir à l'avance"], correct:1, feedback:"✅ La SEP est une maladie évolutive et imprévisible. Les 'bons jours' et 'mauvais jours' ne reflètent pas un manque de volonté.", oldy:"La SEP est l'une des maladies les plus imprévisibles qui soit 🧠" },
+  { tag:"Lupus – Stigma", q:"Une personne avec lupus évite le soleil même en été. Ses amis l'accusent d'être bizarre. Le lupus est aggravé par :", options:["Le froid uniquement","Le soleil, qui peut déclencher des poussées graves","L'eau","Les émotions positives"], correct:1, feedback:"✅ Le lupus est souvent aggravé par les UV. Éviter le soleil n'est pas un caprice — c'est une nécessité médicale.", oldy:"Le soleil est l'ennemi de nombreuses personnes atteintes de lupus ☀️" },
+  { tag:"Fibromyalgie – Droits", q:"Une personne fibromyalgique se voit refuser un aménagement au travail car 'il n'y a rien dans les analyses'. Que peut-elle faire ?", options:["Rien, sans analyse positive elle n'a aucun droit","Demander une RQTH auprès de la MDPH — la fibromyalgie est reconnue comme invalidante","Mentir sur son diagnostic","Changer de médecin jusqu'à trouver un résultat positif"], correct:1, feedback:"✅ La fibromyalgie est reconnue comme maladie invalidante. Une RQTH peut être obtenue sur dossier médical même sans marqueur biologique.", oldy:"Les droits existent — encore faut-il les connaître ! 💪" },
+  { tag:"Crohn – Travail", q:"Une personne avec maladie de Crohn doit souvent s'absenter pour des hospitalisations. Son employeur menace de la licencier. Que dit la loi ?", options:["L'employeur a le droit si les absences sont trop fréquentes","Avec une RQTH, des protections spéciales s'appliquent contre le licenciement abusif lié au handicap","La loi ne protège pas les maladies digestives","Elle doit cacher sa maladie à l'employeur"], correct:1, feedback:"✅ La RQTH offre une protection juridique contre la discrimination liée au handicap, y compris pour les maladies invisibles.", oldy:"La loi protège — mais il faut faire valoir ses droits ! ⚖️" },
+  { tag:"Endométriose – Délai", q:"Quel est le délai moyen de diagnostic de l'endométriose en France ?", options:["6 mois","1 à 2 ans","7 ans","20 ans"], correct:2, feedback:"✅ Il faut en moyenne 7 ans pour diagnostiquer l'endométriose. Ce retard entraîne des années de souffrance non reconnue.", oldy:"7 ans ! C'est pourquoi la sensibilisation est si importante 💛" },
+  { tag:"Cancer – Séquelles", q:"Une personne en rémission d'un cancer ressent encore fatigue et troubles cognitifs. Dire 'tu es guérie, profite !' est :", options:["Encourageant et bienveillant","Minimisant des séquelles réelles — cela peut isoler la personne","Médicalement correct","Neutre, sans impact"], correct:1, feedback:"✅ Les séquelles post-cancer peuvent durer des mois ou des années. Minimiser la souffrance de quelqu'un parce qu'il 'a l'air bien' est une forme de violence invisible.", oldy:"Guéri sur le papier ne veut pas dire guéri en réalité 🎗️" },
+  { tag:"AVC – Préjugés", q:"Une personne de 35 ans a eu un AVC et souffre de fatigue cérébrale intense. Son entourage dit 'mais t'es jeune !'. Quel est le problème de cette phrase ?", options:["Il n'y en a pas, c'est encourageant","Elle nie la réalité des séquelles — l'AVC peut toucher à tout âge et laisser des séquelles durables","Elle est vraie, les jeunes récupèrent toujours mieux","Elle est maladroite mais sans conséquence"], correct:1, feedback:"✅ L'AVC peut toucher à tout âge. La phrase 'mais t'es jeune' minimise des séquelles bien réelles et peut faire beaucoup de mal.", oldy:"Les AVC chez les jeunes adultes sont en augmentation en France 🫀" },
+  // TROUBLES PSY
+  { tag:"TSPT – Accompagnement", q:"Un collègue avec TSPT évite certains sujets de conversation. Un autre insiste pour qu'il 'en parle pour aller mieux'. Quel est le risque ?", options:["Il n'y a pas de risque, parler aide toujours","Forcer quelqu'un à revivre un trauma peut aggraver son état","Le collègue avec TSPT devrait faire un effort","Le TSPT n'est pas un vrai handicap"], correct:1, feedback:"✅ Forcer une personne traumatisée à parler peut déclencher une reviviscence traumatique. L'accompagnement doit être fait par des professionnels.", oldy:"Bienveillance ne veut pas dire intrusion 🕊️" },
+  { tag:"Dépression – Préjugés", q:"Dans une discussion, quelqu'un dit 'la dépression c'est une mode'. Quelle est la meilleure réponse ?", options:["Il a peut-être raison","C'est faux — la dépression est une maladie neurologique reconnue qui peut être mortelle (suicide)","C'est une opinion valable","Il vaut mieux ne pas répondre"], correct:1, feedback:"✅ La dépression est une maladie sérieuse. Elle est la 1ère cause de suicide en France. La banaliser peut avoir des conséquences graves.", oldy:"La dépression tue — parler ouvertement sauve des vies 💙" },
+  { tag:"Trouble bipolaire – Travail", q:"Une personne bipolaire bien traitée médicalement demande un aménagement d'horaires pour éviter les nuits. Son employeur refuse. Que peut-elle faire ?", options:["Rien, c'est une décision de l'employeur","Faire valoir sa RQTH et demander une médiation via la MDPH ou le médecin du travail","Cacher sa maladie et s'adapter","Démissionner"], correct:1, feedback:"✅ La RQTH permet de demander des aménagements raisonnables. Le médecin du travail peut jouer un rôle clé dans la médiation.", oldy:"Connaître ses droits, c'est se protéger 🌊" },
+  { tag:"Schizophrénie – Stigma", q:"Un locataire en bonne santé mentale depuis 2 ans refuse d'avoir un voisin schizophrène. Sur quoi repose ce refus ?", options:["Sur une peur légitime","Sur un préjugé — les personnes schizophrènes stabilisées ne sont pas plus dangereuses que la moyenne","Sur des données statistiques fiables","Sur un avis médical"], correct:1, feedback:"✅ Les personnes schizophrènes stabilisées ne présentent pas de dangerosité particulière. Ce refus est basé sur un préjugé et peut constituer une discrimination.", oldy:"La stigmatisation de la schizophrénie fait énormément de mal 💜" },
+  // MALADIES RARES
+  { tag:"Drépanocytose – Discriminations", q:"Un enfant drépanocytaire est exclu d'une sortie scolaire 'pour sa sécurité' sans concertation avec ses parents. C'est :", options:["Une bonne précaution","Une décision discriminatoire — des aménagements concertés auraient dû être proposés","Normal car sa maladie est grave","Légal si l'enseignant le décide"], correct:1, feedback:"✅ Exclure sans concertation est discriminatoire. Des aménagements peuvent permettre à l'enfant de participer en toute sécurité.", oldy:"L'inclusion, c'est adapter — pas exclure ! 🩸" },
+  { tag:"Maladies rares – Errance", q:"L'errance diagnostique des maladies rares dure en moyenne :", options:["Quelques semaines","Quelques mois","5 à 10 ans","Elles sont toujours diagnostiquées rapidement"], correct:2, feedback:"✅ L'errance diagnostique pour les maladies rares dure en moyenne 5 à 10 ans. Pendant ce temps, le patient souffre sans réponse officielle.", oldy:"L'errance diagnostique est une souffrance en soi 🧬" },
+  { tag:"Ehlers-Danlos", q:"Le syndrome d'Ehlers-Danlos (SED) provoque une hypermobilité articulaire. La personne peut paraître souple et athlétique mais :", options:["Elle est en excellente santé","Ses articulations se luxent facilement, provoquant des douleurs chroniques intenses et invisibles","Elle peut devenir gymnaste professionnelle","Elle ne ressent aucune douleur"], correct:1, feedback:"✅ Le SED est souvent invisibilisé car les personnes 'ont l'air souples'. En réalité, les luxations et douleurs chroniques peuvent être extrêmement invalidantes.", oldy:"Le SED est une maladie du tissu conjonctif souvent mal diagnostiquée 🦴" },
+  // SENSORIELS / RESPIRATOIRES
+  { tag:"BPCO", q:"La BPCO (Bronchopneumopathie Chronique Obstructive) est souvent associée au tabac. Pourquoi est-ce un handicap invisible ?", options:["Elle ne provoque pas de difficultés visibles","L'essoufflement invisible lors d'efforts modérés peut être très invalidant au quotidien","Elle n'est pas invalidante","Elle n'existe pas vraiment"], correct:1, feedback:"✅ La BPCO provoque un essoufflement qui n'est pas visible mais qui peut rendre très difficiles les activités les plus simples.", oldy:"La BPCO est la 3ème cause de décès dans le monde 🫁" },
+  { tag:"Apnée du sommeil", q:"L'apnée du sommeil non traitée peut provoquer à long terme :", options:["Uniquement de la fatigue légère","Hypertension, maladies cardiovasculaires, AVC et dépression","Seulement des ronflements","Des problèmes dentaires"], correct:1, feedback:"✅ L'apnée du sommeil non traitée a des conséquences graves sur la santé cardiovasculaire et mentale à long terme.", oldy:"Un simple masque CPAP peut transformer la vie d'un patient ! ⚡" },
+  // ADDICTIONS
+  { tag:"Addictions – Handicap", q:"L'alcoolo-dépendance sévère peut être reconnue comme handicap en France car :", options:["C'est toujours un choix personnel","Elle peut provoquer des séquelles neurologiques et psychiatriques reconnues invalidantes","Ce n'est jamais reconnu comme handicap","Uniquement si elle touche le foie"], correct:1, feedback:"✅ La dépendance sévère avec séquelles est reconnue comme handicap invalidant. Cela ouvre des droits à un accompagnement adapté.", oldy:"La dépendance est une maladie neurologique, pas un manque de volonté 🤎" },
+  // LOI ET DROITS
+  { tag:"Loi 2005", q:"Qu'a fondamentalement changé la loi du 11 février 2005 pour les personnes handicapées en France ?", options:["Elle a créé les premières aides sociales pour les personnes handicapées","Elle a posé le principe d'égalité des droits et d'inclusion pour toutes les formes de handicap","Elle concerne uniquement les handicaps physiques visibles","Elle s'applique seulement aux enfants"], correct:1, feedback:"✅ La loi de 2005 est un texte fondateur : tous les handicaps (y compris invisibles) doivent être compensés, et la société doit s'adapter — pas l'inverse.", oldy:"Connaître la loi, c'est connaître ses droits ! 🏛️" },
+  { tag:"Discrimination", q:"Dans un débat, quelqu'un dit : 'Si le handicap est invisible, c'est que ce n'est pas vraiment grave.' Quelle est la meilleure réponse ?", options:["Il a raison, un vrai handicap se voit","La visibilité n'a aucun rapport avec la gravité — de nombreux handicaps invisibles sont profondément invalidants","Il faut éviter de répondre","Seul un médecin peut répondre à ça"], correct:1, feedback:"✅ La visibilité d'un handicap ne détermine pas sa gravité. La SEP, l'endométriose, la dépression sévère peuvent être très invalidantes sans être visibles.", oldy:"Combattre les préjugés, c'est aussi de l'inclusion 🗣️" },
+  { tag:"CMI", q:"La CMI (Carte Mobilité Inclusion) peut être attribuée pour un handicap invisible. Qu'est-ce qu'elle apporte ?", options:["Uniquement des réductions SNCF","Une reconnaissance officielle du handicap et des droits concrets (priorités, aides, stationnement, etc.)","Seulement des avantages fiscaux","Uniquement pour les handicaps moteurs"], correct:1, feedback:"✅ La CMI reconnaît officiellement le handicap — y compris invisible — et ouvre des droits concrets au quotidien.", oldy:"La CMI, c'est la preuve que le handicap est réel et reconnu 🪪" },
+  { tag:"VIH", q:"Une personne séropositive sous traitement efficace (charge virale indétectable) peut-elle être discriminée au travail en France ?", options:["Oui, l'employeur peut refuser de l'embaucher","Non, c'est une discrimination illégale — le VIH peut être reconnu comme handicap","Oui si l'employeur prouve un risque","Oui dans les métiers de santé uniquement"], correct:1, feedback:"✅ La discrimination basée sur le VIH est illégale en France. Une personne sous traitement avec charge virale indétectable ne représente aucun risque pour les autres.", oldy:"Undetectable = Untransmittable (U=U) est reconnu par l'OMS ❤️" }
+]
+};
+
+const QS_PER_GAME = 10;
+let currentLevel = 1;
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let answers = [];
+let answered = false;
+
+window.onload = () => {
+  [1,2,3].forEach(l => {
+    document.getElementById('count'+l).textContent = QUESTIONS[l].length + ' questions disponibles';
+  });
+};
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startQuiz(level) {
+  currentLevel = level;
+  currentQuestions = shuffle(QUESTIONS[level]).slice(0, QS_PER_GAME);
+  currentIndex = 0; score = 0; answers = [];
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = currentQuestions[currentIndex];
+  const total = currentQuestions.length;
+  document.getElementById('progress-fill').style.width = (currentIndex / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Question ${currentIndex + 1} / ${total}`;
+  document.getElementById('q-tag').textContent = q.tag;
+  document.getElementById('q-text').textContent = q.q;
+
+  const hints = ['Lis bien ! 🐾', 'Réfléchis bien ! 🧠', 'Question difficile ! 💪'];
+  document.getElementById('oldy-quiz-text').innerHTML = hints[currentLevel - 1];
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  ['A','B','C','D'].forEach((letter, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-option';
+    btn.innerHTML = `<span class="q-option-letter">${letter}</span>${q.options[i]}`;
+    btn.onclick = () => selectAnswer(i);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('q-feedback').className = 'q-feedback';
+  document.getElementById('q-feedback').innerHTML = '';
+  const next = document.getElementById('btn-next');
+  next.className = 'btn';
+  next.textContent = currentIndex < currentQuestions.length - 1 ? 'Question suivante →' : 'Voir mes résultats 🎉';
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = currentQuestions[currentIndex];
+  document.querySelectorAll('.q-option').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+  });
+  const isCorrect = idx === q.correct;
+  if (isCorrect) score++;
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'q-feedback ' + (isCorrect ? 'correct-fb' : 'wrong-fb') + ' show';
+  fb.innerHTML = q.feedback + `<br><small>🐾 <em>${q.oldy}</em></small>`;
+  answers.push({ q: q.q, tag: q.tag, correct: isCorrect });
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex < currentQuestions.length) renderQuestion();
+  else showResults();
+}
+
+function showResults() {
+  const total = currentQuestions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-denom').textContent = '/ ' + total;
+
+  let msg, oldy;
+  if (pct >= 80) {
+    msg = '🌟 Excellent ! Tu es un champion de l\'empathie !';
+    oldy = `<strong>Incroyable !</strong> ${score}/${total} bonnes réponses ! Tu comprends vraiment les handicaps invisibles. 🐾`;
+  } else if (pct >= 50) {
+    msg = '👍 Bien joué ! Tu as beaucoup appris aujourd\'hui.';
+    oldy = `Pas mal du tout ! ${score}/${total}. <strong>Rejoue</strong> pour découvrir d'autres pathologies ! 🐾`;
+  } else {
+    msg = '💛 Continue d\'apprendre, tu vas y arriver !';
+    oldy = `${score}/${total} cette fois. <strong>Ne te décourage pas</strong> ! Chaque question apprise, c'est une personne mieux comprise. 🐾`;
+  }
+
+  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('score-oldy-text').innerHTML = oldy;
+  document.getElementById('score-detail').innerHTML =
+    '<div style="font-weight:700;margin-bottom:8px;color:#555;">Détail :</div>' +
+    answers.map((a, i) => `
+      <div class="score-row">
+        <span><b>Q${i+1}</b> <span style="color:#AAA;font-size:0.8em">[${a.tag}]</span> ${a.q.substring(0, 42)}…</span>
+        <span class="${a.correct ? 'ok' : 'ko'}">${a.correct ? '✅' : '❌'}</span>
+      </div>`).join('');
+
+  showScreen('screen-score');
+}
+
+function goHome() { showScreen('screen-home'); }
+function retryQuiz() { startQuiz(currentLevel); }
+</script>
+</body>
+</html>
