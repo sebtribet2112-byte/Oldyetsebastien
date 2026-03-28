@@ -87,8 +87,10 @@
     #tracas { background: #f5edd8; }
     .tracas-card { background: white; border: 2px solid #d8f3dc; border-radius: 20px; padding: 32px 24px; text-align: center; margin-top: 24px; }
     .tracas-card.or { border-color: #d4a843; background: #fffdf5; }
+    .tracas-card.quiz { border-color: #FF8C42; background: #FFF8F0; }
     .btn-tracas { display: inline-block; background: #2d6a4f; color: white; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 800; text-decoration: none; }
     .btn-kit { display: inline-block; background: #7a4f2b; color: white; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 800; text-decoration: none; }
+    .btn-quiz { display: inline-block; background: #FF8C42; color: white; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 800; text-decoration: none; }
 
     /* AUTEUR */
     #sebastien { background: white; }
@@ -172,6 +174,7 @@
     <a href="/sensibilisation-pathologies.html" class="nav-or">🩺 Pathologies</a>
     <a href="/kit_intervention_oldy_sebastien.html" class="nav-or">🎓 Kit</a>
     <a href="#mes-heros" class="nav-or">💌 Mes Héros</a>
+    <a href="/quiz.html" class="nav-or">🐾 Quiz Oldy</a>
   </div>
 </nav>
 
@@ -277,9 +280,26 @@
 <!-- TRACAS -->
 <section id="tracas">
   <div class="container" style="max-width:680px;">
-    <div class="label">🎮 Mini-jeu en ligne</div>
-    <h2>Le Jeu des Tracas Administratifs</h2>
-    <p class="desc">Vivez de l'intérieur le parcours d'une personne en situation de handicap invisible.</p>
+    <div class="label">🎮 Mini-jeux en ligne</div>
+    <h2>Jouer &amp; Apprendre</h2>
+    <p class="desc">Deux jeux pour comprendre et ressentir le handicap invisible.</p>
+
+    <!-- QUIZ OLDY — NOUVEAU -->
+    <div class="tracas-card quiz">
+      <div style="display:inline-block;background:#FF8C42;color:white;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:12px;">🐾 Nouveau !</div>
+      <div style="font-size:48px;margin-bottom:12px;">🐾</div>
+      <h3 style="font-size:clamp(20px,4vw,26px);font-weight:900;margin-bottom:10px;">Quiz avec Oldy</h3>
+      <p style="font-size:14px;color:#4a5c4a;line-height:1.8;margin-bottom:20px;">76 questions sur tous les handicaps invisibles, 3 niveaux selon l'âge. Oldy te guide à chaque étape !</p>
+      <div class="tags" style="justify-content:center;margin-bottom:24px;">
+        <span class="tag">🌱 6–8 ans</span>
+        <span class="tag">🌿 9–12 ans</span>
+        <span class="tag">🌳 13 ans +</span>
+        <span class="tag">🎲 10 questions par partie</span>
+      </div>
+      <a href="/quiz.html" class="btn-quiz">🐾 Jouer au Quiz</a>
+    </div>
+
+    <!-- LABYRINTHE ADMINISTRATIF -->
     <div class="tracas-card">
       <div style="font-size:48px;margin-bottom:12px;">🗂️</div>
       <h3 style="font-size:clamp(20px,4vw,26px);font-weight:900;margin-bottom:10px;">Le Labyrinthe Administratif</h3>
@@ -291,6 +311,8 @@
       </div>
       <a href="/jeu.html" class="btn-tracas">🎮 Jouer maintenant</a>
     </div>
+
+    <!-- KIT -->
     <div class="tracas-card or">
       <div style="display:inline-block;background:#d4a843;color:#1b2a1b;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:12px;">🎓 Intervenants &amp; enseignants</div>
       <div style="font-size:48px;margin-bottom:12px;">📦</div>
@@ -346,95 +368,5 @@
   </div>
 </section>
 
-<!-- MES HÉROS -->
-<section id="mes-heros">
-  <div class="container">
-    <div class="badge-heros">💛 Témoignage personnel</div>
-    <h2>Survivant, Miraculé,<br>revenu d'ailleurs</h2>
-    <p style="font-size:15px;color:rgba(255,255,255,0.55);font-style:italic;margin-bottom:32px;">Ce livret est réservé à remercier mes héros.</p>
-
-    <a href="/livret.html" class="couv-btn">
-      <div class="couv-haut">
-        <div style="font-size:12px;font-weight:800;color:#b8963e;letter-spacing:0.1rem;text-transform:uppercase;margin-bottom:6px;">Oldy &amp; Sébastien</div>
-        <div style="font-size:16px;font-weight:900;color:#1a2440;line-height:1.3;margin-bottom:6px;">Survivant, Miraculé,<br>revenu d'ailleurs</div>
-        <div style="font-size:12px;color:#6b5a4a;font-style:italic;margin-bottom:14px;">sans mes héros je ne serais plus là !</div>
-        <div style="font-size:44px;margin-bottom:10px;">🐶🤝</div>
-        <div style="background:#1a2440;color:#d4af6a;padding:5px 12px;border-radius:18px;font-size:11px;font-weight:800;display:inline-block;">TRIBET Sébastien</div>
-      </div>
-      <div class="couv-bas">
-        <span>🔒</span>
-        <span>Appuyer pour consulter</span>
-      </div>
-    </a>
-
-    <a href="/livret.html" class="btn-heros" style="text-decoration:none;display:block;text-align:center;line-height:normal;padding-top:16px;">🔒 Consulter le livret</a>
-    <p style="font-size:12px;color:rgba(255,255,255,0.3);font-style:italic;margin-top:8px;">Code communiqué uniquement aux personnes concernées</p>
-  </div>
-</section>
-
-<!-- MODAL -->
-<div id="modal-overlay">
-  <div id="modal-code" class="modal-box">
-    <div style="font-size:40px;margin-bottom:10px;">🔒</div>
-    <h3 style="font-size:19px;font-weight:900;color:#1a2440;margin-bottom:8px;">Accès réservé</h3>
-    <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:20px;">Ce livret est un témoignage personnel et privé.<br>Entrez le code qui vous a été communiqué.</p>
-    <input type="password" id="code-input" placeholder="· · · · · ·" maxlength="20" autocomplete="off"
-           style="width:100%;padding:13px;border:2px solid #d4af6a;border-radius:10px;background:#fdf9f3;font-family:'Nunito',sans-serif;font-size:22px;text-align:center;letter-spacing:0.3rem;color:#1a2440;outline:none;margin-bottom:12px;" />
-    <button type="button" onclick="validerCode()"
-            style="width:100%;padding:13px;background:#1a2440;color:white;border:none;cursor:pointer;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px;">
-      Ouvrir le livret
-    </button>
-    <div id="msg-erreur" style="display:none;color:#c0392b;font-size:13px;margin-bottom:10px;">❌ Code incorrect, veuillez réessayer.</div>
-    <button type="button" onclick="fermerModal()"
-            style="background:none;border:none;cursor:pointer;color:#aaa;font-size:12px;text-decoration:underline;font-family:'Nunito',sans-serif;">
-      Annuler
-    </button>
-  </div>
-
-  <div id="modal-succes" class="modal-box" style="display:none;">
-    <div style="font-size:40px;margin-bottom:10px;">💛</div>
-    <h3 style="font-size:19px;font-weight:900;color:#1a2440;margin-bottom:8px;">Code accepté !</h3>
-    <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:20px;">Appuyez sur le bouton pour ouvrir le livret dans un nouvel onglet.</p>
-    <a href="https://drive.google.com/file/d/1rA49F6mLoOQYq6fvrsUq31mAPwz2Ydbp/view?usp=drivesdk"
-       target="_blank" rel="noopener"
-       style="display:inline-block;background:#b8963e;color:white;padding:13px 28px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;text-decoration:none;margin-bottom:14px;">
-      📄 Ouvrir le livret
-    </a><br>
-    <button type="button" onclick="fermerModal()"
-            style="background:none;border:none;cursor:pointer;color:#aaa;font-size:12px;text-decoration:underline;font-family:'Nunito',sans-serif;">
-      Fermer
-    </button>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <strong>Les aventures d'Oldy et Sébastien</strong><br>
-  TRIBET Sébastien — auteur créateur — 03/2026<br>
-  seb.tribet2112 [at] gmail.com · <a href="https://oldyetsebastien.fr">oldyetsebastien.fr</a><br>
-  Handicaps invisibles, nous existons.
-</footer>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  var CODE = "MERCI2014";
-
-  function ouvrirModal() {
-    document.getElementById('modal-overlay').style.display = 'block';
-    document.getElementById('modal-code').style.display = 'inline-block';
-    document.getElementById('modal-succes').style.display = 'none';
-    document.getElementById('msg-erreur').style.display = 'none';
-    document.getElementById('code-input').value = '';
-    document.body.style.overflow = 'hidden';
-    setTimeout(function(){ document.getElementById('code-input').focus(); }, 150);
-  }
-
-  function fermerModal() {
-    document.getElementById('modal-overlay').style.display = 'none';
-    document.body.style.overflow = '';
-  }
-
-  function validerCode() {
-    var s = document.getElementById('code-input').value.trim().toUpperCase();
-    if (s === CODE) {
-      document.getElementById('modal-code').style.display = 'none';
-      document.getElementById('modal-s
+</body>
+</html>
