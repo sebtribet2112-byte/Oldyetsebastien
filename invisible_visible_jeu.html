@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invisible Visible – Jeu de plateau</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert: #2d6a4f; --vert2: #52b788; --or: #d4a843; --or2: #f5c842;
+  --rouge: #e63946; --bleu: #118AB2; --violet: #7B5EA7; --orange: #FF8C42;
+  --bg: #fefae0; --card: #ffffff; --text: #1b2a1b; --grey: #6b7c6b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ===== ÉCRANS ===== */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ===== ACCUEIL ===== */
+#s-home {
+  background: linear-gradient(135deg, #1b3a2d 0%, #2d6a4f 50%, #0d2b1f 100%);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 30px 20px;
+}
+#s-home.active { display: flex; }
+.home-logo { font-size: 4rem; margin-bottom: 10px; animation: bounce 2s infinite; }
+.home-title { font-family: 'Fredoka One', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--or); margin-bottom: 6px; line-height: 1.1; }
+.home-sub { font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+.home-tagline { font-size: 0.9rem; color: rgba(255,255,255,0.5); font-style: italic; margin-bottom: 32px; }
+.home-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 20px; max-width: 420px; width: 100%; margin-bottom: 28px; }
+.home-card-row { display: flex; justify-content: space-around; }
+.hc-stat { text-align: center; }
+.hc-stat b { display: block; font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--or2); }
+.hc-stat span { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; }
+.btn-start { background: var(--or); color: var(--text); border: none; padding: 16px 48px; border-radius: 50px; font-family: 'Fredoka One', cursive; font-size: 1.3rem; cursor: pointer; box-shadow: 0 6px 0 #9a7020; transition: all 0.15s; margin-bottom: 12px; display: block; width: 100%; max-width: 320px; }
+.btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #9a7020; }
+.btn-start:active { transform: translateY(3px); box-shadow: 0 3px 0 #9a7020; }
+.btn-rules { background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.3); padding: 12px 32px; border-radius: 50px; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; display: block; width: 100%; max-width: 320px; }
+
+/* ===== CONFIG JOUEURS ===== */
+#s-config { background: var(--bg); padding: 20px; }
+#s-config.active { display: flex; flex-direction: column; align-items: center; }
+.config-title { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--vert); margin-bottom: 6px; text-align: center; }
+.config-sub { font-size: 0.9rem; color: var(--grey); margin-bottom: 24px; text-align: center; }
+.player-setup { width: 100%; max-width: 460px; }
+.player-row { background: white; border: 2px solid #d8f3dc; border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+.player-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+.p1a { background: #FFE8D6; } .p2a { background: #D6EAF8; } .p3a { background: #D5F5E3; } .p4a { background: #FEF9E7; }
+.player-row input { flex: 1; border: 1.5px solid #d8f3dc; border-radius: 10px; padding: 8px 12px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); background: var(--bg); outline: none; }
+.player-row input:focus { border-color: var(--vert2); }
+.player-condition { font-size: 0.78rem; color: var(--grey); font-weight: 600; white-space: nowrap; }
+.btn-launch { background: var(--vert); color: white; border: none; padding: 14px 40px; border-radius: 50px; font-family: 'Fredoka One', cursive; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 0 #1a3d2d; margin-top: 16px; width: 100%; max-width: 460px; transition: all 0.15s; }
+.btn-launch:hover { transform: translateY(-2px); }
+
+/* ===== JEU ===== */
+#s-game { background: var(--bg); }
+#s-game.active { display: flex; flex-direction: column; }
+
+/* TOP BAR */
+.game-bar { background: var(--vert); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.game-title-bar { font-family: 'Fredoka One', cursive; color: var(--or); font-size: 1.1rem; }
+.game-turn { background: rgba(255,255,255,0.15); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
+.game-score-bar { color: rgba(255,255,255,0.8); font-size: 0.8rem; font-weight: 700; }
+
+/* PLATEAU */
+.board-wrap { padding: 12px; overflow-x: auto; }
+.board { display: flex; flex-wrap: wrap; gap: 6px; max-width: 600px; margin: 0 auto; justify-content: center; }
+.case {
+  width: 52px; height: 52px; border-radius: 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800;
+  cursor: default; border: 2px solid transparent; transition: all 0.3s; position: relative;
+  text-align: center; line-height: 1.2;
+}
+.case-depart { background: linear-gradient(135deg, #2d6a4f, #52b788); color: white; border-color: #2d6a4f; }
+.case-arrivee { background: linear-gradient(135deg, #d4a843, #f5c842); color: #1b2a1b; border-color: #d4a843; }
+.case-defi { background: #FEE8EE; border-color: #e63946; color: #c0305a; }
+.case-soutien { background: #E8FDF6; border-color: #52b788; color: #1a7a5e; }
+.case-event { background: #EBF5FB; border-color: #118AB2; color: #0e6e90; }
+.case-pathologie { background: #F0EBF8; border-color: #7B5EA7; color: #5a3d8a; }
+.case-bonus { background: #FFF8E8; border-color: #d4a843; color: #9a7020; }
+.case-repos { background: #F5F5F5; border-color: #CCC; color: #888; }
+.case .case-num { position: absolute; top: 2px; left: 4px; font-size: 0.55rem; opacity: 0.6; }
+.case .case-icon { font-size: 1.2rem; }
+.case .case-label { font-size: 0.55rem; margin-top: 1px; }
+.case.active-case { transform: scale(1.1); box-shadow: 0 0 0 3px var(--or), 0 4px 12px rgba(0,0,0,0.2); z-index: 10; }
+.pion { position: absolute; bottom: 2px; right: 2px; font-size: 0.8rem; }
+
+/* JOUEURS INFO */
+.players-bar { display: flex; gap: 8px; padding: 8px 12px; overflow-x: auto; }
+.player-chip {
+  background: white; border: 2px solid #d8f3dc; border-radius: 12px;
+  padding: 8px 12px; min-width: 110px; flex-shrink: 0; transition: all 0.3s;
+}
+.player-chip.current { border-color: var(--or); box-shadow: 0 2px 8px rgba(212,168,67,0.3); }
+.pc-name { font-size: 0.8rem; font-weight: 800; color: var(--text); }
+.pc-condition { font-size: 0.7rem; color: var(--violet); font-weight: 700; }
+.pc-pos { font-size: 0.7rem; color: var(--grey); }
+.pc-tokens { font-size: 0.75rem; margin-top: 3px; }
+
+/* ZONE ACTION */
+.action-zone { padding: 12px; max-width: 600px; margin: 0 auto; width: 100%; }
+.action-card {
+  background: white; border-radius: 20px; padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 12px;
+  animation: slideUp 0.3s ease;
+}
+.action-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.action-icon { font-size: 2rem; }
+.action-type { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+.action-title { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--text); }
+.action-body { font-size: 0.9rem; color: var(--grey); line-height: 1.6; margin-bottom: 14px; }
+.action-effect { border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; font-weight: 700; margin-bottom: 14px; }
+.effect-pos { background: #E8FDF6; color: #1a7a5e; }
+.effect-neg { background: #FEE8EE; color: #c0305a; }
+.effect-neu { background: #EBF5FB; color: #0e6e90; }
+.action-card.defi { border-left: 4px solid var(--rouge); }
+.action-card.soutien { border-left: 4px solid var(--vert2); }
+.action-card.event { border-left: 4px solid var(--bleu); }
+.action-card.pathologie { border-left: 4px solid var(--violet); }
+.action-card.bonus { border-left: 4px solid var(--or); }
+
+/* DÉ */
+.de-zone { text-align: center; margin-bottom: 12px; }
+.de { font-size: 3.5rem; cursor: pointer; transition: all 0.3s; display: inline-block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.2)); }
+.de:hover { transform: scale(1.1) rotate(10deg); }
+.de.rolling { animation: roll 0.5s ease; }
+.de-result { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--vert); margin-top: 4px; }
+.btn-action { background: var(--vert); color: white; border: none; padding: 13px 28px; border-radius: 50px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; width: 100%; max-width: 320px; box-shadow: 0 4px 0 #1a3d2d; transition: all 0.15s; display: block; margin: 0 auto 8px; }
+.btn-action:hover { transform: translateY(-2px); }
+.btn-action.secondary { background: white; color: var(--vert); border: 2px solid var(--vert); box-shadow: none; }
+.btn-action.or { background: var(--or); color: var(--text); box-shadow: 0 4px 0 #9a7020; }
+
+/* RÈGLES */
+#s-rules { background: var(--bg); padding: 20px; }
+#s-rules.active { display: block; }
+.rules-box { max-width: 500px; margin: 0 auto; }
+.rules-title { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--vert); margin-bottom: 20px; text-align: center; }
+.rules-section { background: white; border-radius: 16px; padding: 18px; margin-bottom: 14px; border: 2px solid #d8f3dc; }
+.rules-section h3 { font-size: 1rem; font-weight: 800; color: var(--vert); margin-bottom: 8px; }
+.rules-section p, .rules-section li { font-size: 0.88rem; color: var(--grey); line-height: 1.7; }
+.rules-section ul { padding-left: 18px; }
+.rules-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.rl { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 700; }
+.rl-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+
+/* FIN */
+#s-end { background: linear-gradient(135deg, #2d6a4f, #0d2b1f); min-height: 100vh; }
+#s-end.active { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px 20px; }
+.end-icon { font-size: 5rem; animation: bounce 1s 3; }
+.end-title { font-family: 'Fredoka One', cursive; font-size: 2.5rem; color: var(--or); margin: 10px 0; }
+.end-msg { color: rgba(255,255,255,0.8); font-size: 1rem; max-width: 380px; line-height: 1.7; margin-bottom: 24px; }
+.end-stats { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 16px 24px; margin-bottom: 24px; }
+.end-stat { color: white; font-size: 0.9rem; margin: 4px 0; }
+.end-stat b { color: var(--or2); }
+
+/* ANIMATIONS */
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes roll { 0%{transform:rotate(0) scale(1)} 50%{transform:rotate(360deg) scale(1.3)} 100%{transform:rotate(720deg) scale(1)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+.pulse { animation: pulse 1s infinite; }
+footer-bar { background: var(--vert); color: rgba(255,255,255,0.5); text-align: center; padding: 10px; font-size: 0.75rem; }
+</style>
+</head>
+<body>
+
+<!-- ===== ACCUEIL ===== -->
+<div class="screen active" id="s-home">
+  <div class="home-logo">🎲</div>
+  <div class="home-title">Invisible<br>Visible</div>
+  <div class="home-sub">Le jeu de plateau coopératif</div>
+  <div class="home-tagline">« Rendons visible l'invisible » — Oldy &amp; Sébastien</div>
+  <div class="home-card">
+    <div class="home-card-row">
+      <div class="hc-stat"><b>2–4</b><span>Joueurs</span></div>
+      <div class="hc-stat"><b>7+</b><span>Ans</span></div>
+      <div class="hc-stat"><b>~30'</b><span>Par partie</span></div>
+      <div class="hc-stat"><b>73</b><span>Conditions</span></div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="goScreen('s-config')">🎮 Commencer à jouer</button>
+  <button class="btn-rules" onclick="goScreen('s-rules')">📖 Lire les règles</button>
+  <div style="margin-top:20px;font-size:0.75rem;color:rgba(255,255,255,0.3);">© Les aventures d'Oldy et Sébastien · oldyetsebastien.fr</div>
+</div>
+
+<!-- ===== CONFIG ===== -->
+<div class="screen" id="s-config">
+  <div style="background:var(--vert);padding:14px 16px;display:flex;align-items:center;gap:10px;">
+    <button onclick="goScreen('s-home')" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;">←</button>
+    <span style="font-family:'Fredoka One',cursive;color:var(--or);font-size:1.1rem;">Invisible Visible</span>
+  </div>
+  <div style="padding:20px;display:flex;flex-direction:column;align-items:center;">
+    <div class="config-title">🐾 Les joueurs</div>
+    <div class="config-sub">Chaque joueur incarne une personne avec un handicap invisible</div>
+    <div class="player-setup">
+      <div class="player-row">
+        <div class="player-avatar p1a">🧑</div>
+        <input type="text" id="p1name" placeholder="Joueur 1" maxlength="14" />
+        <div class="player-condition" id="p1cond">🧩 Dyslexie</div>
+      </div>
+      <div class="player-row">
+        <div class="player-avatar p2a">👩</div>
+        <input type="text" id="p2name" placeholder="Joueur 2" maxlength="14" />
+        <div class="player-condition" id="p2cond">💜 Fibromyalgie</div>
+      </div>
+      <div class="player-row">
+        <div class="player-avatar p3a">🧒</div>
+        <input type="text" id="p3name" placeholder="Joueur 3 (optionnel)" maxlength="14" />
+        <div class="player-condition" id="p3cond">🧠 TDAH</div>
+      </div>
+      <div class="player-row">
+        <div class="player-avatar p4a">👦</div>
+        <input type="text" id="p4name" placeholder="Joueur 4 (optionnel)" maxlength="14" />
+        <div class="player-condition" id="p4cond">💙 Anxiété</div>
+      </div>
+      <div style="background:#f0faf4;border:2px solid #d8f3dc;border-radius:14px;padding:14px;margin-top:8px;font-size:0.82rem;color:var(--grey);line-height:1.6;">
+        🎯 <strong>Objectif :</strong> Traverser ensemble le plateau en 40 cases. Aidez-vous mutuellement pour surmonter les défis du quotidien avec un handicap invisible !
+      </div>
+      <button class="btn-launch" onclick="launchGame()">🎲 Lancer la partie !</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== JEU ===== -->
+<div class="screen" id="s-game">
+  <div class="game-bar">
+    <div class="game-title-bar">🎲 Invisible Visible</div>
+    <div class="game-turn" id="turn-label">Tour 1</div>
+    <div class="game-score-bar" id="score-bar">🌟 0 pts</div>
+  </div>
+  <div class="players-bar" id="players-bar"></div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+  <div class="action-zone" id="action-zone">
+    <div class="de-zone">
+      <div class="de" id="de" onclick="lancerDe()">🎲</div>
+      <div class="de-result" id="de-result">Appuie sur le dé pour jouer !</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RÈGLES ===== -->
+<div class="screen" id="s-rules">
+  <div style="background:var(--vert);padding:14px 16px;display:flex;align-items:center;gap:10px;">
+    <button onclick="goScreen('s-home')" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;">←</button>
+    <span style="font-family:'Fredoka One',cursive;color:var(--or);font-size:1.1rem;">Règles du jeu</span>
+  </div>
+  <div class="rules-box" style="padding:20px;">
+    <div class="rules-title">📖 Règles</div>
+    <div class="rules-section">
+      <h3>🎯 Objectif</h3>
+      <p>Atteindre ensemble la case ARRIVÉE (case 40) en surmontant les défis du quotidien. <strong>Jeu coopératif : tous gagnent ou tous perdent !</strong></p>
+    </div>
+    <div class="rules-section">
+      <h3>🎮 Tour de jeu</h3>
+      <ul>
+        <li>Le joueur actif lance le dé (1 à 6)</li>
+        <li>Son pion avance du nombre de cases indiqué</li>
+        <li>Il applique l'effet de la case sur laquelle il tombe</li>
+        <li>Le tour passe au joueur suivant</li>
+      </ul>
+    </div>
+    <div class="rules-section">
+      <h3>🗺️ Les cases</h3>
+      <div class="rules-legend">
+        <div class="rl"><div class="rl-dot" style="background:#e63946;"></div>Défi — reculer</div>
+        <div class="rl"><div class="rl-dot" style="background:#52b788;"></div>Soutien — avancer</div>
+        <div class="rl"><div class="rl-dot" style="background:#118AB2;"></div>Événement — surprise</div>
+        <div class="rl"><div class="rl-dot" style="background:#7B5EA7;"></div>Pathologie — info</div>
+        <div class="rl"><div class="rl-dot" style="background:#d4a843;"></div>Bonus — points</div>
+        <div class="rl"><div class="rl-dot" style="background:#CCC;"></div>Repos — pause</div>
+      </div>
+    </div>
+    <div class="rules-section">
+      <h3>🤝 Coopération</h3>
+      <p>Quand un joueur tombe sur une case Défi, les autres peuvent lui donner un jeton Soutien (🤝) pour réduire la pénalité de 1. Chaque joueur commence avec 2 jetons.</p>
+    </div>
+    <div class="rules-section">
+      <h3>🏆 Victoire</h3>
+      <p>Tous les joueurs doivent atteindre la case 40 pour gagner. Le score final dépend du nombre de tours utilisés et des points bonus accumulés.</p>
+    </div>
+    <button class="btn-launch" onclick="goScreen('s-home')" style="margin-top:8px;">← Retour à l'accueil</button>
+  </div>
+</div>
+
+<!-- ===== FIN ===== -->
+<div class="screen" id="s-end">
+  <div class="end-icon" id="end-icon">🏆</div>
+  <div class="end-title" id="end-title">Bravo !</div>
+  <div class="end-msg" id="end-msg">Vous avez traversé ensemble le quotidien avec un handicap invisible.</div>
+  <div class="end-stats" id="end-stats"></div>
+  <button class="btn-start" onclick="goScreen('s-home')">🔄 Rejouer</button>
+  <div style="margin-top:12px;font-size:0.75rem;color:rgba(255,255,255,0.3);">© Les aventures d'Oldy et Sébastien</div>
+</div>
+
+<script>
+// ===== DONNÉES =====
+const CONDITIONS = [
+  {nom:"Dyslexie",emoji:"🧩",desc:"Trouble de la lecture neurologique"},
+  {nom:"Fibromyalgie",emoji:"💜",desc:"Douleurs chroniques invisibles"},
+  {nom:"TDAH",emoji:"🧠",desc:"Trouble de l'attention et concentration"},
+  {nom:"Anxiété",emoji:"💙",desc:"Trouble anxieux généralisé"},
+  {nom:"Dépression",emoji:"🌧️",desc:"Maladie neurologique de l'humeur"},
+  {nom:"TSA / Autisme",emoji:"🌈",desc:"Trouble du spectre autistique"},
+  {nom:"Endométriose",emoji:"🌸",desc:"Maladie gynécologique douloureuse"},
+  {nom:"SEP",emoji:"⚡",desc:"Sclérose en plaques"},
+  {nom:"Diabète",emoji:"🩸",desc:"Maladie métabolique chronique"},
+  {nom:"Épilepsie",emoji:"🔆",desc:"Trouble neurologique avec crises"},
+  {nom:"Lupus",emoji:"🦋",desc:"Maladie auto-immune systémique"},
+  {nom:"Drépanocytose",emoji:"❤️",desc:"Maladie génétique du sang"},
+];
+
+const CARTES = {
+  defi: [
+    {titre:"Réunion de travail",texte:"Tu dois expliquer ton handicap invisible à ton nouveau collègue. Il ne comprend pas pourquoi tu as besoin d'aménagements.",effet:"Recule de 2 cases. Mais tu as été courageux·se !",delta:-2,type:"neg"},
+    {titre:"Rendez-vous médical refusé",texte:"Le médecin dit que 'ça ne se voit pas' et refuse de te prescrire ce dont tu as besoin.",effet:"Recule de 3 cases. Cette injustice est épuisante.",delta:-3,type:"neg"},
+    {titre:"Fatigue invisible",texte:"Après une bonne nuit de sommeil, tu te réveilles épuisé·e. Personne autour de toi ne comprend.",effet:"Recule de 2 cases. Ton corps a besoin de repos.",delta:-2,type:"neg"},
+    {titre:"Formulaire MDPH",texte:"Des dizaines de pages à remplir, des justificatifs à réunir... Le dossier MDPH prend des semaines.",effet:"Recule de 2 cases et perds 1 tour.",delta:-2,type:"neg",perdu:true},
+    {titre:"Regard des autres",texte:"Au supermarché, tu utilises ta CMI et quelqu'un te dit 'vous avez l'air bien pourtant'.",effet:"Recule de 1 case. Ces mots font mal.",delta:-1,type:"neg"},
+    {titre:"Crises inopinées",texte:"En plein cours ou réunion, tu as une crise (douleur, anxiété, hypoglycémie...). Tout le monde te regarde.",effet:"Recule de 2 cases. Mais tu as géré !",delta:-2,type:"neg"},
+    {titre:"Préjugés au travail",texte:"Ton employeur dit que tu 'n'as pas l'air malade' et refuse le télétravail médical.",effet:"Recule de 3 cases. Discrimination invisible.",delta:-3,type:"neg"},
+    {titre:"Errance diagnostique",texte:"Après 3 ans de consultations, aucun médecin n'a encore trouvé ce que tu as.",effet:"Recule de 2 cases. L'errance diagnostique est épuisante.",delta:-2,type:"neg"},
+    {titre:"Médicaments oubliés",texte:"Tu as oublié ton traitement ce matin. La journée risque d'être difficile.",effet:"Recule de 1 case.",delta:-1,type:"neg"},
+    {titre:"Mauvaise journée",texte:"Aujourd'hui tout est plus dur. La douleur, la fatigue, les regards. Une mauvaise journée comme tant d'autres.",effet:"Recule de 2 cases.",delta:-2,type:"neg"},
+    {titre:"Incompréhension familiale",texte:"Ta famille dit 'tu exagères, tout le monde est fatigué'. Expliquer encore et encore est épuisant.",effet:"Recule de 2 cases.",delta:-2,type:"neg"},
+    {titre:"Urgences débordées",texte:"Tu dois aller aux urgences pour une crise. Attente de 6 heures. Personne ne comprend l'urgence invisible.",effet:"Recule de 3 cases et perds 1 tour.",delta:-3,type:"neg",perdu:true},
+  ],
+  soutien: [
+    {titre:"Ami·e bienveillant·e",texte:"Ton ami·e t'écoute sans juger. Il/elle adapte vos sorties à ton énergie du jour.",effet:"Avance de 3 cases. L'amitié vraie est précieuse !",delta:3,type:"pos"},
+    {titre:"Médecin à l'écoute",texte:"Enfin un médecin qui te croit, t'écoute et adapte ton traitement. Le diagnostic est posé !",effet:"Avance de 4 cases. Un tournant dans ta vie !",delta:4,type:"pos"},
+    {titre:"Aménagement scolaire",texte:"Ton enseignant met en place un PAP pour toi. Tiers-temps, documents adaptés... tu peux enfin montrer ce que tu vaux.",effet:"Avance de 3 cases.",delta:3,type:"pos"},
+    {titre:"RQTH obtenue",texte:"La MDPH reconnaît officiellement ton handicap. Tu obtiens la RQTH et de nouveaux droits au travail.",effet:"Avance de 4 cases. Tes droits sont reconnus !",delta:4,type:"pos"},
+    {titre:"Association d'entraide",texte:"Tu rejoins une association de personnes touchées par la même condition. Tu n'es plus seul·e !",effet:"Avance de 2 cases. La solidarité, c'est fort !",delta:2,type:"pos"},
+    {titre:"Employeur compréhensif",texte:"Ton employeur accepte le télétravail et les aménagements d'horaires. Ta vie change.",effet:"Avance de 3 cases.",delta:3,type:"pos"},
+    {titre:"Traitement efficace",texte:"Après plusieurs essais, ton médecin trouve enfin le bon traitement. Tu te sens mieux.",effet:"Avance de 3 cases.",delta:3,type:"pos"},
+    {titre:"CMI obtenue",texte:"Ta Carte Mobilité Inclusion est validée. Priorité dans les files, places réservées... la vie quotidienne s'améliore.",effet:"Avance de 2 cases.",delta:2,type:"pos"},
+    {titre:"Journée sans douleur",texte:"Aujourd'hui, tu vas mieux ! Ces journées sont précieuses et tu en profites pleinement.",effet:"Avance de 2 cases.",delta:2,type:"pos"},
+    {titre:"Soutien psychologique",texte:"Le suivi avec un·e psychologue t'aide à accepter et gérer ton handicap au quotidien.",effet:"Avance de 2 cases.",delta:2,type:"pos"},
+    {titre:"Collègue solidaire",texte:"Un collègue prend de tes nouvelles et propose de t'aider sur une tâche difficile aujourd'hui.",effet:"Avance de 2 cases. La solidarité au travail compte !",delta:2,type:"pos"},
+    {titre:"Famille qui comprend",texte:"Ta famille a pris le temps de se renseigner sur ta condition. Ils s'adaptent à toi maintenant.",effet:"Avance de 3 cases.",delta:3,type:"pos"},
+  ],
+  event: [
+    {titre:"Sensibilisation réussie",texte:"Tu témoignes devant une classe. Les élèves sont touchés. Quelques-uns comprennent vraiment.",effet:"Avance de 2 cases ! Tu changes les mentalités.",delta:2,type:"pos"},
+    {titre:"Concours de circonstances",texte:"Un rendez-vous annulé au dernier moment te force à reprendre tout de zéro.",effet:"Reste sur ta case. Rien ne change.",delta:0,type:"neu"},
+    {titre:"Journée mondiale",texte:"C'est la journée mondiale de sensibilisation à ta condition. Les réseaux sociaux en parlent.",effet:"Avance de 1 case. La visibilité progresse !",delta:1,type:"pos"},
+    {titre:"Rencontre inattendue",texte:"Tu rencontres quelqu'un avec la même condition que toi. Un échange précieux et réconfortant.",effet:"Avance de 2 cases.",delta:2,type:"pos"},
+    {titre:"Changement de médecin",texte:"Tu changes de médecin traitant. Le nouveau dossier prend du temps.",effet:"Recule de 1 case.",delta:-1,type:"neg"},
+    {titre:"Grève des transports",texte:"Grève aujourd'hui ! Le trajet habituel est impossible. Gérer une journée atypique avec ton handicap...",effet:"Recule de 1 case.",delta:-1,type:"neg"},
+    {titre:"Météo capricieuse",texte:"La météo aggrave tes symptômes (froid, chaleur, pression atmosphérique). Certaines conditions y sont très sensibles.",effet:"Reste sur ta case.",delta:0,type:"neu"},
+    {titre:"Bonne surprise administrative",texte:"Un remboursement de la Sécurité Sociale arrive enfin. Ce n'est pas grand chose mais c'est déjà ça.",effet:"Avance de 1 case.",delta:1,type:"pos"},
+    {titre:"Podcast inspirant",texte:"Tu écoutes le témoignage d'une personne avec le même handicap que toi. Ça te redonne de l'énergie.",effet:"Avance de 1 case.",delta:1,type:"pos"},
+    {titre:"Accident mineur",texte:"Un petit incident sans gravité mais qui te coûte beaucoup d'énergie à gérer.",effet:"Recule de 1 case.",delta:-1,type:"neg"},
+  ],
+  pathologie: [
+    {titre:"Le saviez-vous ?",texte:"La fibromyalgie touche environ 3% de la population. Les douleurs ne se voient pas dans les analyses biologiques classiques.",effet:"Case information. Partage ce savoir !",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"L'endométriose touche 1 femme sur 10 en France. Il faut en moyenne 7 ans pour obtenir un diagnostic.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"Le TDAH n'est pas un manque de volonté. C'est lié à un déficit en dopamine dans le cerveau.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"La dyslexie touche environ 10% de la population. De nombreux grands esprits étaient dyslexiques.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"La sclérose en plaques est imprévisible : des 'bons jours' et 'mauvais jours' se succèdent sans prévenir.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"Les personnes autistes peuvent 'masquer' leur autisme au quotidien. Ce 'masking' est épuisant et peut mener au burn-out.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"La dépression est la 1ère cause de handicap dans le monde selon l'OMS. Ce n'est pas 'juste de la tristesse'.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"La drépanocytose est la maladie génétique la plus fréquente en France. Les crises douloureuses sont souvent invisibles.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"Le lupus touche 9 femmes pour 1 homme. Le soleil peut déclencher des poussées graves.",effet:"Case information.",delta:0,type:"neu"},
+    {titre:"Le saviez-vous ?",texte:"L'épilepsie touche 600 000 personnes en France. Entre les crises, les personnes épileptiques mènent une vie normale.",effet:"Case information.",delta:0,type:"neu"},
+  ],
+  bonus: [
+    {titre:"Champion de l'empathie !",texte:"Tu as aidé un autre joueur pendant ce tour. L'entraide est la clé !",effet:"+5 points bonus pour l'équipe !",delta:0,pts:5,type:"pos"},
+    {titre:"Témoignage courageux",texte:"Tu as partagé ton expérience du handicap invisible. Changer les mentalités, c'est aussi ça la victoire.",effet:"+3 points bonus.",delta:0,pts:3,type:"pos"},
+    {titre:"Case Empathie",texte:"Tous les joueurs parlent d'une situation vécue liée au handicap invisible. La parole libère.",effet:"+2 points pour chaque joueur qui partage.",delta:0,pts:2,type:"pos"},
+    {titre:"Solidarité maximale",texte:"Ce tour, personne n'a reculé grâce au soutien de l'équipe. Incroyable !",effet:"+4 points bonus équipe.",delta:0,pts:4,type:"pos"},
+  ]
+};
+
+// Types de cases sur le plateau (40 cases)
+const PLATEAU = [
+  'depart','defi','soutien','event','defi','pathologie','soutien','defi',
+  'repos','soutien','defi','event','soutien','pathologie','defi','bonus',
+  'soutien','defi','event','soutien','defi','pathologie','soutien','repos',
+  'defi','event','soutien','defi','bonus','soutien','pathologie','defi',
+  'event','soutien','defi','soutien','pathologie','bonus','soutien','arrivee'
+];
+
+const COLORS = ['#FF8C42','#118AB2','#06D6A0','#EF476F'];
+const PIONS = ['🟠','🔵','🟢','🔴'];
+
+// ===== ÉTAT DU JEU =====
+let joueurs = [];
+let tourActuel = 0;
+let joueurActuel = 0;
+let dejaLance = false;
+let scoreTotal = 0;
+let cartePiochee = null;
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function launchGame() {
+  const noms = ['p1name','p2name','p3name','p4name'].map(id => document.getElementById(id).value.trim());
+  const condsShuffled = shuffle(CONDITIONS);
+  joueurs = [];
+  let idx = 0;
+  noms.forEach((nom, i) => {
+    if (nom || i < 2) {
+      joueurs.push({
+        nom: nom || `Joueur ${i+1}`,
+        condition: condsShuffled[idx % condsShuffled.length],
+        position: 0,
+        tokens: 2,
+        actif: true,
+        couleur: COLORS[idx],
+        pion: PIONS[idx],
+        perduTour: false
+      });
+      idx++;
+    }
+  });
+  tourActuel = 1;
+  joueurActuel = 0;
+  scoreTotal = 0;
+  dejaLance = false;
+  cartePiochee = null;
+  buildBoard();
+  updatePlayersBar();
+  updateActionZone();
+  goScreen('s-game');
+}
+
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  PLATEAU.forEach((type, i) => {
+    const c = document.createElement('div');
+    c.id = `case-${i}`;
+    c.className = `case case-${type}`;
+    c.innerHTML = `<span class="case-num">${i+1}</span><span class="case-icon">${getCaseIcon(type)}</span><span class="case-label">${getCaseLabel(type)}</span>`;
+    board.appendChild(c);
+  });
+  updatePions();
+}
+
+function getCaseIcon(t) {
+  const icons = {depart:'🚀',arrivee:'🏆',defi:'⚡',soutien:'💚',event:'🎲',pathologie:'📚',bonus:'⭐',repos:'😴'};
+  return icons[t]||'❓';
+}
+function getCaseLabel(t) {
+  const labels = {depart:'Départ',arrivee:'Arrivée!',defi:'Défi',soutien:'Soutien',event:'Événement',pathologie:'Info',bonus:'Bonus',repos:'Repos'};
+  return labels[t]||'';
+}
+
+function updatePions() {
+  // Reset all pions
+  document.querySelectorAll('.pion').forEach(p => p.remove());
+  joueurs.forEach(j => {
+    const c = document.getElementById(`case-${j.position}`);
+    if (c) {
+      const pion = document.createElement('span');
+      pion.className = 'pion';
+      pion.textContent = j.pion;
+      c.appendChild(pion);
+    }
+    if (j.position === joueurActuel ? true : false) {
+      c && c.classList.add('active-case');
+    }
+  });
+  // Highlight current player's case
+  document.querySelectorAll('.case').forEach(c => c.classList.remove('active-case'));
+  const curr = joueurs[joueurActuel];
+  if (curr) {
+    const c = document.getElementById(`case-${curr.position}`);
+    if (c) c.classList.add('active-case');
+  }
+}
+
+function updatePlayersBar() {
+  const bar = document.getElementById('players-bar');
+  bar.innerHTML = '';
+  joueurs.forEach((j, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'player-chip' + (i === joueurActuel ? ' current' : '');
+    chip.innerHTML = `
+      <div class="pc-name">${j.pion} ${j.nom}</div>
+      <div class="pc-condition">${j.condition.emoji} ${j.condition.nom}</div>
+      <div class="pc-pos">Case ${j.position+1}/40</div>
+      <div class="pc-tokens">🤝 ${j.tokens} jeton${j.tokens>1?'s':''}</div>
+    `;
+    bar.appendChild(chip);
+  });
+}
+
+function updateActionZone() {
+  const az = document.getElementById('action-zone');
+  const j = joueurs[joueurActuel];
+  document.getElementById('turn-label').textContent = `Tour ${tourActuel} · ${j.nom}`;
+  document.getElementById('score-bar').textContent = `🌟 ${scoreTotal} pts`;
+  updatePions();
+
+  if (j.perduTour) {
+    j.perduTour = false;
+    az.innerHTML = `
+      <div class="action-card event">
+        <div class="action-header">
+          <div class="action-icon">😴</div>
+          <div><div class="action-type" style="color:var(--grey)">Tour passé</div>
+          <div class="action-title">${j.nom} passe son tour</div></div>
+        </div>
+        <div class="action-body">Suite à la carte précédente, ${j.nom} doit passer ce tour.</div>
+        <button class="btn-action" onclick="passerAuSuivant()">Tour suivant →</button>
+      </div>`;
+    return;
+  }
+
+  if (!dejaLance) {
+    az.innerHTML = `
+      <div style="background:white;border-radius:20px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,0.1);text-align:center;margin-bottom:12px;">
+        <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--vert);margin-bottom:4px;">C'est ton tour, ${j.nom} !</div>
+        <div style="font-size:0.85rem;color:var(--grey);margin-bottom:12px;">${j.condition.emoji} ${j.condition.nom} — Case ${j.position+1}/40</div>
+        <div class="de-zone">
+          <div class="de" id="de" onclick="lancerDe()">🎲</div>
+          <div class="de-result" id="de-result" class="pulse">Appuie sur le dé !</div>
+        </div>
+      </div>`;
+  }
+}
+
+function lancerDe() {
+  if (dejaLance) return;
+  const de = document.getElementById('de');
+  de.classList.add('rolling');
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  let count = 0;
+  const interval = setInterval(() => {
+    de.textContent = faces[Math.floor(Math.random()*6)];
+    count++;
+    if (count > 10) {
+      clearInterval(interval);
+      de.classList.remove('rolling');
+      const val = Math.floor(Math.random()*6)+1;
+      de.textContent = faces[val-1];
+      document.getElementById('de-result').textContent = `${val} — Tu avances de ${val} case${val>1?'s':''}`;
+      dejaLance = true;
+      setTimeout(() => deplacerJoueur(val), 600);
+    }
+  }, 80);
+}
+
+function deplacerJoueur(val) {
+  const j = joueurs[joueurActuel];
+  j.position = Math.min(j.position + val, 39);
+  updatePions();
+  const type = PLATEAU[j.position];
+
+  if (j.position === 39) {
+    afficherVictoire(j);
+    return;
+  }
+
+  afficherCarte(type, j);
+}
+
+function piocherCarte(type) {
+  const pool = CARTES[type];
+  if (!pool) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function afficherCarte(type, j) {
+  const az = document.getElementById('action-zone');
+  let carte, cardClass, typeLabel, typeColor;
+
+  if (type === 'repos') {
+    az.innerHTML = `
+      <div class="action-card" style="border-left:4px solid #CCC">
+        <div class="action-header">
+          <div class="action-icon">😴</div>
+          <div><div class="action-type" style="color:#888">Case Repos</div>
+          <div class="action-title">Pause bien méritée</div></div>
+        </div>
+        <div class="action-body">Tu tombes sur une case Repos. Ton corps en avait besoin. Tu restes sur cette case.</div>
+        <div class="action-effect effect-neu">😴 Repos — Tu restes sur la case ${j.position+1}</div>
+        <button class="btn-action" onclick="passerAuSuivant()">Tour suivant →</button>
+      </div>`;
+    return;
+  }
+
+  carte = piocherCarte(type);
+  if (!carte) { passerAuSuivant(); return; }
+  cartePiochee = carte;
+
+  const colors = {defi:'var(--rouge)',soutien:'var(--vert2)',event:'var(--bleu)',pathologie:'var(--violet)',bonus:'var(--or)'};
+  const labels = {defi:'⚡ Défi',soutien:'💚 Soutien',event:'🎲 Événement',pathologie:'📚 Le saviez-vous ?',bonus:'⭐ Bonus'};
+  const icons = {defi:'😰',soutien:'🤗',event:'🎭',pathologie:'💡',bonus:'🌟'};
+
+  let effetClass = carte.type === 'pos' ? 'effect-pos' : carte.type === 'neg' ? 'effect-neg' : 'effect-neu';
+
+  let extra = '';
+  if (type === 'defi' && j.tokens > 0) {
+    extra = `<button class="btn-action secondary" onclick="utiliserJeton()" style="margin-bottom:8px;">🤝 Utiliser un jeton soutien (${j.tokens} restant${j.tokens>1?'s':''})</button>`;
+  }
+
+  az.innerHTML = `
+    <div class="action-card ${type}" style="animation:slideUp 0.3s ease">
+      <div class="action-header">
+        <div class="action-icon">${icons[type]}</div>
+        <div>
+          <div class="action-type" style="color:${colors[type]}">${labels[type]}</div>
+          <div class="action-title">${carte.titre}</div>
+        </div>
+      </div>
+      <div class="action-body">${carte.texte}</div>
+      <div class="action-effect ${effetClass}">${carte.effet}</div>
+      ${extra}
+      <button class="btn-action ${type==='soutien'||type==='bonus'?'or':''}" onclick="appliquerCarte()">
+        ${type==='defi'?'😰 Affronter le défi':type==='soutien'?'💚 Profiter du soutien':type==='bonus'?'⭐ Empocher le bonus':'✅ Continuer'}
+      </button>
+    </div>`;
+}
+
+function utiliserJeton() {
+  const j = joueurs[joueurActuel];
+  if (j.tokens > 0 && cartePiochee && cartePiochee.delta < 0) {
+    j.tokens--;
+    cartePiochee.delta = Math.min(cartePiochee.delta + 1, 0);
+    cartePiochee.effet = cartePiochee.effet + ' (jeton utilisé : -1 pénalité)';
+    afficherCarte(PLATEAU[j.position], j);
+  }
+}
+
+function appliquerCarte() {
+  const j = joueurs[joueurActuel];
+  if (!cartePiochee) { passerAuSuivant(); return; }
+
+  const delta = cartePiochee.delta || 0;
+  if (delta !== 0) {
+    j.position = Math.max(0, Math.min(j.position + delta, 39));
+  }
+  if (cartePiochee.pts) {
+    scoreTotal += cartePiochee.pts;
+  }
+  if (cartePiochee.perdu) {
+    j.perduTour = true;
+  }
+
+  updatePions();
+  document.getElementById('score-bar').textContent = `🌟 ${scoreTotal} pts`;
+
+  if (j.position === 39) {
+    afficherVictoire(j);
+    return;
+  }
+
+  cartePiochee = null;
+  const az = document.getElementById('action-zone');
+  az.innerHTML = `
+    <div style="background:white;border-radius:20px;padding:20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+      <div style="font-size:0.9rem;color:var(--grey);margin-bottom:12px;">${j.nom} est maintenant case ${j.position+1}/40</div>
+      <button class="btn-action" onclick="passerAuSuivant()">Tour suivant →</button>
+    </div>`;
+}
+
+function passerAuSuivant() {
+  dejaLance = false;
+  cartePiochee = null;
+  joueurActuel = (joueurActuel + 1) % joueurs.length;
+  if (joueurActuel === 0) tourActuel++;
+  updatePlayersBar();
+  updateActionZone();
+  window.scrollTo(0, 0);
+
+  // Vérifier si tous les joueurs ont gagné
+  if (joueurs.every(j => j.position === 39)) {
+    finDePartie(true);
+  }
+}
+
+function afficherVictoire(j) {
+  const az = document.getElementById('action-zone');
+  const remaining = joueurs.filter(p => p.position < 39);
+  az.innerHTML = `
+    <div class="action-card soutien" style="text-align:center">
+      <div style="font-size:3rem;margin-bottom:8px;">🏆</div>
+      <div class="action-title" style="text-align:center;font-size:1.3rem;">${j.nom} atteint l'ARRIVÉE !</div>
+      <div class="action-body" style="text-align:center;margin:10px 0;">${remaining.length > 0 ? `Il reste ${remaining.length} joueur${remaining.length>1?'s':''} à faire arriver. Continuez à vous entraider !` : 'Tous les joueurs sont arrivés ! Bravo l\'équipe !'}</div>
+      <button class="btn-action or" onclick="${remaining.length > 0 ? 'passerAuSuivant()' : 'finDePartie(true)'}">
+        ${remaining.length > 0 ? 'Continuer pour les autres →' : '🏆 Voir les résultats !'}
+      </button>
+    </div>`;
+}
+
+function finDePartie(victoire) {
+  document.getElementById('end-icon').textContent = victoire ? '🏆' : '💪';
+  document.getElementById('end-title').textContent = victoire ? 'Bravo l\'équipe !' : 'Bien joué !';
+  document.getElementById('end-msg').textContent = victoire
+    ? 'Vous avez traversé ensemble le quotidien avec un handicap invisible. Vous avez appris, partagé, et vous êtes entraidés. C\'est ça, l\'inclusion !'
+    : 'Vous avez découvert les défis du quotidien des personnes avec un handicap invisible. Chaque partie apporte de nouvelles connaissances !';
+
+  const stats = document.getElementById('end-stats');
+  stats.innerHTML = `
+    <div class="end-stat">🏁 <b>${tourActuel}</b> tours joués</div>
+    <div class="end-stat">🌟 <b>${scoreTotal}</b> points bonus accumulés</div>
+    ${joueurs.map(j => `<div class="end-stat">${j.pion} ${j.nom} — ${j.condition.emoji} ${j.condition.nom} — Case <b>${j.position+1}</b>/40</div>`).join('')}
+  `;
+  goScreen('s-end');
+}
+</script>
+</body>
+</html>

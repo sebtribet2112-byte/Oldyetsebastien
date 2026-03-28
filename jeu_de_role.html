@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeu de Rôle – Les Handicaps Invisibles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert:#2d6a4f;--vert2:#52b788;--or:#d4a843;--or2:#f5c842;
+  --rouge:#e63946;--bleu:#118AB2;--violet:#7B5EA7;--orange:#FF8C42;
+  --rose:#E91E8C;--teal:#009688;
+  --bg:#fefae0;--text:#1b2a1b;--grey:#6b7c6b;--soft:#f0faf4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;min-height:100vh;padding-bottom:40px;}
+.screen.active{display:block;}
+
+/* ACCUEIL */
+#s-home{background:linear-gradient(135deg,#1b3a2d,#2d6a4f,#0d2b1f);}
+#s-home.active{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px;}
+.home-title{font-family:'Fredoka One',cursive;font-size:clamp(2rem,8vw,3.2rem);color:var(--or);margin-bottom:4px;}
+.home-sub{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:6px;}
+.home-tagline{color:rgba(255,255,255,0.45);font-style:italic;font-size:0.85rem;margin-bottom:28px;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;width:100%;max-width:500px;margin-bottom:24px;}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr;}}
+.mode-card{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.18);border-radius:18px;padding:20px 12px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.mode-card:hover{background:rgba(255,255,255,0.16);transform:translateY(-4px);border-color:var(--or);}
+.mode-icon{font-size:2.4rem;margin-bottom:6px;}
+.mode-name{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--or);margin-bottom:4px;}
+.mode-desc{font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.4;}
+.btn-rules-home{background:rgba(255,255,255,0.1);color:white;border:2px solid rgba(255,255,255,0.25);padding:10px 28px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.9rem;cursor:pointer;margin-top:8px;}
+
+/* TOPBAR */
+.topbar{background:var(--vert);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.topbar-back{background:none;border:none;color:white;font-size:1.3rem;cursor:pointer;padding:4px;}
+.topbar-title{font-family:'Fredoka One',cursive;color:var(--or);font-size:1.1rem;flex:1;}
+.topbar-badge{background:rgba(255,255,255,0.15);color:white;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:800;white-space:nowrap;}
+
+/* CONFIG */
+.config-wrap{padding:16px;max-width:500px;margin:0 auto;}
+.config-title{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--vert);margin-bottom:4px;}
+.config-sub{font-size:0.85rem;color:var(--grey);margin-bottom:20px;}
+.player-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.player-row{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;}
+.player-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.pa1{background:#FFE8D6;} .pa2{background:#D6EAF8;} .pa3{background:#D5F5E3;} .pa4{background:#FEF9E7;}
+.player-row input{flex:1;border:1.5px solid #d8f3dc;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;background:var(--bg);outline:none;min-width:0;}
+.role-badge{font-size:0.7rem;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap;cursor:pointer;user-select:none;}
+.role-handi{background:#F0EBF8;color:var(--violet);border:1.5px solid var(--violet);}
+.role-entour{background:#EBF5FB;color:var(--bleu);border:1.5px solid var(--bleu);}
+.btn-launch{background:var(--vert);color:white;border:none;padding:14px 40px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 0 #1a3d2d;width:100%;transition:all 0.15s;margin-top:8px;}
+.btn-launch:hover{transform:translateY(-2px);}
+.info-box{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;font-size:0.82rem;color:var(--grey);line-height:1.6;margin-bottom:16px;}
+
+/* JEU */
+.game-wrap{padding:12px;max-width:600px;margin:0 auto;}
+.players-chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;}
+.pchip{background:white;border:2px solid #d8f3dc;border-radius:12px;padding:8px 14px;flex-shrink:0;transition:all 0.3s;cursor:pointer;}
+.pchip.current{box-shadow:0 2px 10px rgba(212,168,67,0.4);}
+.pchip-name{font-size:0.82rem;font-weight:800;}
+.pchip-role{font-size:0.68rem;font-weight:700;}
+.pchip-pts{font-size:0.7rem;color:var(--grey);}
+
+/* CARTE RÔLE */
+.role-card{border-radius:20px;padding:0;margin-bottom:14px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,0.1);animation:slideUp 0.4s ease;}
+.role-card-header{padding:16px 20px 12px;color:white;position:relative;}
+.rc-type{font-size:0.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:4px;}
+.rc-nom{font-family:'Fredoka One',cursive;font-size:1.5rem;margin-bottom:2px;}
+.rc-condition{font-size:0.85rem;opacity:0.85;}
+.role-card-body{background:white;padding:16px 20px;}
+.rc-desc{font-size:0.9rem;color:var(--grey);line-height:1.6;margin-bottom:12px;}
+.rc-objectif{background:var(--soft);border-radius:10px;padding:10px 14px;font-size:0.85rem;margin-bottom:10px;}
+.rc-objectif strong{color:var(--vert);}
+.rc-niveau{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:800;margin-bottom:10px;}
+
+/* SCÉNARIO */
+.scenario-card{background:white;border-radius:18px;padding:18px 20px;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,0,0,0.08);animation:slideUp 0.3s ease;}
+.sc-tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:800;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.sc-lieu{font-size:0.78rem;color:var(--grey);font-weight:700;margin-bottom:6px;}
+.sc-titre{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--text);margin-bottom:8px;}
+.sc-desc{font-size:0.88rem;color:var(--grey);line-height:1.6;margin-bottom:12px;}
+.sc-consignes{border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+.sc-consigne-item{display:flex;gap:8px;margin-bottom:6px;font-size:0.85rem;line-height:1.4;}
+.sc-consigne-item:last-child{margin-bottom:0;}
+.sc-role-icon{flex-shrink:0;font-size:1rem;}
+.timer-zone{display:flex;align-items:center;justify-content:space-between;background:var(--soft);border-radius:10px;padding:10px 14px;margin-bottom:12px;}
+.timer-display{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--vert);}
+.timer-label{font-size:0.75rem;color:var(--grey);font-weight:700;}
+.timer-btns{display:flex;gap:6px;}
+.tbtn{padding:6px 14px;border:none;border-radius:20px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:800;cursor:pointer;}
+.tbtn-start{background:var(--vert2);color:white;}
+.tbtn-stop{background:var(--rouge);color:white;}
+.tbtn-reset{background:#EEE;color:var(--grey);}
+
+/* RÉFLEXION */
+.reflexion-zone{background:linear-gradient(135deg,#1a2440,#2a3a5c);border-radius:16px;padding:16px 18px;margin-bottom:12px;}
+.rz-title{font-family:'Fredoka One',cursive;color:var(--or);font-size:1.1rem;margin-bottom:10px;}
+.rz-question{background:rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:white;font-size:0.85rem;line-height:1.5;margin-bottom:6px;cursor:pointer;transition:all 0.2s;}
+.rz-question:hover{background:rgba(255,255,255,0.18);}
+.rz-question.revealed{background:rgba(212,168,67,0.2);border:1px solid rgba(212,168,67,0.4);}
+.rz-answer{display:none;color:rgba(255,255,255,0.75);font-size:0.8rem;margin-top:4px;padding-left:8px;line-height:1.4;}
+.rz-question.revealed .rz-answer{display:block;}
+
+/* SCORE */
+.score-zone{background:white;border-radius:16px;padding:16px;margin-bottom:12px;border:2px solid #d8f3dc;}
+.sz-title{font-weight:800;color:var(--vert);font-size:0.9rem;margin-bottom:10px;}
+.sz-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:0.85rem;}
+.sz-row:last-child{border:none;}
+.sz-pts{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--or);}
+.pts-btn{background:var(--soft);border:1px solid #d8f3dc;border-radius:20px;padding:4px 10px;font-size:0.75rem;font-weight:800;cursor:pointer;color:var(--vert);}
+.pts-btn:hover{background:var(--vert);color:white;}
+
+/* BOUTONS */
+.btn-primary{background:var(--vert);color:white;border:none;padding:13px 28px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;width:100%;box-shadow:0 4px 0 #1a3d2d;transition:all 0.15s;display:block;margin-bottom:8px;}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-primary.or{background:var(--or);color:var(--text);box-shadow:0 4px 0 #9a7020;}
+.btn-secondary{background:white;color:var(--vert);border:2px solid var(--vert);padding:11px 28px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;width:100%;transition:all 0.15s;display:block;margin-bottom:8px;}
+
+/* FIN */
+#s-end{background:linear-gradient(135deg,#2d6a4f,#0d2b1f);}
+#s-end.active{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px;}
+.end-title{font-family:'Fredoka One',cursive;font-size:2.5rem;color:var(--or);margin:12px 0 6px;}
+.end-sub{color:rgba(255,255,255,0.7);font-size:0.95rem;max-width:380px;line-height:1.7;margin-bottom:24px;}
+.end-podium{background:rgba(255,255,255,0.1);border-radius:16px;padding:16px 24px;margin-bottom:24px;width:100%;max-width:400px;}
+.podium-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);color:white;font-size:0.9rem;}
+.podium-row:last-child{border:none;}
+.podium-row b{color:var(--or2);}
+
+/* RÈGLES */
+#s-rules{background:var(--bg);padding:0;}
+.rules-wrap{max-width:540px;margin:0 auto;padding:16px;}
+.rules-section{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:16px;margin-bottom:12px;}
+.rules-section h3{font-size:0.95rem;font-weight:800;color:var(--vert);margin-bottom:8px;}
+.rules-section p,.rules-section li{font-size:0.85rem;color:var(--grey);line-height:1.7;}
+.rules-section ul{padding-left:18px;}
+
+/* ANIM */
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.pulse{animation:pulse 1s infinite;}
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div class="screen active" id="s-home">
+  <div style="font-size:3.5rem;margin-bottom:10px;animation:bounce 2s infinite;">🎭</div>
+  <div class="home-title">Jeu de Rôle</div>
+  <div class="home-sub">Les Handicaps Invisibles</div>
+  <div class="home-tagline">« Vis de l'intérieur ce que les autres ne voient pas »</div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="goConfig(1)">
+      <div class="mode-icon">🌱</div>
+      <div class="mode-name">6–8 ans</div>
+      <div class="mode-desc">Scénarios simples, émotions, rôles guidés</div>
+    </div>
+    <div class="mode-card" onclick="goConfig(2)">
+      <div class="mode-icon">🌿</div>
+      <div class="mode-name">9–12 ans</div>
+      <div class="mode-desc">Situations du quotidien, compréhension</div>
+    </div>
+    <div class="mode-card" onclick="goConfig(3)">
+      <div class="mode-icon">🌳</div>
+      <div class="mode-name">13 ans +</div>
+      <div class="mode-desc">Cas complexes, droits, discrimination</div>
+    </div>
+  </div>
+  <button class="btn-rules-home" onclick="goRules()">📖 Lire les règles</button>
+  <div style="margin-top:20px;font-size:0.72rem;color:rgba(255,255,255,0.3);">© Les aventures d'Oldy et Sébastien · oldyetsebastien.fr</div>
+</div>
+
+<!-- CONFIG -->
+<div class="screen" id="s-config">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goHome()">←</button>
+    <div class="topbar-title">🎭 Configuration</div>
+    <div class="topbar-badge" id="config-level-badge">Niveau ?</div>
+  </div>
+  <div class="config-wrap">
+    <div class="config-title">Les joueurs</div>
+    <div class="config-sub">2 à 4 joueurs. Cliquez sur le badge pour changer le rôle.</div>
+    <div class="info-box">
+      <strong>🟣 Rôle Handicapé·e</strong> — Tu incarnes une personne avec un handicap invisible.<br>
+      <strong>🔵 Rôle Entourage</strong> — Tu incarnes un ami, enseignant, employeur, médecin ou famille.<br><br>
+      Il faut au moins <strong>1 joueur de chaque type</strong> pour jouer ensemble !
+    </div>
+    <div class="player-rows" id="player-rows"></div>
+    <button class="btn-launch" onclick="launchGame()">🎭 Commencer le jeu de rôle !</button>
+  </div>
+</div>
+
+<!-- JEU -->
+<div class="screen" id="s-game">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goHome()">←</button>
+    <div class="topbar-title" id="game-title-bar">🎭 Jeu de Rôle</div>
+    <div class="topbar-badge" id="game-round-badge">Sc. 1</div>
+  </div>
+  <div class="game-wrap">
+    <div class="players-chips" id="players-chips"></div>
+    <div id="game-content"></div>
+  </div>
+</div>
+
+<!-- FIN -->
+<div class="screen" id="s-end">
+  <div style="font-size:4rem;animation:bounce 1s 3;">🎭</div>
+  <div class="end-title">Bravo !</div>
+  <div class="end-sub" id="end-sub">Vous avez joué ensemble et mieux compris ce que vivent les personnes avec un handicap invisible.</div>
+  <div class="end-podium" id="end-podium"></div>
+  <button class="btn-primary or" onclick="goHome()" style="max-width:300px;">🏠 Retour à l'accueil</button>
+</div>
+
+<!-- RÈGLES -->
+<div class="screen" id="s-rules">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goHome()">←</button>
+    <div class="topbar-title">📖 Règles du jeu</div>
+  </div>
+  <div class="rules-wrap">
+    <div class="rules-section">
+      <h3>🎯 Principe</h3>
+      <p>Chaque joueur reçoit une <strong>fiche de rôle</strong>. Certains incarnent des <strong>personnes avec un handicap invisible</strong>, d'autres incarnent leur <strong>entourage</strong> (ami, enseignant, employeur, médecin…). Ensemble, vous jouez des scénarios de la vie réelle.</p>
+    </div>
+    <div class="rules-section">
+      <h3>🎭 Les rôles</h3>
+      <ul>
+        <li><strong>Rôle Handicapé·e :</strong> Exprimer ce que tu ressens. Défendre tes besoins. Faire comprendre ton handicap invisible sans te justifier.</li>
+        <li><strong>Rôle Entourage :</strong> Réagir naturellement d'abord, puis évoluer vers plus de compréhension et d'empathie.</li>
+      </ul>
+    </div>
+    <div class="rules-section">
+      <h3>⏱️ Un tour de jeu</h3>
+      <ul>
+        <li>Lire le scénario à voix haute</li>
+        <li>Chaque joueur lit sa consigne de rôle (sans la montrer aux autres)</li>
+        <li>Jouer la scène pendant 3 à 5 minutes</li>
+        <li>Discussion guidée : questions de réflexion</li>
+        <li>Attribution des points d'empathie</li>
+      </ul>
+    </div>
+    <div class="rules-section">
+      <h3>🌟 Points d'empathie</h3>
+      <ul>
+        <li>+2 pts : Avoir bien joué son rôle</li>
+        <li>+3 pts : Avoir fait preuve d'empathie remarquable</li>
+        <li>+1 pt : Avoir bien répondu à une question de réflexion</li>
+        <li>Bonus : Avoir partagé une expérience personnelle</li>
+      </ul>
+    </div>
+    <div class="rules-section">
+      <h3>🏆 Victoire</h3>
+      <p>Pas vraiment de gagnant ! Le vrai prix, c'est d'avoir mieux compris ce que vivent les personnes avec un handicap invisible. Les points servent à encourager la participation.</p>
+    </div>
+    <button class="btn-launch" onclick="goHome()" style="margin-top:8px;">← Retour à l'accueil</button>
+  </div>
+</div>
+
+<script>
+// ===== DONNÉES =====
+
+const ROLES_HANDI = {
+  1: [ // 6-8 ans
+    {nom:"Léa",condition:"Dyslexie",emoji:"🧩",couleur:"#7B5EA7",couleurBg:"#F0EBF8",
+     desc:"Tu as 8 ans et tu as du mal à lire. Les lettres se mélangent parfois dans ta tête. Tu travailles très dur mais c'est plus difficile pour toi que pour les autres.",
+     objectif:"Expliquer à ton ami·e pourquoi lire est difficile pour toi, sans te sentir 'nul·le'.",
+     conseil:"Tu peux dire : 'Les lettres bougent dans ma tête, mais je fais des efforts !'"},
+    {nom:"Tom",condition:"TDAH",emoji:"🧠",couleur:"#118AB2",couleurBg:"#EBF5FB",
+     desc:"Tu as 7 ans. Tu as du mal à rester assis longtemps. Ton cerveau pense à plein de choses en même temps. Tu n'es pas méchant, ton cerveau fonctionne juste différemment.",
+     objectif:"Expliquer pourquoi tu bouges beaucoup sans que ce soit un caprice.",
+     conseil:"Tu peux dire : 'Mon cerveau a besoin de bouger pour réfléchir !'"},
+    {nom:"Maya",condition:"Anxiété",emoji:"💙",couleur:"#e63946",couleurBg:"#FEE8EE",
+     desc:"Tu as 8 ans. Chaque matin avant l'école tu as mal au ventre. Tu as peur de beaucoup de choses. Ce n'est pas dans ta tête — c'est une vraie douleur.",
+     objectif:"Expliquer ta peur du matin sans qu'on te dise 'c'est rien'.",
+     conseil:"Tu peux dire : 'J'ai vraiment mal, mon ventre me fait peur le matin.'"},
+    {nom:"Noa",condition:"Dyspraxie",emoji:"🤹",couleur:"#d4a843",couleurBg:"#FFF8E8",
+     desc:"Tu as 7 ans. Tu renverses souvent les choses, tu as du mal à écrire et à t'habiller vite. On dit que tu es maladroit·e mais ce n'est pas un choix.",
+     objectif:"Expliquer que ta maladresse n'est pas exprès.",
+     conseil:"Tu peux dire : 'Mon cerveau a du mal à dire à mes bras quoi faire exactement.'"},
+  ],
+  2: [ // 9-12 ans
+    {nom:"Camille",condition:"Fibromyalgie",emoji:"💜",couleur:"#7B5EA7",couleurBg:"#F0EBF8",
+     desc:"Tu as 12 ans et tu as très mal partout certains jours. Personne ne voit ta douleur mais elle est réelle. Tu dois parfois manquer le sport ou les sorties.",
+     objectif:"Expliquer à ton/ta professeur·e pourquoi tu ne peux pas faire sport aujourd'hui sans qu'il/elle pense que tu mens.",
+     conseil:"Parle de ta fatigue et de ta douleur concrètement. Tu mérites d'être cru·e."},
+    {nom:"Samir",condition:"Épilepsie",emoji:"🔆",couleur:"#FF8C42",couleurBg:"#FFF8F0",
+     desc:"Tu as 11 ans. Tu prends des médicaments chaque jour. Tu peux avoir une crise à tout moment. Tu veux participer à la sortie scolaire mais tes camarades ont peur.",
+     objectif:"Convaincre le groupe que tu peux participer à la sortie en toute sécurité.",
+     conseil:"Explique ce qu'il faut faire en cas de crise. Montrer que tu maîtrises ta situation."},
+    {nom:"Inès",condition:"Diabète",emoji:"🩸",couleur:"#e63946",couleurBg:"#FEE8EE",
+     desc:"Tu as 10 ans. Tu dois mesurer ta glycémie et manger du sucre rapidement parfois. Tes camarades t'accusent d'avoir des privilèges en cours.",
+     objectif:"Expliquer pourquoi tu as le droit de manger en classe sans être 'injuste'.",
+     conseil:"Parle concrètement des dangers d'une hypoglycémie. C'est médical, pas un avantage."},
+    {nom:"Arthur",condition:"TSA / Autisme",emoji:"🌈",couleur:"#52b788",couleurBg:"#E8FDF6",
+     desc:"Tu as 11 ans. Tu as du mal dans les endroits très bruyants. La cantine te fait souffrir. Tu n'es pas asocial·e — tu as juste besoin de moins de stimulations.",
+     objectif:"Demander à manger dans un endroit plus calme sans paraître bizarre.",
+     conseil:"Explique ce que tu ressens physiquement dans les endroits bruyants."},
+  ],
+  3: [ // 13 ans +
+    {nom:"Jade",condition:"Endométriose",emoji:"🌸",couleur:"#E91E8C",couleurBg:"#FCE4EC",
+     desc:"Tu as 16 ans. Tu souffres de douleurs intenses chaque mois. Ton employeur de stage pense que tu exagères quand tu es absente. Tu attends encore un diagnostic officiel.",
+     objectif:"Défendre ton droit à des aménagements sans diagnostic officiel.",
+     conseil:"La douleur n'a pas besoin d'un tampon médical pour être réelle. Défends-toi avec calme et fermeté."},
+    {nom:"Alex",condition:"Dépression sévère",emoji:"🌧️",couleur:"#118AB2",couleurBg:"#EBF5FB",
+     desc:"Tu as 17 ans. Tu passes par une dépression. Certains jours tu ne peux pas te lever. Ta famille dit 'secoue-toi'. Tu dois aussi gérer tes études.",
+     objectif:"Expliquer à ta famille ce que tu vis sans que ce soit réduit à de la paresse.",
+     conseil:"La dépression change la chimie du cerveau. Ce n'est pas un choix. Utilise des mots précis."},
+    {nom:"Sasha",condition:"TDAH adulte",emoji:"🧠",couleur:"#009688",couleurBg:"#E0F2F1",
+     desc:"Tu as 15 ans. Tu as un TDAH diagnostiqué. Ton/ta prof principal·e refuse le tiers-temps 'parce que tu as l'air concentré·e en cours'. Tu as pourtant tous les droits.",
+     objectif:"Faire valoir tes droits légaux face à un·e adulte qui ne croit pas à ton handicap.",
+     conseil:"La loi de 2005 et le PAP sont de ton côté. Connais tes droits et cite-les."},
+    {nom:"Rayan",condition:"Trouble bipolaire",emoji:"🌊",couleur:"#7B5EA7",couleurBg:"#F0EBF8",
+     desc:"Tu as 18 ans. Tu as un trouble bipolaire stabilisé sous traitement. Tu postules à un emploi. L'employeur demande 'avez-vous des problèmes de santé ?'",
+     objectif:"Décider si et comment parler de ton trouble bipolaire en entretien d'embauche.",
+     conseil:"Tu n'es pas obligé·e de tout dire. Mais si tu choisis de le faire, comment le présenter positivement ?"},
+  ]
+};
+
+const ROLES_ENTOUR = {
+  1: [
+    {nom:"Le/la meilleur·e ami·e",role:"Ami·e",emoji:"🤝",couleur:"#52b788",couleurBg:"#E8FDF6",
+     desc:"Tu es l'ami·e de la personne. Au début tu ne comprends pas trop son problème. Puis tu essaies vraiment d'écouter et d'aider.",
+     consigne:"D'abord dis 'mais c'est pas si grave'. Puis écoute vraiment et dis 'je vais t'aider'."},
+    {nom:"Le/la maîtresse",role:"Enseignant·e",emoji:"📚",couleur:"#FF8C42",couleurBg:"#FFF8F0",
+     desc:"Tu es enseignant·e. Tu veux aider mais tu ne sais pas toujours comment. Tu penses parfois que l'élève pourrait 'faire un effort'.",
+     consigne:"D'abord sois un peu perplexe. Puis pose des questions bienveillantes et propose des solutions."},
+    {nom:"Maman / Papa",role:"Parent",emoji:"👨‍👩‍👦",couleur:"#d4a843",couleurBg:"#FFF8E8",
+     desc:"Tu es parent. Tu aimes ton enfant mais tu minimises parfois ses difficultés sans le vouloir.",
+     consigne:"D'abord dis 'tout le monde a ce problème'. Puis réalise que c'est différent pour ton enfant."},
+  ],
+  2: [
+    {nom:"Le/la prof de sport",role:"Enseignant·e",emoji:"🏃",couleur:"#e63946",couleurBg:"#FEE8EE",
+     desc:"Tu es prof de sport. Tu veux que tout le monde participe. Tu penses parfois que les dispenses médicales sont des prétextes.",
+     consigne:"D'abord résiste un peu. Puis essaie de comprendre et propose une alternative."},
+    {nom:"Le/la meilleur·e ami·e",role:"Ami·e",emoji:"🤝",couleur:"#52b788",couleurBg:"#E8FDF6",
+     desc:"Tu es l'ami·e. Tu veux aider mais tu ne sais pas toujours comment sans paraître intrusif·ve.",
+     consigne:"Écoute, propose ton aide sans forcer. Montre que tu crois ce que l'autre dit."},
+    {nom:"Un·e camarade sceptique",role:"Camarade",emoji:"🤨",couleur:"#7B5EA7",couleurBg:"#F0EBF8",
+     desc:"Tu es camarade de classe. Tu penses que l'autre exagère un peu. Tu vas changer d'avis.",
+     consigne:"D'abord dis 'on a tous nos problèmes'. Puis écoute et reconnais que c'est différent."},
+    {nom:"Le/la directeur·rice",role:"Direction",emoji:"🏫",couleur:"#118AB2",couleurBg:"#EBF5FB",
+     desc:"Tu diriges l'école. Tu dois faire respecter les droits de chaque élève tout en gérant les contraintes.",
+     consigne:"Sois bienveillant·e. Propose des aménagements concrets. Montre que la loi protège l'élève."},
+  ],
+  3: [
+    {nom:"Le/la responsable RH",role:"Employeur",emoji:"💼",couleur:"#1b2a1b",couleurBg:"#F5F5F5",
+     desc:"Tu es en charge des ressources humaines. Tu dois équilibrer les besoins de l'entreprise et les droits du salarié.",
+     consigne:"D'abord sois neutre. Pose des questions. Propose des aménagements raisonnables si la personne explique bien."},
+    {nom:"Le/la médecin",role:"Médecin",emoji:"🩺",couleur:"#009688",couleurBg:"#E0F2F1",
+     desc:"Tu es médecin. Tu veux aider mais tu es parfois sceptique face aux symptômes que tu ne vois pas dans les analyses.",
+     consigne:"D'abord doute un peu. Puis pose de vraies questions cliniques et reconnais la réalité des symptômes."},
+    {nom:"Le/la parent",role:"Famille",emoji:"👨‍👩‍👦",couleur:"#d4a843",couleurBg:"#FFF8E8",
+     desc:"Tu es parent d'un·e ado. Tu veux le/la protéger mais tu minimises parfois sa souffrance involontairement.",
+     consigne:"D'abord dis 'tu exagères'. Puis écoute vraiment et reconnaît que tu avais tort."},
+    {nom:"Un·e ami·e bienveillant·e",role:"Ami·e",emoji:"💛",couleur:"#52b788",couleurBg:"#E8FDF6",
+     desc:"Tu es ami·e de la personne depuis longtemps. Tu veux comprendre et aider sans être intrusif·ve.",
+     consigne:"Écoute activement. Pose des questions ouvertes. Offre ton aide concrètement."},
+  ]
+};
+
+const SCENARIOS = {
+  1: [
+    {titre:"La récré du lundi",lieu:"🏫 Cour de récré",tag:"Amitié",tagColor:"#52b788",
+     desc:"Lundi matin. Ton ami·e avec un handicap invisible n'a pas envie de courir avec le groupe. Il/elle semble triste et fatigué·e. Comment la/le retrouves-tu ?",
+     consignes_handi:"Dis comment tu te sens vraiment aujourd'hui. Tu as le droit de ne pas avoir envie.",
+     consignes_entour:"D'abord insiste un peu. Puis écoute et propose de rester assis·e avec lui/elle.",
+     reflexion:[
+       {q:"Pourquoi ton ami·e ne voulait-il/elle pas courir ?",r:"Parce qu'il/elle ne se sentait pas bien à cause de son handicap invisible."},
+       {q:"Qu'est-ce que tu aurais pu faire différemment ?",r:"Écouter avant de insister, et proposer une autre activité plus calme."},
+       {q:"Comment te sentirais-tu si personne ne te croyait quand tu as mal ?",r:"Seul·e, triste et incompris·e. C'est ce que ressent souvent la personne."},
+     ],
+     duree:4},
+    {titre:"La dictée impossible",lieu:"🏫 En classe",tag:"École",tagColor:"#FF8C42",
+     desc:"La maîtresse demande à tout le monde de lire à voix haute. L'élève avec une dyslexie est très anxieux·se. La maîtresse insiste.",
+     consignes_handi:"Explique poliment que c'est difficile pour toi. Tu n'as pas à t'excuser.",
+     consignes_entour:"D'abord insiste doucement. Puis comprends et propose une alternative.",
+     reflexion:[
+       {q:"Pourquoi lire à voix haute était difficile pour cet élève ?",r:"À cause de la dyslexie, les lettres se mélangent. Ce n'est pas un manque de travail."},
+       {q:"Comment la maîtresse aurait pu mieux aider ?",r:"Prévenir à l'avance, proposer de lire à voix basse, ou choisir une autre activité."},
+     ],
+     duree:4},
+    {titre:"L'anniversaire bruyant",lieu:"🎂 Fête d'anniversaire",tag:"Vie sociale",tagColor:"#7B5EA7",
+     desc:"Il y a une fête d'anniversaire avec beaucoup de bruit. L'élève autiste souffre mais ne veut pas gâcher la fête. Son/sa meilleur·e ami·e remarque qu'il/elle est mal.",
+     consignes_handi:"Dis comment tu te sens. Tu n'as pas à souffrir en silence pour faire plaisir aux autres.",
+     consignes_entour:"Remarque la souffrance. Propose d'aller dans un endroit plus calme quelques minutes.",
+     reflexion:[
+       {q:"Pourquoi la fête était difficile pour cet enfant ?",r:"Le bruit et l'agitation font physiquement mal aux personnes avec hypersensibilité sensorielle."},
+       {q:"Qu'est-ce qu'un bon ami fait dans cette situation ?",r:"Il remarque, propose une solution, et ne force pas l'autre à 'tenir bon'."},
+     ],
+     duree:4},
+  ],
+  2: [
+    {titre:"Le cours de sport",lieu:"🏃 Gymnase",tag:"École",tagColor:"#FF8C42",
+     desc:"L'élève avec fibromyalgie ne peut pas faire la course d'aujourd'hui à cause de ses douleurs. Le/la prof de sport pense que c'est un prétexte.",
+     consignes_handi:"Explique tes douleurs sans te justifier excessivement. Tu as le droit de ne pas courir.",
+     consignes_entour:"D'abord sois sceptique. Puis écoute et propose une alternative (arbitre, chrono...).",
+     reflexion:[
+       {q:"Pourquoi l'élève ne pouvait pas courir aujourd'hui ?",r:"La fibromyalgie provoque des douleurs intenses qui varient d'un jour à l'autre."},
+       {q:"Quelle aurait été la bonne réaction du professeur dès le début ?",r:"Croire l'élève sans preuve visible et proposer une participation adaptée."},
+       {q:"Qu'est-ce que ça change pour l'élève d'être cru·e ?",r:"Ça évite l'humiliation et lui permet de participer autrement, sans souffrir inutilement."},
+     ],
+     duree:5},
+    {titre:"La sortie scolaire",lieu:"🚌 Bus scolaire",tag:"Vie sociale",tagColor:"#52b788",
+     desc:"L'élève épileptique veut participer à la sortie au musée. Certains camarades ont peur d'être avec lui/elle en cas de crise.",
+     consignes_handi:"Explique comment se passe une crise et ce qu'il faut faire. Tu n'es pas dangereux·se.",
+     consignes_entour:"D'abord exprime tes peurs. Puis écoute, apprends les bons gestes et accepte.",
+     reflexion:[
+       {q:"Pourquoi les camarades avaient-ils peur ?",r:"Par méconnaissance. L'épilepsie fait peur car elle est mal comprise."},
+       {q:"Qu'est-ce qui change quand on sait quoi faire ?",r:"La peur disparaît. Savoir les gestes de premiers secours rassure tout le monde."},
+       {q:"L'élève avait-il/elle le droit de participer ?",r:"Oui. La loi garantit le droit à la scolarisation même avec un handicap."},
+     ],
+     duree:5},
+    {titre:"La cantine",lieu:"🍽️ Réfectoire",tag:"Quotidien",tagColor:"#7B5EA7",
+     desc:"L'élève autiste souffre du bruit de la cantine. Il/elle demande à la directrice de manger ailleurs. Un camarade pense que c'est injuste.",
+     consignes_handi:"Explique physiquement ce que tu ressens. Ce n'est pas un caprice.",
+     consignes_entour:"Joueur·se Directrice : propose une solution. Joueur·se Camarade : comprends pourquoi c'est différent.",
+     reflexion:[
+       {q:"Pourquoi la cantine était-elle douloureuse ?",r:"L'hypersensibilité sensorielle peut rendre un bruit ordinaire physiquement douloureux."},
+       {q:"Est-ce que manger ailleurs était un 'privilège injuste' ?",r:"Non. C'est un aménagement nécessaire, pas un avantage."},
+     ],
+     duree:5},
+  ],
+  3: [
+    {titre:"L'entretien d'embauche",lieu:"💼 Bureau",tag:"Travail",tagColor:"#1b2a1b",
+     desc:"Un·e candidat·e avec un trouble bipolaire stabilisé passe un entretien. Le/la RH pose des questions sur la santé. La personne doit décider quoi révéler.",
+     consignes_handi:"Tu n'es pas obligé·e de tout dire. Mais tu peux choisir de mentionner le trouble de façon positive.",
+     consignes_entour:"Pose des questions légitimes. Ne discrimine pas. Propose des aménagements si besoin.",
+     reflexion:[
+       {q:"Avait-il/elle l'obligation légale de parler de son trouble ?",r:"Non. En France, on n'est pas obligé de révéler son état de santé à un employeur."},
+       {q:"Quels sont les risques de ne pas en parler ?",r:"Pas d'aménagements possibles. Mais aussi protection contre la discrimination."},
+       {q:"Comment présenter un handicap invisible positivement en entretien ?",r:"Parler de la RQTH, des aménagements demandés, et de ce qu'on apporte malgré les défis."},
+     ],
+     duree:6},
+    {titre:"Le certificat médical refusé",lieu:"🏥 Cabinet médical",tag:"Santé",tagColor:"#009688",
+     desc:"Une personne avec endométriose demande un arrêt de travail ou un aménagement. Le médecin dit qu'il ne voit rien dans les analyses et remet en doute la douleur.",
+     consignes_handi:"Défends ta douleur avec des mots précis. Tu n'as pas à prouver ce que tu ressens.",
+     consignes_entour:"D'abord sois cliniquement sceptique. Puis écoute vraiment et reconnaît la réalité de la douleur.",
+     reflexion:[
+       {q:"Pourquoi le médecin était-il sceptique ?",r:"L'endométriose et d'autres maladies ne se voient pas dans les analyses classiques."},
+       {q:"Qu'est-ce que l'errance diagnostique ?",r:"Des années de consultations sans diagnostic. En moyenne 7 ans pour l'endométriose en France."},
+       {q:"Que peut faire la personne si le médecin la refuse ?",r:"Consulter un autre médecin, contacter la MDPH, ou demander un spécialiste."},
+     ],
+     duree:6},
+    {titre:"Le tiers-temps refusé",lieu:"📚 Établissement scolaire",tag:"Droits",tagColor:"#118AB2",
+     desc:"Un·e élève avec TDAH diagnostiqué demande le tiers-temps légal. Le/la prof principal·e refuse car 'l'élève a l'air concentré·e en cours'.",
+     consignes_handi:"Connais tes droits légaux. Cite la loi de 2005 et le PAP. Sois calme et ferme.",
+     consignes_entour:"D'abord résiste. Puis écoute les arguments légaux et reconnais l'erreur.",
+     reflexion:[
+       {q:"Quel est le droit légal de cet·te élève ?",r:"La loi de 2005 garantit des aménagements scolaires. Le PAP est établi par la MDPH."},
+       {q:"Pourquoi le/la prof refusait-il/elle ?",r:"Méconnaissance du handicap invisible. L'élève 'a l'air bien' donc paraît ne pas en avoir besoin."},
+       {q:"Comment faire valoir ses droits face à un adulte qui refuse ?",r:"Citer la loi, impliquer les parents, contacter le chef d'établissement ou la MDPH."},
+     ],
+     duree:6},
+    {titre:"La conversation familiale",lieu:"🏠 Maison",tag:"Famille",tagColor:"#d4a843",
+     desc:"Un·e ado dépressif·ve essaie d'expliquer à ses parents pourquoi il/elle ne peut pas 'juste se secouer'. Les parents pensent qu'il/elle est paresseux·se.",
+     consignes_handi:"Explique la dépression comme une maladie neurologique. Ce n'est pas de la faiblesse.",
+     consignes_entour:"D'abord minimise. Puis écoute vraiment, reconnaît ton erreur et propose ton soutien.",
+     reflexion:[
+       {q:"Pourquoi 'se secouer' ne fonctionne pas avec la dépression ?",r:"La dépression modifie la chimie du cerveau. Ce n'est pas un manque de volonté."},
+       {q:"Qu'est-ce qui aide vraiment une personne dépressive ?",r:"Être écouté·e, cru·e, accompagné·e vers un professionnel, et ne pas se sentir jugé·e."},
+       {q:"Qu'est-ce que les parents auraient pu dire différemment ?",r:"'Je vois que tu souffres, comment puis-je t'aider ?' plutôt que 'fais un effort'."},
+     ],
+     duree:6},
+  ]
+};
+
+// ===== ÉTAT =====
+let currentLevel = 1;
+let joueurs = [];
+let scenarioIdx = 0;
+let scores = {};
+let timerVal = 0;
+let timerRunning = false;
+let timerInt = null;
+let currentScenarios = [];
+
+// ===== NAVIGATION =====
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function goHome() {
+  clearInterval(timerInt);
+  goScreen('s-home');
+}
+function goRules() { goScreen('s-rules'); }
+
+// ===== CONFIG =====
+function goConfig(level) {
+  currentLevel = level;
+  const lvlNames = {1:'🌱 6–8 ans', 2:'🌿 9–12 ans', 3:'🌳 13 ans +'};
+  document.getElementById('config-level-badge').textContent = lvlNames[level];
+  buildPlayerRows();
+  goScreen('s-config');
+}
+
+function buildPlayerRows() {
+  const wrap = document.getElementById('player-rows');
+  wrap.innerHTML = '';
+  const avs = ['🧒','👦','🧑','👧'];
+  const pas = ['pa1','pa2','pa3','pa4'];
+  const roleDefaults = ['handi','entour','handi','entour'];
+  for (let i=0; i<4; i++) {
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `
+      <div class="player-avatar ${pas[i]}">${avs[i]}</div>
+      <input type="text" id="pname${i}" placeholder="Joueur ${i+1}${i>=2?' (optionnel)':''}" maxlength="14"/>
+      <span class="role-badge role-${roleDefaults[i]}" id="prole${i}" onclick="toggleRole(${i})">${roleDefaults[i]==='handi'?'🟣 Handicapé·e':'🔵 Entourage'}</span>`;
+    wrap.appendChild(row);
+  }
+}
+
+function toggleRole(i) {
+  const badge = document.getElementById('prole'+i);
+  if (badge.classList.contains('role-handi')) {
+    badge.classList.replace('role-handi','role-entour');
+    badge.textContent = '🔵 Entourage';
+  } else {
+    badge.classList.replace('role-entour','role-handi');
+    badge.textContent = '🟣 Handicapé·e';
+  }
+}
+
+function launchGame() {
+  joueurs = [];
+  const handiRoles = shuffle([...ROLES_HANDI[currentLevel]]);
+  const entourRoles = shuffle([...ROLES_ENTOUR[currentLevel]]);
+  let hIdx=0, eIdx=0;
+  const avEmojis = ['🧒','👦','🧑','👧'];
+  const avColors = ['#FFE8D6','#D6EAF8','#D5F5E3','#FEF9E7'];
+
+  for (let i=0; i<4; i++) {
+    const nom = document.getElementById('pname'+i).value.trim();
+    if (!nom && i>=2) continue;
+    const roleType = document.getElementById('prole'+i).classList.contains('role-handi') ? 'handi' : 'entour';
+    let roleData;
+    if (roleType === 'handi') {
+      roleData = handiRoles[hIdx % handiRoles.length]; hIdx++;
+    } else {
+      roleData = entourRoles[eIdx % entourRoles.length]; eIdx++;
+    }
+    joueurs.push({
+      nom: nom || `Joueur ${i+1}`,
+      type: roleType,
+      role: roleData,
+      avatar: avEmojis[i],
+      avatarBg: avColors[i],
+    });
+    scores[i] = 0;
+  }
+
+  currentScenarios = shuffle([...SCENARIOS[currentLevel]]);
+  scenarioIdx = 0;
+  goScreen('s-game');
+  renderGame();
+}
+
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ===== RENDU JEU =====
+function renderGame() {
+  updateChips();
+  const sc = currentScenarios[scenarioIdx];
+  if (!sc) { showEnd(); return; }
+  document.getElementById('game-round-badge').textContent = `Sc. ${scenarioIdx+1}/${currentScenarios.length}`;
+  document.getElementById('game-title-bar').textContent = '🎭 ' + sc.titre;
+  showScenarioPhase(sc);
+}
+
+function updateChips() {
+  const bar = document.getElementById('players-chips');
+  bar.innerHTML = '';
+  joueurs.forEach((j, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'pchip';
+    chip.style.borderColor = j.role.couleur;
+    chip.innerHTML = `
+      <div class="pchip-name" style="color:${j.role.couleur}">${j.avatar} ${j.nom}</div>
+      <div class="pchip-role">${j.type==='handi'?'🟣':'🔵'} ${j.role.role||j.role.nom}</div>
+      <div class="pchip-pts">🌟 ${scores[i]} pts</div>`;
+    bar.appendChild(chip);
+  });
+}
+
+function showScenarioPhase(sc) {
+  timerVal = sc.duree * 60; timerRunning = false; clearInterval(timerInt);
+  const content = document.getElementById('game-content');
+  content.innerHTML = `
+    <div class="scenario-card">
+      <span class="sc-tag" style="background:${sc.tagColor}20;color:${sc.tagColor};">${sc.tag}</span>
+      <div class="sc-lieu">${sc.lieu}</div>
+      <div class="sc-titre">${sc.titre}</div>
+      <div class="sc-desc">${sc.desc}</div>
+      <div class="sc-consignes" style="background:var(--soft);border:1.5px solid #d8f3dc;">
+        <div style="font-weight:800;font-size:0.82rem;color:var(--vert);margin-bottom:8px;">📋 Consignes par rôle :</div>
+        ${joueurs.map(j=>`
+          <div class="sc-consigne-item">
+            <span class="sc-role-icon">${j.type==='handi'?'🟣':'🔵'}</span>
+            <span><strong>${j.nom}</strong> (${j.role.condition||j.role.role}) — ${j.type==='handi'?sc.consignes_handi:sc.consignes_entour}</span>
+          </div>`).join('')}
+      </div>
+      <div class="timer-zone">
+        <div>
+          <div class="timer-label">⏱️ Durée de la scène</div>
+          <div class="timer-display" id="timer-disp">${sc.duree}:00</div>
+        </div>
+        <div class="timer-btns">
+          <button class="tbtn tbtn-start" onclick="startTimer()">▶ Start</button>
+          <button class="tbtn tbtn-stop" onclick="stopTimer()">⏸ Stop</button>
+          <button class="tbtn tbtn-reset" onclick="resetTimer(${sc.duree})">↺</button>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showReflexion()">💬 Discussion → Questions</button>
+    </div>`;
+
+  // Fiches de rôle individuelles
+  joueurs.forEach((j, i) => {
+    const card = document.createElement('div');
+    card.className = 'role-card';
+    card.innerHTML = `
+      <div class="role-card-header" style="background:${j.role.couleur};">
+        <div class="rc-type">${j.type==='handi'?'🟣 Rôle — Personne avec handicap invisible':'🔵 Rôle — Entourage'}</div>
+        <div class="rc-nom">${j.role.emoji||''} ${j.nom} joue : ${j.role.nom||j.role.role}</div>
+        <div class="rc-condition">${j.role.condition||j.role.role}</div>
+      </div>
+      <div class="role-card-body">
+        <div class="rc-desc">${j.role.desc}</div>
+        <div class="rc-objectif"><strong>🎯 Objectif :</strong> ${j.role.objectif||j.role.consigne}</div>
+        ${j.role.conseil?`<div style="background:#FFF8E8;border-radius:8px;padding:8px 12px;font-size:0.8rem;color:var(--grey);"><strong>💡 Conseil :</strong> ${j.role.conseil}</div>`:''}
+      </div>`;
+    content.appendChild(card);
+  });
+}
+
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInt = setInterval(() => {
+    timerVal--;
+    if (timerVal <= 0) { timerVal=0; stopTimer(); }
+    const m = Math.floor(timerVal/60), s = timerVal%60;
+    const el = document.getElementById('timer-disp');
+    if (el) el.textContent = `${m}:${s<10?'0':''}${s}`;
+    if (timerVal<=30 && el) el.style.color='var(--rouge)';
+  }, 1000);
+}
+function stopTimer() { timerRunning=false; clearInterval(timerInt); }
+function resetTimer(duree) {
+  stopTimer(); timerVal=duree*60;
+  const el=document.getElementById('timer-disp');
+  if(el){el.textContent=`${duree}:00`;el.style.color='var(--vert)';}
+}
+
+function showReflexion() {
+  const sc = currentScenarios[scenarioIdx];
+  const content = document.getElementById('game-content');
+  let questionsHTML = sc.reflexion.map((q,i)=>`
+    <div class="rz-question" onclick="revealAnswer(this)">
+      ❓ ${q.q}
+      <div class="rz-answer">💡 ${q.r}</div>
+    </div>`).join('');
+
+  content.innerHTML = `
+    <div class="reflexion-zone">
+      <div class="rz-title">💬 Questions de réflexion — ${sc.titre}</div>
+      ${questionsHTML}
+    </div>
+    <div class="score-zone">
+      <div class="sz-title">🌟 Points d'empathie — Attribuez les points</div>
+      ${joueurs.map((j,i)=>`
+        <div class="sz-row">
+          <span>${j.avatar} ${j.nom}</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="sz-pts" id="spts${i}">${scores[i]}</span>
+            <button class="pts-btn" onclick="addPts(${i},1)">+1</button>
+            <button class="pts-btn" onclick="addPts(${i},2)">+2</button>
+            <button class="pts-btn" onclick="addPts(${i},3)">+3</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="btn-primary or" onclick="nextScenario()">
+      ${scenarioIdx < currentScenarios.length-1 ? '🎭 Scénario suivant →' : '🏆 Voir les résultats !'}
+    </button>`;
+  updateChips();
+}
+
+function revealAnswer(el) { el.classList.toggle('revealed'); }
+
+function addPts(i, pts) {
+  scores[i] += pts;
+  document.getElementById('spts'+i).textContent = scores[i];
+  updateChips();
+}
+
+function nextScenario() {
+  scenarioIdx++;
+  if (scenarioIdx >= currentScenarios.length) { showEnd(); return; }
+  renderGame();
+}
+
+function showEnd() {
+  clearInterval(timerInt);
+  const sorted = joueurs.map((j,i)=>({...j, pts:scores[i], idx:i})).sort((a,b)=>b.pts-a.pts);
+  const medals = ['🥇','🥈','🥉','🎖️'];
+  document.getElementById('end-podium').innerHTML =
+    '<div style="font-weight:800;color:rgba(255,255,255,0.6);font-size:0.8rem;margin-bottom:10px;">Points d\'empathie :</div>' +
+    sorted.map((j,i)=>`<div class="podium-row">${medals[i]} ${j.avatar} ${j.nom} <b>${j.pts} pts</b></div>`).join('');
+  document.getElementById('end-sub').textContent =
+    `Vous avez joué ${currentScenarios.length} scénario${currentScenarios.length>1?'s':''} ensemble. Vous comprenez mieux maintenant ce que vivent les personnes avec un handicap invisible. C'est ça, l'inclusion ! 🐾`;
+  goScreen('s-end');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory & Loto – Les Handicaps Invisibles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert: #2d6a4f; --vert2: #52b788; --or: #d4a843; --or2: #f5c842;
+  --rouge: #e63946; --bleu: #118AB2; --violet: #7B5EA7; --orange: #FF8C42;
+  --bg: #fefae0; --text: #1b2a1b; --grey: #6b7c6b; --soft: #f0faf4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ÉCRANS */
+.screen { display: none; min-height: 100vh; padding-bottom: 30px; }
+.screen.active { display: block; }
+
+/* ACCUEIL */
+#s-home {
+  background: linear-gradient(135deg, #1b3a2d, #2d6a4f, #0d2b1f);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 30px 20px;
+}
+#s-home.active { display: flex; }
+.home-title { font-family: 'Fredoka One', cursive; font-size: clamp(2rem,8vw,3.2rem); color: var(--or); margin-bottom: 4px; }
+.home-sub { color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 28px; }
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 440px; margin-bottom: 24px; }
+.mode-card { background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 22px 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
+.mode-card:hover { background: rgba(255,255,255,0.16); transform: translateY(-4px); border-color: var(--or); }
+.mode-icon { font-size: 2.8rem; margin-bottom: 8px; }
+.mode-name { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--or); margin-bottom: 4px; }
+.mode-desc { font-size: 0.78rem; color: rgba(255,255,255,0.6); line-height: 1.4; }
+.footer-home { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 16px; }
+
+/* TOPBAR */
+.topbar { background: var(--vert); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 50; }
+.topbar-back { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; padding: 4px; }
+.topbar-title { font-family: 'Fredoka One', cursive; color: var(--or); font-size: 1.1rem; flex: 1; }
+.topbar-info { background: rgba(255,255,255,0.15); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
+
+/* ===== MEMORY ===== */
+.memory-wrap { padding: 12px; max-width: 700px; margin: 0 auto; }
+.memory-stats { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.mstat { background: white; border: 2px solid #d8f3dc; border-radius: 12px; padding: 8px 14px; text-align: center; flex: 1; min-width: 70px; }
+.mstat b { display: block; font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--vert); }
+.mstat span { font-size: 0.7rem; color: var(--grey); font-weight: 700; text-transform: uppercase; }
+.memory-level-btns { display: flex; gap: 8px; margin-bottom: 14px; }
+.mlvl { flex: 1; padding: 8px; border: 2px solid #d8f3dc; background: white; border-radius: 12px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: var(--grey); }
+.mlvl.active { background: var(--vert); color: white; border-color: var(--vert); }
+.memory-grid { display: grid; gap: 8px; }
+.memory-grid.g12 { grid-template-columns: repeat(4,1fr); }
+.memory-grid.g20 { grid-template-columns: repeat(5,1fr); }
+.memory-grid.g30 { grid-template-columns: repeat(6,1fr); }
+
+.mcard {
+  aspect-ratio: 3/4; border-radius: 12px; cursor: pointer;
+  position: relative; transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+.mcard.flipped { transform: rotateY(180deg); }
+.mcard.matched { transform: rotateY(180deg); cursor: default; }
+.mcard-front, .mcard-back {
+  position: absolute; inset: 0; border-radius: 12px;
+  backface-visibility: hidden; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 6px;
+}
+.mcard-front {
+  background: linear-gradient(135deg, var(--vert), var(--vert2));
+  border: 2px solid var(--vert2);
+}
+.mcard-front-icon { font-size: 1.6rem; color: rgba(255,255,255,0.4); }
+.mcard-back { background: white; border: 2px solid #d8f3dc; transform: rotateY(180deg); }
+.mcard.matched .mcard-back { background: #E8FDF6; border-color: var(--vert2); }
+.mcard-emoji { font-size: clamp(1rem, 4vw, 1.8rem); margin-bottom: 4px; }
+.mcard-label { font-size: clamp(0.55rem, 1.5vw, 0.72rem); font-weight: 800; color: var(--text); text-align: center; line-height: 1.2; }
+.mcard-type { font-size: 0.55rem; color: var(--grey); margin-top: 2px; text-align: center; }
+.mcard-back.type-image { background: #FFF8F0; border-color: var(--orange); }
+.mcard-back.type-text { background: #EBF5FB; border-color: var(--bleu); }
+
+/* MEMORY WIN */
+.memory-win { background: linear-gradient(135deg, var(--vert), #0d2b1f); border-radius: 20px; padding: 28px; text-align: center; margin: 16px; animation: popIn 0.5s ease; }
+.win-icon { font-size: 4rem; }
+.win-title { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--or); margin: 8px 0; }
+.win-msg { color: rgba(255,255,255,0.8); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6; }
+.win-score { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--or2); margin-bottom: 16px; }
+.btn-replay { background: var(--or); color: var(--text); border: none; padding: 13px 32px; border-radius: 50px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 0 #9a7020; margin: 4px; }
+.btn-home2 { background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.3); padding: 11px 28px; border-radius: 50px; font-family: 'Fredoka One', cursive; font-size: 1rem; cursor: pointer; margin: 4px; }
+
+/* ===== LOTO ===== */
+.loto-wrap { padding: 12px; max-width: 700px; margin: 0 auto; }
+.loto-top { display: flex; gap: 8px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+.loto-players { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; }
+.loto-player-tab { background: white; border: 2px solid #d8f3dc; border-radius: 12px; padding: 8px 16px; font-weight: 800; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+.loto-player-tab.active { background: var(--vert); color: white; border-color: var(--vert); }
+.loto-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; margin-bottom: 14px; }
+.lcase {
+  aspect-ratio: 1; border-radius: 10px; background: white; border: 2px solid #d8f3dc;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; padding: 4px; text-align: center;
+}
+.lcase:hover { border-color: var(--or); background: #FFF8F0; }
+.lcase.checked { background: var(--vert); border-color: var(--vert); }
+.lcase.checked .lcase-emoji { filter: grayscale(0); }
+.lcase.checked .lcase-label { color: white; }
+.lcase-emoji { font-size: clamp(1rem, 3vw, 1.4rem); margin-bottom: 2px; }
+.lcase-label { font-size: clamp(0.48rem, 1.2vw, 0.62rem); font-weight: 800; color: var(--text); line-height: 1.2; }
+.lcase-check { font-size: 1.2rem; display: none; }
+.lcase.checked .lcase-check { display: block; }
+.lcase.checked .lcase-emoji { display: none; }
+.lcase.checked .lcase-label { font-size: 0.6rem; }
+
+/* Tirage */
+.tirage-zone { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 2px solid #d8f3dc; }
+.tirage-title { font-weight: 800; color: var(--vert); font-size: 0.9rem; margin-bottom: 10px; }
+.tirage-card { background: linear-gradient(135deg, var(--vert), var(--vert2)); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 10px; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.tirage-emoji { font-size: 2.5rem; }
+.tirage-nom { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: white; margin-top: 4px; }
+.tirage-desc { font-size: 0.78rem; color: rgba(255,255,255,0.75); margin-top: 2px; }
+.btn-tirer { background: var(--or); color: var(--text); border: none; padding: 12px 28px; border-radius: 50px; font-family: 'Fredoka One', cursive; font-size: 1rem; cursor: pointer; box-shadow: 0 3px 0 #9a7020; width: 100%; transition: all 0.15s; }
+.btn-tirer:hover { transform: translateY(-2px); }
+.btn-tirer:disabled { opacity: 0.5; cursor: default; transform: none; }
+.historique { display: flex; flex-wrap: wrap; gap: 4px; max-height: 80px; overflow-y: auto; }
+.histo-tag { background: var(--soft); border: 1px solid #d8f3dc; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; font-weight: 700; color: var(--grey); }
+
+/* LOTO WIN */
+.loto-win { background: linear-gradient(135deg, var(--or), #f5c842); border-radius: 20px; padding: 24px; text-align: center; margin: 12px; animation: popIn 0.5s ease; }
+.loto-win-title { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--text); margin: 8px 0; }
+
+/* ANIMATIONS */
+@keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.bounce { animation: bounce 0.4s ease; }
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div class="screen active" id="s-home">
+  <div style="font-size:3.5rem;margin-bottom:8px;animation:bounce 2s infinite;">🐾</div>
+  <div class="home-title">Memory & Loto</div>
+  <div class="home-sub">Les Handicaps Invisibles — Oldy & Sébastien</div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="startMemory()">
+      <div class="mode-icon">🃏</div>
+      <div class="mode-name">Memory</div>
+      <div class="mode-desc">Retourne les cartes et trouve les paires ! Nom + description à associer.</div>
+    </div>
+    <div class="mode-card" onclick="startLoto()">
+      <div class="mode-icon">🎯</div>
+      <div class="mode-name">Loto</div>
+      <div class="mode-desc">Coche ta grille quand le tirage affiche une pathologie ! 1 à 4 joueurs.</div>
+    </div>
+  </div>
+  <div class="footer-home">© Les aventures d'Oldy et Sébastien · oldyetsebastien.fr</div>
+</div>
+
+<!-- MEMORY -->
+<div class="screen" id="s-memory">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goHome()">←</button>
+    <div class="topbar-title">🃏 Memory — Handicaps Invisibles</div>
+    <div class="topbar-info" id="m-timer">0s</div>
+  </div>
+  <div class="memory-wrap">
+    <div class="memory-stats">
+      <div class="mstat"><b id="m-pairs">0</b><span>Paires</span></div>
+      <div class="mstat"><b id="m-total">0</b><span>Total</span></div>
+      <div class="mstat"><b id="m-moves">0</b><span>Essais</span></div>
+      <div class="mstat"><b id="m-best">–</b><span>Meilleur</span></div>
+    </div>
+    <div class="memory-level-btns">
+      <button class="mlvl active" onclick="setLevel(6)" id="lvl-6">🌱 Facile (6 paires)</button>
+      <button class="mlvl" onclick="setLevel(10)" id="lvl-10">🌿 Moyen (10 paires)</button>
+      <button class="mlvl" onclick="setLevel(15)" id="lvl-15">🌳 Difficile (15 paires)</button>
+    </div>
+    <div class="memory-grid g12" id="memory-grid"></div>
+    <div id="memory-win" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- LOTO -->
+<div class="screen" id="s-loto">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goHome()">←</button>
+    <div class="topbar-title">🎯 Loto — Handicaps Invisibles</div>
+    <div class="topbar-info" id="loto-restant">36 restants</div>
+  </div>
+  <div class="loto-wrap">
+    <div class="loto-players" id="loto-players"></div>
+    <div class="tirage-zone">
+      <div class="tirage-title">🎲 Tirage en cours</div>
+      <div class="tirage-card" id="tirage-card">
+        <div class="tirage-emoji">🎲</div>
+        <div class="tirage-nom">Appuie sur le bouton !</div>
+        <div class="tirage-desc">Chaque joueur coche si sa grille contient la pathologie tirée</div>
+      </div>
+      <button class="btn-tirer" id="btn-tirer" onclick="tirer()">🎲 Tirer une pathologie</button>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:6px;">📋 Grille de <span id="grille-player-name">Joueur 1</span></div>
+      <div class="loto-grid" id="loto-grid"></div>
+    </div>
+    <div style="background:white;border-radius:14px;padding:12px;border:2px solid #d8f3dc;">
+      <div style="font-weight:800;font-size:0.8rem;color:var(--grey);margin-bottom:6px;">Tirages précédents :</div>
+      <div class="historique" id="historique"></div>
+    </div>
+    <div id="loto-win" style="display:none;margin-top:12px;"></div>
+  </div>
+</div>
+
+<script>
+// ===== DONNÉES =====
+const PATHOLOGIES = [
+  {nom:"Dyslexie", emoji:"🧩", desc:"Trouble de la lecture neurologique", cat:"DYS"},
+  {nom:"TDAH", emoji:"🧠", desc:"Trouble de l'attention et concentration", cat:"Neurodév."},
+  {nom:"Dyspraxie", emoji:"🤹", desc:"Trouble de la coordination des gestes", cat:"DYS"},
+  {nom:"Dyscalculie", emoji:"🔢", desc:"Trouble du traitement des chiffres", cat:"DYS"},
+  {nom:"Dysorthographie", emoji:"📝", desc:"Trouble de l'orthographe neurologique", cat:"DYS"},
+  {nom:"Dysphasie", emoji:"💬", desc:"Trouble du langage oral", cat:"DYS"},
+  {nom:"Dysgraphie", emoji:"✏️", desc:"Trouble de l'écriture manuelle", cat:"DYS"},
+  {nom:"TSA / Autisme", emoji:"🌈", desc:"Fonctionnement neurologique différent", cat:"Neurodév."},
+  {nom:"HPI", emoji:"💡", desc:"Haut Potentiel Intellectuel avec souffrance", cat:"Neurodév."},
+  {nom:"Dépression", emoji:"🌧️", desc:"Maladie neurologique de l'humeur", cat:"Psy"},
+  {nom:"Anxiété", emoji:"💙", desc:"Trouble anxieux généralisé", cat:"Psy"},
+  {nom:"Trouble bipolaire", emoji:"🌊", desc:"Alternance manie / dépression", cat:"Psy"},
+  {nom:"TOC", emoji:"🔄", desc:"Pensées intrusives et rituels compulsifs", cat:"Psy"},
+  {nom:"TSPT", emoji:"🕊️", desc:"Stress post-traumatique", cat:"Psy"},
+  {nom:"Schizophrénie", emoji:"💜", desc:"Perturbation de la perception de réalité", cat:"Psy"},
+  {nom:"Fibromyalgie", emoji:"💜", desc:"Douleurs chroniques invisibles", cat:"Chronique"},
+  {nom:"Fatigue chronique", emoji:"😴", desc:"Épuisement permanent non réparé par le repos", cat:"Chronique"},
+  {nom:"Endométriose", emoji:"🌸", desc:"Douleurs gynécologiques chroniques", cat:"Chronique"},
+  {nom:"Diabète", emoji:"🩸", desc:"Maladie métabolique chronique", cat:"Chronique"},
+  {nom:"Épilepsie", emoji:"🔆", desc:"Crises neurologiques imprévisibles", cat:"Chronique"},
+  {nom:"SEP", emoji:"⚡", desc:"Sclérose en plaques — symptômes variables", cat:"Chronique"},
+  {nom:"Lupus", emoji:"🦋", desc:"Maladie auto-immune systémique", cat:"Chronique"},
+  {nom:"Polyarthrite", emoji:"🦴", desc:"Inflammation chronique des articulations", cat:"Chronique"},
+  {nom:"Crohn / MICI", emoji:"🤎", desc:"Inflammation chronique de l'intestin", cat:"Chronique"},
+  {nom:"Mucoviscidose", emoji:"💚", desc:"Maladie génétique des poumons", cat:"Génétique"},
+  {nom:"Drépanocytose", emoji:"❤️", desc:"Maladie génétique du sang", cat:"Génétique"},
+  {nom:"Hémophilie", emoji:"🩹", desc:"Trouble de la coagulation sanguine", cat:"Génétique"},
+  {nom:"Ehlers-Danlos", emoji:"🫀", desc:"Hypermobilité articulaire douloureuse", cat:"Génétique"},
+  {nom:"Acouphènes", emoji:"👂", desc:"Bruit permanent dans les oreilles", cat:"Sensoriel"},
+  {nom:"Malvoyance", emoji:"👁️", desc:"Basse vision sans cécité totale", cat:"Sensoriel"},
+  {nom:"Asthme sévère", emoji:"🌬️", desc:"Difficultés respiratoires chroniques", cat:"Respiratoire"},
+  {nom:"Apnée du sommeil", emoji:"😮‍💨", desc:"Arrêts respiratoires nocturnes", cat:"Respiratoire"},
+  {nom:"Cancer (séquelles)", emoji:"🎗️", desc:"Fatigue et séquelles post-traitement", cat:"Oncologie"},
+  {nom:"AVC (séquelles)", emoji:"🧠", desc:"Séquelles cognitives et fatigue cérébrale", cat:"Vasculaire"},
+  {nom:"Anévrisme", emoji:"🫀", desc:"Séquelles de rupture d'anévrisme cérébral", cat:"Vasculaire"},
+  {nom:"VIH", emoji:"❤️‍🩹", desc:"Infection chronique — traitements efficaces", cat:"Infectieux"},
+];
+
+// ===== UTILS =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function goHome() {
+  clearInterval(timerInterval);
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-home').classList.add('active');
+}
+
+// ===== MEMORY =====
+let mLevel = 6;
+let mFlipped = [], mMatched = 0, mMoves = 0, mLock = false;
+let mTimer = 0, timerInterval = null;
+let mBest = {};
+
+function startMemory() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-memory').classList.add('active');
+  initMemory();
+}
+
+function setLevel(n) {
+  mLevel = n;
+  document.querySelectorAll('.mlvl').forEach(b => b.classList.remove('active'));
+  document.getElementById('lvl-'+n).classList.add('active');
+  initMemory();
+}
+
+function initMemory() {
+  clearInterval(timerInterval);
+  mTimer = 0; mMoves = 0; mMatched = 0; mFlipped = []; mLock = false;
+  document.getElementById('m-moves').textContent = 0;
+  document.getElementById('m-pairs').textContent = 0;
+  document.getElementById('m-total').textContent = mLevel;
+  document.getElementById('m-timer').textContent = '0s';
+  document.getElementById('m-best').textContent = mBest[mLevel] ? mBest[mLevel]+'s' : '–';
+  document.getElementById('memory-win').style.display = 'none';
+
+  const grid = document.getElementById('memory-grid');
+  grid.className = 'memory-grid ' + (mLevel===6?'g12':mLevel===10?'g20':'g30');
+
+  const selected = shuffle(PATHOLOGIES).slice(0, mLevel);
+  // Create pairs: one "image" card (emoji) and one "text" card (description)
+  let cards = [];
+  selected.forEach((p, i) => {
+    cards.push({id: i, type:'emoji', data: p, pairId: i});
+    cards.push({id: i+mLevel, type:'text', data: p, pairId: i});
+  });
+  cards = shuffle(cards);
+
+  grid.innerHTML = '';
+  cards.forEach((card, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mcard';
+    div.dataset.pairid = card.pairId;
+    div.dataset.idx = idx;
+    div.innerHTML = `
+      <div class="mcard-front"><div class="mcard-front-icon">🐾</div></div>
+      <div class="mcard-back type-${card.type}">
+        <div class="mcard-emoji">${card.type==='emoji' ? card.data.emoji : '📖'}</div>
+        <div class="mcard-label">${card.type==='emoji' ? card.data.nom : card.data.desc}</div>
+        <div class="mcard-type">${card.type==='emoji' ? card.data.cat : card.data.nom}</div>
+      </div>`;
+    div.onclick = () => flipCard(div);
+    grid.appendChild(div);
+  });
+
+  timerInterval = setInterval(() => {
+    mTimer++;
+    document.getElementById('m-timer').textContent = mTimer+'s';
+  }, 1000);
+}
+
+function flipCard(card) {
+  if (mLock || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  card.classList.add('flipped');
+  mFlipped.push(card);
+  if (mFlipped.length === 2) {
+    mLock = true;
+    mMoves++;
+    document.getElementById('m-moves').textContent = mMoves;
+    const [a, b] = mFlipped;
+    if (a.dataset.pairid === b.dataset.pairid) {
+      a.classList.add('matched'); b.classList.add('matched');
+      mMatched++;
+      document.getElementById('m-pairs').textContent = mMatched;
+      mFlipped = []; mLock = false;
+      if (mMatched === mLevel) memoryWin();
+    } else {
+      setTimeout(() => {
+        a.classList.remove('flipped'); b.classList.remove('flipped');
+        mFlipped = []; mLock = false;
+      }, 1100);
+    }
+  }
+}
+
+function memoryWin() {
+  clearInterval(timerInterval);
+  if (!mBest[mLevel] || mTimer < mBest[mLevel]) mBest[mLevel] = mTimer;
+  const stars = mMoves <= mLevel*1.5 ? '⭐⭐⭐' : mMoves <= mLevel*2.5 ? '⭐⭐' : '⭐';
+  const win = document.getElementById('memory-win');
+  win.style.display = 'block';
+  win.innerHTML = `
+    <div class="memory-win">
+      <div class="win-icon">🏆</div>
+      <div class="win-title">Bravo !</div>
+      <div class="win-score">${stars} — ${mMoves} essais en ${mTimer}s</div>
+      <div class="win-msg">Tu as trouvé toutes les paires ! Tu connais maintenant <strong>${mLevel} handicaps invisibles</strong> et leurs descriptions. 🐾</div>
+      <button class="btn-replay" onclick="initMemory()">🔄 Rejouer</button>
+      <button class="btn-home2" onclick="goHome()">🏠 Accueil</button>
+    </div>`;
+  document.getElementById('memory-grid').style.display = 'none';
+  setTimeout(() => document.getElementById('memory-grid').style.display = 'grid', 100);
+}
+
+// ===== LOTO =====
+let lotoPlayers = ['Joueur 1'];
+let lotoCurrentPlayer = 0;
+let lotoGrids = {}; // playerIdx -> array of {pathologie, checked}
+let lotoTires = [];
+let lotoRestants = [];
+
+function startLoto() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-loto').classList.add('active');
+  initLoto();
+}
+
+function initLoto() {
+  // Ask number of players via simple prompt-like interface
+  const nb = parseInt(prompt('Combien de joueurs ? (1 à 4)', '2')) || 1;
+  const clamp = Math.min(4, Math.max(1, nb));
+  lotoPlayers = [];
+  for (let i=0; i<clamp; i++) {
+    const name = prompt(`Nom du joueur ${i+1} :`, `Joueur ${i+1}`) || `Joueur ${i+1}`;
+    lotoPlayers.push(name);
+  }
+  lotoCurrentPlayer = 0;
+  lotoTires = [];
+  lotoRestants = shuffle([...PATHOLOGIES]);
+  document.getElementById('loto-restant').textContent = lotoRestants.length + ' restants';
+  document.getElementById('btn-tirer').disabled = false;
+
+  // Grilles : 15 cases (3×5) par joueur, tirées aléatoirement
+  lotoGrids = {};
+  lotoPlayers.forEach((_, i) => {
+    const cases = shuffle([...PATHOLOGIES]).slice(0, 15);
+    lotoGrids[i] = cases.map(p => ({pathologie: p, checked: false}));
+  });
+
+  buildLotoPlayers();
+  renderLotoGrid();
+  document.getElementById('tirage-card').innerHTML = `
+    <div class="tirage-emoji">🎲</div>
+    <div class="tirage-nom">Appuie sur le bouton !</div>
+    <div class="tirage-desc">Chaque joueur coche si sa grille contient la pathologie tirée</div>`;
+  document.getElementById('historique').innerHTML = '';
+  document.getElementById('loto-win').style.display = 'none';
+}
+
+function buildLotoPlayers() {
+  const bar = document.getElementById('loto-players');
+  bar.innerHTML = '';
+  lotoPlayers.forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'loto-player-tab' + (i === lotoCurrentPlayer ? ' active' : '');
+    const checked = lotoGrids[i] ? lotoGrids[i].filter(c=>c.checked).length : 0;
+    btn.innerHTML = `${name} <span style="opacity:0.7">(${checked}/15)</span>`;
+    btn.onclick = () => switchPlayer(i);
+    bar.appendChild(btn);
+  });
+  document.getElementById('grille-player-name').textContent = lotoPlayers[lotoCurrentPlayer];
+}
+
+function switchPlayer(i) {
+  lotoCurrentPlayer = i;
+  buildLotoPlayers();
+  renderLotoGrid();
+}
+
+function renderLotoGrid() {
+  const grid = document.getElementById('loto-grid');
+  grid.innerHTML = '';
+  const cases = lotoGrids[lotoCurrentPlayer];
+  cases.forEach((c, idx) => {
+    const div = document.createElement('div');
+    div.className = 'lcase' + (c.checked ? ' checked' : '');
+    // Highlight if last drawn
+    const lastTire = lotoTires[lotoTires.length-1];
+    if (lastTire && c.pathologie.nom === lastTire.nom && !c.checked) {
+      div.style.borderColor = 'var(--orange)';
+      div.style.background = '#FFF8F0';
+      div.style.animation = 'bounce 0.5s ease';
+    }
+    div.innerHTML = `
+      <div class="lcase-emoji">${c.pathologie.emoji}</div>
+      <div class="lcase-check">✅</div>
+      <div class="lcase-label">${c.pathologie.nom}</div>`;
+    div.onclick = () => toggleCase(idx);
+    grid.appendChild(div);
+  });
+}
+
+function toggleCase(idx) {
+  lotoGrids[lotoCurrentPlayer][idx].checked = !lotoGrids[lotoCurrentPlayer][idx].checked;
+  renderLotoGrid();
+  buildLotoPlayers();
+  checkLotoWin();
+}
+
+function tirer() {
+  if (lotoRestants.length === 0) return;
+  const p = lotoRestants.pop();
+  lotoTires.push(p);
+  document.getElementById('loto-restant').textContent = lotoRestants.length + ' restants';
+  if (lotoRestants.length === 0) document.getElementById('btn-tirer').disabled = true;
+
+  // Afficher le tirage
+  document.getElementById('tirage-card').innerHTML = `
+    <div class="tirage-emoji" style="animation:bounce 0.4s ease">${p.emoji}</div>
+    <div class="tirage-nom">${p.nom}</div>
+    <div class="tirage-desc">${p.desc}</div>`;
+
+  // Historique
+  const hist = document.getElementById('historique');
+  const tag = document.createElement('span');
+  tag.className = 'histo-tag';
+  tag.textContent = p.emoji + ' ' + p.nom;
+  hist.insertBefore(tag, hist.firstChild);
+
+  renderLotoGrid();
+}
+
+function checkLotoWin() {
+  lotoPlayers.forEach((name, i) => {
+    const cases = lotoGrids[i];
+    const checked = cases.filter(c => c.checked).length;
+
+    // Vérifier lignes (3 lignes de 5)
+    let hasLine = false;
+    for (let row=0; row<3; row++) {
+      const rowCases = cases.slice(row*5, row*5+5);
+      if (rowCases.every(c => c.checked)) hasLine = true;
+    }
+    // Vérifier colonnes (5 colonnes de 3)
+    for (let col=0; col<5; col++) {
+      if ([0,1,2].every(row => cases[row*5+col].checked)) hasLine = true;
+    }
+    // Carton plein
+    const full = checked === 15;
+
+    if (hasLine || full) {
+      const win = document.getElementById('loto-win');
+      if (win.style.display !== 'block') {
+        win.style.display = 'block';
+        win.innerHTML = `
+          <div class="loto-win">
+            <div style="font-size:3rem;">${full?'🏆':'🎉'}</div>
+            <div class="loto-win-title">${full ? 'CARTON PLEIN !' : 'LOTO !'}</div>
+            <div style="font-size:0.95rem;color:var(--text);margin-bottom:16px;">
+              <strong>${name}</strong> ${full ? 'a complété toute sa grille !' : 'a complété une ligne !'}<br>
+              Tu connais maintenant <strong>${checked} pathologies</strong> invisibles ! 🐾
+            </div>
+            <button class="btn-replay" onclick="initLoto()">🔄 Nouvelle partie</button>
+            <button class="btn-home2" style="background:var(--vert);border-color:var(--vert);" onclick="goHome()">🏠 Accueil</button>
+          </div>`;
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

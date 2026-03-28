@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devine mon Invisible – Jeu de cartes</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert:#2d6a4f;--vert2:#52b788;--or:#d4a843;--or2:#f5c842;
+  --rouge:#e63946;--bleu:#118AB2;--violet:#7B5EA7;--orange:#FF8C42;
+  --rose:#E91E8C;--teal:#009688;
+  --bg:#fefae0;--text:#1b2a1b;--grey:#6b7c6b;--soft:#f0faf4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;min-height:100vh;padding-bottom:40px;}
+.screen.active{display:block;}
+
+/* ACCUEIL */
+#s-home{background:linear-gradient(135deg,#0d2b1f,#2d6a4f,#1b3a2d);}
+#s-home.active{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px;}
+.home-icon{font-size:4rem;margin-bottom:10px;animation:float 3s ease-in-out infinite;}
+.home-title{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,7vw,3rem);color:var(--or);line-height:1.1;margin-bottom:6px;}
+.home-sub{color:rgba(255,255,255,0.65);font-size:0.95rem;margin-bottom:6px;}
+.home-tag{color:rgba(255,255,255,0.4);font-style:italic;font-size:0.82rem;margin-bottom:28px;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;max-width:480px;margin-bottom:20px;}
+@media(max-width:460px){.mode-grid{grid-template-columns:1fr;max-width:280px;}}
+.mode-card{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);border-radius:16px;padding:18px 10px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.mode-card:hover{background:rgba(255,255,255,0.16);transform:translateY(-4px);border-color:var(--or);}
+.mc-icon{font-size:2rem;margin-bottom:6px;}
+.mc-name{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--or);margin-bottom:3px;}
+.mc-desc{font-size:0.7rem;color:rgba(255,255,255,0.5);line-height:1.4;}
+.btn-home-rules{background:rgba(255,255,255,0.1);color:white;border:2px solid rgba(255,255,255,0.2);padding:9px 24px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer;}
+
+/* TOPBAR */
+.topbar{background:var(--vert);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.topbar-back{background:none;border:none;color:white;font-size:1.3rem;cursor:pointer;padding:4px;}
+.topbar-title{font-family:'Fredoka One',cursive;color:var(--or);font-size:1.1rem;flex:1;}
+.topbar-badge{background:rgba(255,255,255,0.15);color:white;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:800;white-space:nowrap;}
+
+/* CONFIG */
+.config-wrap{padding:16px;max-width:480px;margin:0 auto;}
+.config-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--vert);margin-bottom:4px;}
+.config-sub{font-size:0.82rem;color:var(--grey);margin-bottom:16px;}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.team-card{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;text-align:center;}
+.team-label{font-weight:800;font-size:0.82rem;color:var(--vert);margin-bottom:8px;}
+.team-input{width:100%;border:1.5px solid #d8f3dc;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;background:var(--bg);outline:none;text-align:center;}
+.team-score{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--or);margin-top:6px;}
+.solo-setup{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;margin-bottom:16px;}
+.diff-btns{display:flex;gap:8px;margin-top:10px;}
+.diff-btn{flex:1;padding:8px;border:2px solid #d8f3dc;background:white;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.8rem;cursor:pointer;color:var(--grey);transition:all 0.2s;}
+.diff-btn.active{background:var(--vert);color:white;border-color:var(--vert);}
+.btn-launch{background:var(--vert);color:white;border:none;padding:14px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 0 #1a3d2d;width:100%;transition:all 0.15s;margin-top:8px;}
+.btn-launch:hover{transform:translateY(-2px);}
+
+/* JEU */
+.game-wrap{padding:12px;max-width:560px;margin:0 auto;}
+.score-bar{display:flex;gap:8px;margin-bottom:14px;}
+.score-chip{flex:1;background:white;border:2px solid #d8f3dc;border-radius:12px;padding:10px;text-align:center;transition:all 0.3s;}
+.score-chip.active{border-color:var(--or);box-shadow:0 2px 10px rgba(212,168,67,0.3);}
+.sc-name{font-size:0.78rem;font-weight:800;color:var(--text);}
+.sc-pts{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--or);}
+.sc-label{font-size:0.65rem;color:var(--grey);}
+
+/* CARTE PRINCIPALE */
+.main-card{border-radius:24px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.15);margin-bottom:14px;animation:slideUp 0.4s ease;}
+.mc-header{padding:16px 20px 12px;color:white;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.mc-h-left{}
+.mc-category{font-size:0.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:0.75;margin-bottom:4px;}
+.mc-num{font-family:'Fredoka One',cursive;font-size:1.8rem;line-height:1;}
+.mc-level-badge{background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:800;white-space:nowrap;}
+.mc-body{background:white;padding:16px 20px;}
+
+/* INDICES */
+.indices-wrap{margin-bottom:14px;}
+.indice{background:var(--soft);border-radius:12px;padding:12px 16px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;border:2px solid transparent;position:relative;}
+.indice.revealed{background:white;border-color:#d8f3dc;}
+.indice-header{display:flex;align-items:center;gap:10px;}
+.indice-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.8rem;flex-shrink:0;color:white;}
+.indice-question{font-size:0.88rem;font-weight:700;color:var(--text);flex:1;}
+.indice-lock{font-size:1rem;color:var(--grey);}
+.indice-answer{display:none;margin-top:8px;padding-top:8px;border-top:1px solid #d8f3dc;font-size:0.85rem;color:var(--grey);line-height:1.5;}
+.indice.revealed .indice-answer{display:block;}
+.indice.revealed .indice-lock{display:none;}
+.indice-pts-badge{font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,0.5);color:var(--text);white-space:nowrap;}
+
+/* RÉPONSE */
+.reponse-zone{background:white;border-radius:14px;padding:14px;border:2px solid #d8f3dc;margin-bottom:12px;}
+.rz-label{font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:8px;}
+.rz-input{width:100%;border:1.5px solid #d8f3dc;border-radius:10px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--text);background:var(--bg);outline:none;margin-bottom:8px;}
+.rz-input:focus{border-color:var(--vert2);}
+.btn-valider{background:var(--bleu);color:white;border:none;padding:11px 24px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;width:100%;box-shadow:0 3px 0 #0a5a7a;transition:all 0.15s;}
+.btn-valider:hover{transform:translateY(-2px);}
+
+/* RÉSULTAT */
+.result-card{border-radius:16px;padding:16px;margin-bottom:12px;text-align:center;animation:popIn 0.4s ease;}
+.result-card.correct{background:linear-gradient(135deg,#52b788,#2d6a4f);color:white;}
+.result-card.wrong{background:linear-gradient(135deg,#e63946,#c0305a);color:white;}
+.result-card.partial{background:linear-gradient(135deg,var(--or),var(--or2));color:var(--text);}
+.result-icon{font-size:2.5rem;margin-bottom:6px;}
+.result-title{font-family:'Fredoka One',cursive;font-size:1.4rem;margin-bottom:4px;}
+.result-answer{font-size:0.88rem;opacity:0.85;margin-bottom:8px;line-height:1.5;}
+.result-pts{font-family:'Fredoka One',cursive;font-size:1.1rem;}
+
+/* INFO PATHOLOGIE */
+.info-box{background:white;border-radius:14px;padding:14px 16px;border:2px solid #d8f3dc;margin-bottom:12px;}
+.info-title{font-weight:800;font-size:0.88rem;color:var(--vert);margin-bottom:6px;}
+.info-text{font-size:0.82rem;color:var(--grey);line-height:1.6;}
+
+/* BTNS */
+.btn-primary{background:var(--vert);color:white;border:none;padding:13px 28px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;width:100%;box-shadow:0 4px 0 #1a3d2d;transition:all 0.15s;display:block;margin-bottom:8px;}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-primary.or{background:var(--or);color:var(--text);box-shadow:0 4px 0 #9a7020;}
+.btn-secondary{background:white;color:var(--vert);border:2px solid var(--vert);padding:11px 28px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;width:100%;transition:all 0.15s;display:block;margin-bottom:8px;}
+.btn-pass{background:var(--soft);color:var(--grey);border:1.5px solid #d8f3dc;padding:9px 20px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer;width:100%;margin-bottom:6px;}
+
+/* PROGRESSION */
+.progress-bar{height:6px;background:#e0e0e0;border-radius:99px;margin-bottom:12px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--vert),var(--vert2));border-radius:99px;transition:width 0.5s ease;}
+
+/* FIN */
+#s-end{background:linear-gradient(135deg,#0d2b1f,#2d6a4f);}
+#s-end.active{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px;}
+.end-trophy{font-size:5rem;animation:bounce 1s 3;}
+.end-title{font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--or);margin:10px 0 6px;}
+.end-msg{color:rgba(255,255,255,0.75);font-size:0.95rem;max-width:380px;line-height:1.7;margin-bottom:24px;}
+.end-scores{background:rgba(255,255,255,0.1);border-radius:16px;padding:16px 24px;margin-bottom:20px;width:100%;max-width:380px;}
+.end-score-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.1);color:white;font-size:0.9rem;}
+.end-score-row:last-child{border:none;}
+.end-score-row b{color:var(--or2);}
+
+/* RÈGLES */
+#s-rules{background:var(--bg);}
+.rules-wrap{max-width:520px;margin:0 auto;padding:16px;}
+.rules-sec{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;margin-bottom:10px;}
+.rules-sec h3{font-size:0.92rem;font-weight:800;color:var(--vert);margin-bottom:8px;}
+.rules-sec p,.rules-sec li{font-size:0.83rem;color:var(--grey);line-height:1.7;}
+.rules-sec ul{padding-left:16px;}
+
+/* ANIMATIONS */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake 0.4s ease;}
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div class="screen active" id="s-home">
+  <div class="home-icon">🃏</div>
+  <div class="home-title">Devine<br>mon Invisible</div>
+  <div class="home-sub">Le jeu de devinettes sur les handicaps invisibles</div>
+  <div class="home-tag">« Rendons visible l'invisible » — Oldy &amp; Sébastien</div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="goConfig('solo')">
+      <div class="mc-icon">🧩</div>
+      <div class="mc-name">Solo</div>
+      <div class="mc-desc">Teste tes connaissances seul·e</div>
+    </div>
+    <div class="mode-card" onclick="goConfig('duo')">
+      <div class="mc-icon">🤝</div>
+      <div class="mc-name">Duo</div>
+      <div class="mc-desc">2 joueurs, chacun son tour</div>
+    </div>
+    <div class="mode-card" onclick="goConfig('equipes')">
+      <div class="mc-icon">🏆</div>
+      <div class="mc-name">Équipes</div>
+      <div class="mc-desc">2 équipes s'affrontent</div>
+    </div>
+  </div>
+  <button class="btn-home-rules" onclick="goScreen('s-rules')">📖 Règles du jeu</button>
+  <div style="margin-top:18px;font-size:0.7rem;color:rgba(255,255,255,0.25);">© Les aventures d'Oldy et Sébastien · oldyetsebastien.fr</div>
+</div>
+
+<!-- CONFIG -->
+<div class="screen" id="s-config">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">🃏 Configuration</div>
+    <div class="topbar-badge" id="conf-mode-badge">Mode ?</div>
+  </div>
+  <div class="config-wrap" id="config-content"></div>
+</div>
+
+<!-- JEU -->
+<div class="screen" id="s-game">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">🃏 Devine mon Invisible</div>
+    <div class="topbar-badge" id="game-badge">1/10</div>
+  </div>
+  <div class="game-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="score-bar" id="score-bar"></div>
+    <div id="game-content"></div>
+  </div>
+</div>
+
+<!-- FIN -->
+<div class="screen" id="s-end">
+  <div class="end-trophy">🏆</div>
+  <div class="end-title" id="end-title">Bravo !</div>
+  <div class="end-msg" id="end-msg">Vous avez découvert de nombreux handicaps invisibles !</div>
+  <div class="end-scores" id="end-scores"></div>
+  <button class="btn-primary or" onclick="goScreen('s-home')" style="max-width:300px;">🔄 Rejouer</button>
+</div>
+
+<!-- RÈGLES -->
+<div class="screen" id="s-rules">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">📖 Règles</div>
+  </div>
+  <div class="rules-wrap">
+    <div class="rules-sec">
+      <h3>🎯 Principe</h3>
+      <p>Des indices décrivent une pathologie invisible <strong>sans jamais la nommer</strong>. Le but est de deviner de quelle condition il s'agit. Les indices se révèlent un par un — plus vite tu trouves, plus tu gagnes de points !</p>
+    </div>
+    <div class="rules-sec">
+      <h3>💰 Points</h3>
+      <ul>
+        <li>Bonne réponse après 1 indice : <strong>5 points</strong></li>
+        <li>Bonne réponse après 2 indices : <strong>4 points</strong></li>
+        <li>Bonne réponse après 3 indices : <strong>3 points</strong></li>
+        <li>Bonne réponse après 4 indices : <strong>2 points</strong></li>
+        <li>Bonne réponse après tous les indices : <strong>1 point</strong></li>
+        <li>Mauvaise réponse ou passer : <strong>0 point</strong></li>
+      </ul>
+    </div>
+    <div class="rules-sec">
+      <h3>🎮 Modes</h3>
+      <ul>
+        <li><strong>Solo</strong> : Joue seul·e, améliore ton score !</li>
+        <li><strong>Duo</strong> : 2 joueurs à tour de rôle. Celui qui a le plus de points gagne.</li>
+        <li><strong>Équipes</strong> : Un joueur donne des indices à son équipe qui doit deviner. Sans dire le nom !</li>
+      </ul>
+    </div>
+    <div class="rules-sec">
+      <h3>⭐ Mode Équipes (spécial)</h3>
+      <p>Le joueur qui donne les indices voit la carte complète. Il doit faire deviner sans dire le nom, ni les mots interdits. Son équipe a 60 secondes pour trouver !</p>
+    </div>
+    <button class="btn-launch" onclick="goScreen('s-home')" style="margin-top:8px;">← Accueil</button>
+  </div>
+</div>
+
+<script>
+// ===== CARTES =====
+const CARTES = [
+  // NIVEAU 1 — 6-8 ans
+  {id:1,nom:"Dyslexie",cat:"DYS",niveau:1,couleur:"#7B5EA7",couleurBg:"#F0EBF8",emoji:"🧩",
+   interdits:["lire","lettre","lecture","lire"],
+   info:"La dyslexie touche environ 10% des enfants. C'est un trouble neurologique, pas un manque de travail.",
+   indices:[
+     {q:"Quand je regarde les mots, que se passe-t-il ?",r:"Les lettres semblent bouger ou se mélanger.",pts:5},
+     {q:"Est-ce que j'aime les livres ?",r:"Oui ! Mais lire me demande beaucoup plus d'efforts que les autres.",pts:4},
+     {q:"Est-ce que je suis moins intelligent·e ?",r:"Non, c'est un trouble neurologique qui n'a rien à voir avec l'intelligence.",pts:3},
+     {q:"Quel outil peut m'aider à l'école ?",r:"Un ordinateur pour écrire, plus de temps pour les examens (tiers-temps).",pts:2},
+     {q:"Comment s'appelle mon trouble ?",r:"Un trouble 'DYS' qui commence par 'dys' et finit par 'lexie'.",pts:1},
+   ]},
+  {id:2,nom:"TDAH",cat:"Neurodév.",niveau:1,couleur:"#118AB2",couleurBg:"#EBF5FB",emoji:"🧠",
+   interdits:["attention","concentr","tdah","hyperactif"],
+   info:"Le TDAH est lié à un manque de dopamine dans le cerveau. Ce n'est pas de la mauvaise volonté.",
+   indices:[
+     {q:"Comment est mon cerveau pendant un cours ?",r:"Mon cerveau pense à mille choses en même temps, difficile de rester focalisé·e.",pts:5},
+     {q:"Est-ce que j'aime rester assis·e longtemps ?",r:"Non ! Mon corps a besoin de bouger pour que mon cerveau fonctionne mieux.",pts:4},
+     {q:"Est-ce un choix de ma part ?",r:"Non ! C'est un trouble neurologique — mon cerveau manque d'une substance qu'on appelle la dopamine.",pts:3},
+     {q:"Que disent parfois les adultes de moi à tort ?",r:"Que je suis agité·e, distrait·e, ou mal élevé·e... alors que c'est mon cerveau.",pts:2},
+     {q:"Ces 4 lettres me définissent...",r:"T.D.A.H — Trouble Déficit de l'Attention avec ou sans Hyperactivité.",pts:1},
+   ]},
+  {id:3,nom:"Diabète",cat:"Chronique",niveau:1,couleur:"#e63946",couleurBg:"#FEE8EE",emoji:"🩸",
+   interdits:["sucre","insuline","glycémie","diabète"],
+   info:"Le diabète touche des millions de personnes. Une hypoglycémie peut être très dangereuse si non traitée.",
+   indices:[
+     {q:"Que dois-je surveiller dans mon sang toute la journée ?",r:"Le taux d'une substance qui donne de l'énergie au corps — ni trop, ni trop peu.",pts:5},
+     {q:"Que se passe-t-il si ce taux baisse trop vite ?",r:"Je tremble, j'ai des sueurs, je peux perdre connaissance — c'est une urgence.",pts:4},
+     {q:"Quel outil j'utilise tous les jours ?",r:"Un appareil qui mesure mon sang avec une petite piqûre au doigt.",pts:3},
+     {q:"Ai-je le droit de manger en classe ?",r:"Oui ! Parfois c'est médical et urgent. Ce n'est pas de la gourmandise.",pts:2},
+     {q:"De quoi souffrent des millions de personnes dans le monde ?",r:"Du diabète, type 1 ou type 2.",pts:1},
+   ]},
+  {id:4,nom:"Anxiété",cat:"Psy",niveau:1,couleur:"#52b788",couleurBg:"#E8FDF6",emoji:"💙",
+   interdits:["peur","anxieux","stress","angoisse"],
+   info:"L'anxiété peut causer de vraies douleurs physiques. Ce n'est pas 'dans la tête' — c'est réel.",
+   indices:[
+     {q:"Où je ressens cette maladie dans mon corps ?",r:"Dans le ventre (douleurs), la gorge serrée, le cœur qui bat vite.",pts:5},
+     {q:"Quand est-ce que ça arrive souvent pour les enfants ?",r:"Le matin avant l'école, ou avant un événement important.",pts:4},
+     {q:"Est-ce que je choisis d'avoir ces douleurs ?",r:"Non ! Elles arrivent toutes seules et peuvent être intenses.",pts:3},
+     {q:"Quel mot décrit le contraire de ce que je ressens ?",r:"La sérénité, la tranquillité — des émotions que je cherche.",pts:2},
+     {q:"Comment s'appelle ce trouble quand il est constant et fort ?",r:"Le trouble anxieux — ou anxiété généralisée.",pts:1},
+   ]},
+
+  // NIVEAU 2 — 9-12 ans
+  {id:5,nom:"Fibromyalgie",cat:"Chronique",niveau:2,couleur:"#7B5EA7",couleurBg:"#F0EBF8",emoji:"💜",
+   interdits:["douleur","fibro","corps","partout"],
+   info:"La fibromyalgie ne se voit pas dans les analyses biologiques. Ce n'est pas inventé — c'est une vraie maladie.",
+   indices:[
+     {q:"Où ai-je mal avec cette maladie ?",r:"Partout dans le corps, y compris là où on ne s'y attend pas.",pts:5},
+     {q:"Après avoir dormi, comment je me sens ?",r:"Aussi fatigué·e qu'avant. Le sommeil ne répare pas cette fatigue.",pts:4},
+     {q:"Est-ce que ça se voit dans les analyses médicales classiques ?",r:"Non ! C'est souvent ce qui rend le diagnostic si long à obtenir.",pts:3},
+     {q:"Quel est le problème avec les 'bons jours' et 'mauvais jours' ?",r:"L'entourage pense que les mauvais jours sont des caprices puisque les bons jours semblent normaux.",pts:2},
+     {q:"Ce mot commence par 'fibro' et finit par 'myalgie'...",r:"La fibromyalgie !",pts:1},
+   ]},
+  {id:6,nom:"Endométriose",cat:"Chronique",niveau:2,couleur:"#E91E8C",couleurBg:"#FCE4EC",emoji:"🌸",
+   interdits:["utérus","règles","gynéco","endomètre"],
+   info:"1 femme sur 10 en France. Délai moyen de diagnostic : 7 ans. Les douleurs sont réelles mais souvent minimisées.",
+   indices:[
+     {q:"À quel moment du mois les douleurs sont-elles souvent les plus intenses ?",r:"Pendant certains jours du cycle menstruel — des douleurs bien plus intenses que la normale.",pts:5},
+     {q:"Combien de temps faut-il en moyenne pour obtenir un diagnostic en France ?",r:"7 ans en moyenne ! Une longue errance douloureuse.",pts:4},
+     {q:"Pourquoi les médecins mettent-ils si longtemps à diagnostiquer ?",r:"Parce que les douleurs sont souvent minimisées et qu'on ne voit rien dans les examens standard.",pts:3},
+     {q:"Combien de femmes sont touchées en France ?",r:"1 femme sur 10 — c'est pourtant l'une des maladies gynécologiques les plus fréquentes.",pts:2},
+     {q:"Ce nom vient du mot 'endomètre'...",r:"L'endométriose !",pts:1},
+   ]},
+  {id:7,nom:"Épilepsie",cat:"Chronique",niveau:2,couleur:"#FF8C42",couleurBg:"#FFF8F0",emoji:"🔆",
+   interdits:["crise","convulsion","cerveau","épileps"],
+   info:"600 000 personnes en France. Entre les crises, les personnes épileptiques mènent une vie tout à fait normale.",
+   indices:[
+     {q:"Que se passe-t-il dans le cerveau lors d'un épisode ?",r:"Des décharges électriques incontrôlées qui perturbent le fonctionnement normal.",pts:5},
+     {q:"Peut-on prédire quand ces épisodes vont arriver ?",r:"Non, c'est imprévisible. C'est ça qui rend cette maladie si difficile à vivre.",pts:4},
+     {q:"Comment dois-je aider quelqu'un pendant un épisode ?",r:"L'allonger sur le côté, éloigner les objets dangereux, appeler à l'aide — ne jamais le tenir ni mettre quoi que ce soit dans sa bouche.",pts:3},
+     {q:"Peut-on mener une vie normale entre les épisodes ?",r:"Oui ! Complètement. La maladie n'est souvent pas visible du tout entre les épisodes.",pts:2},
+     {q:"Combien de personnes sont touchées en France ?",r:"600 000 personnes. C'est l'une des maladies neurologiques les plus fréquentes.",pts:1},
+   ]},
+  {id:8,nom:"Dépression",cat:"Psy",niveau:2,couleur:"#118AB2",couleurBg:"#EBF5FB",emoji:"🌧️",
+   interdits:["triste","déprim","humeur","pleurer"],
+   info:"La dépression est une maladie neurologique. Elle modifie la chimie du cerveau. Ce n'est pas de la paresse.",
+   indices:[
+     {q:"Que dit-on souvent à tort à une personne qui souffre de cette maladie ?",r:"'Secoue-toi !', 'fais un effort !', 'tout le monde a des problèmes...'",pts:5},
+     {q:"Pourquoi ces conseils ne marchent-ils pas ?",r:"Parce que cette maladie modifie la chimie du cerveau — ce n'est pas une question de volonté.",pts:4},
+     {q:"Quand est-ce que ça devient une maladie ?",r:"Quand la tristesse profonde dure plus de 2 semaines et empêche de fonctionner normalement.",pts:3},
+     {q:"Quelle est la conséquence la plus grave de cette maladie non traitée ?",r:"Elle est la 1ère cause de handicap dans le monde et peut mener au suicide.",pts:2},
+     {q:"Comment s'appelle cette maladie neurologique de l'humeur ?",r:"La dépression — ou épisode dépressif majeur.",pts:1},
+   ]},
+
+  // NIVEAU 3 — 13 ans +
+  {id:9,nom:"Sclérose en plaques",cat:"Neurologique",niveau:3,couleur:"#009688",couleurBg:"#E0F2F1",emoji:"⚡",
+   interdits:["myéline","nerf","plaque","sclérose","SEP"],
+   info:"La SEP touche surtout les jeunes adultes entre 20 et 40 ans. Ses symptômes sont très imprévisibles.",
+   indices:[
+     {q:"Quelle partie du système nerveux est touchée ?",r:"La gaine protectrice des nerfs (myéline) est attaquée par le système immunitaire.",pts:5},
+     {q:"Pourquoi cette maladie est-elle si imprévisible ?",r:"Les symptômes varient d'un jour à l'autre — paralysie, vue trouble, fatigue intense... puis disparaissent.",pts:4},
+     {q:"Qui est touché le plus souvent ?",r:"Les jeunes adultes de 20 à 40 ans, surtout les femmes.",pts:3},
+     {q:"Pourquoi parle-t-on de 'bons jours' et 'mauvais jours' ?",r:"Certains jours la personne semble aller parfaitement bien, d'autres elle ne peut pas se lever.",pts:2},
+     {q:"Ces 3 lettres représentent cette maladie...",r:"S.E.P. — Sclérose En Plaques.",pts:1},
+   ]},
+  {id:10,nom:"Lupus",cat:"Auto-immune",niveau:3,couleur:"#7B5EA7",couleurBg:"#F0EBF8",emoji:"🦋",
+   interdits:["immun","anticorps","lupus","auto-immune"],
+   info:"Le lupus touche 9 femmes pour 1 homme. Le soleil peut déclencher des poussées graves.",
+   indices:[
+     {q:"Qui attaque qui dans cette maladie ?",r:"Le système immunitaire attaque les propres organes de la personne par erreur.",pts:5},
+     {q:"Quel élément déclencheur surprenant aggrave souvent les symptômes ?",r:"Le soleil ! Les rayons UV peuvent déclencher des poussées graves.",pts:4},
+     {q:"Quels organes peuvent être touchés ?",r:"Presque tous : la peau, les articulations, les reins, le cœur, les poumons...",pts:3},
+     {q:"Quel est le ratio hommes/femmes ?",r:"9 femmes pour 1 homme — c'est surtout une maladie féminine.",pts:2},
+     {q:"Quel animal est souvent utilisé comme symbole de cette maladie ?",r:"Le papillon — car l'éruption cutanée caractéristique a cette forme sur le visage.",pts:1},
+   ]},
+  {id:11,nom:"Syndrome d'Ehlers-Danlos",cat:"Génétique",niveau:3,couleur:"#d4a843",couleurBg:"#FFF8E8",emoji:"🫀",
+   interdits:["articulation","luxation","collagène","hypermobilité"],
+   info:"Le SED est souvent mal diagnostiqué car la personne 'paraît souple'. Les douleurs sont pourtant intenses.",
+   indices:[
+     {q:"Pourquoi cette maladie est-elle souvent invisible ?",r:"Les personnes atteintes paraissent très souples — voire athlétiques — alors qu'elles souffrent beaucoup.",pts:5},
+     {q:"Quelle protéine est défaillante dans cette maladie génétique ?",r:"Le collagène, qui assure la solidité des tendons, ligaments et peau.",pts:4},
+     {q:"Quel sport semble contre-indiqué mais semble pourtant facile pour ces personnes ?",r:"La gym, la danse — leur grande souplesse cache la fragilité de leurs articulations.",pts:3},
+     {q:"Que peuvent se faire facilement ces personnes ?",r:"Se démettre une épaule en attrapant quelque chose, se tordre une cheville en marchant normalement.",pts:2},
+     {q:"Ces 3 noms propres composent le nom de ce syndrome...",r:"Le syndrome d'Ehlers-Danlos (SED).",pts:1},
+   ]},
+  {id:12,nom:"Trouble bipolaire",cat:"Psy",niveau:3,couleur:"#118AB2",couleurBg:"#EBF5FB",emoji:"🌊",
+   interdits:["manie","dépression","humeur","bipolaire"],
+   info:"Le trouble bipolaire touche 1% de la population. Stabilisé sous traitement, il permet une vie normale.",
+   indices:[
+     {q:"Comment décrire les phases de cette maladie ?",r:"Des périodes de grande énergie et euphorie (on se sent invincible), puis des périodes de profonde tristesse.",pts:5},
+     {q:"Pourquoi est-ce invisible ?",r:"Entre les épisodes, la personne semble parfaitement normale — ce qui peut rendre le diagnostic difficile.",pts:4},
+     {q:"Quel est le danger de la phase haute (euphorique) ?",r:"La personne prend des décisions impulsives, dépense énormément, ne dort pas — sans s'en rendre compte.",pts:3},
+     {q:"Peut-on mener une vie normale avec ce trouble ?",r:"Oui ! Avec un traitement adapté et un suivi médical, beaucoup de personnes vivent normalement.",pts:2},
+     {q:"Quel terme médical désigne ce trouble et ses deux pôles opposés ?",r:"Le trouble bipolaire — anciennement appelé psychose maniaco-dépressive.",pts:1},
+   ]},
+  {id:13,nom:"Drépanocytose",cat:"Génétique",niveau:3,couleur:"#e63946",couleurBg:"#FEE8EE",emoji:"❤️",
+   interdits:["sang","globule","drépa","hémoglobine"],
+   info:"La drépanocytose est la maladie génétique la plus fréquente en France. Les crises peuvent être extrêmement douloureuses.",
+   indices:[
+     {q:"Quelle partie du sang est touchée par cette maladie génétique ?",r:"Les globules rouges prennent une forme anormale en faucille au lieu d'être ronds.",pts:5},
+     {q:"Que provoquent ces cellules anormales ?",r:"Elles bloquent les petits vaisseaux sanguins, causant des douleurs intenses et soudaines.",pts:4},
+     {q:"Quels facteurs peuvent déclencher une crise ?",r:"Le froid, la fatigue, le stress, les infections — des choses du quotidien.",pts:3},
+     {q:"Quelle origine ont souvent les personnes touchées ?",r:"Afrique subsaharienne, Antilles, Maghreb — c'est une maladie à forte prévalence dans ces régions.",pts:2},
+     {q:"C'est la maladie génétique la plus fréquente en France...",r:"La drépanocytose.",pts:1},
+   ]},
+  {id:14,nom:"TSPT",cat:"Psy",niveau:3,couleur:"#52b788",couleurBg:"#E8FDF6",emoji:"🕊️",
+   interdits:["trauma","choc","stress post","TSPT"],
+   info:"Le TSPT peut toucher n'importe qui après un événement traumatisant. Ce n'est pas de la faiblesse.",
+   indices:[
+     {q:"Après quel type d'événement cette maladie peut-elle apparaître ?",r:"Après un événement traumatisant : accident, agression, catastrophe, guerre, violence.",pts:5},
+     {q:"Qu'est-ce qu'un 'flashback' ?",r:"Le cerveau rejoue involontairement le traumatisme comme si ça se passait en ce moment.",pts:4},
+     {q:"Pourquoi cette maladie est-elle invisible ?",r:"La personne semble aller bien en apparence mais peut basculer brusquement au moindre déclencheur.",pts:3},
+     {q:"Que dit-on souvent à tort à ces personnes ?",r:"'C'est du passé, passe à autre chose !' — alors que le cerveau a été profondément modifié.",pts:2},
+     {q:"Quelle est l'abréviation de ce trouble post-traumatique ?",r:"T.S.P.T. — Trouble de Stress Post-Traumatique.",pts:1},
+   ]},
+  {id:15,nom:"Acouphènes sévères",cat:"Sensoriel",niveau:2,couleur:"#FF8C42",couleurBg:"#FFF8F0",emoji:"👂",
+   interdits:["oreille","entendre","bruit","son"],
+   info:"10% de la population souffre d'acouphènes. Les formes sévères peuvent causer dépression et isolement.",
+   indices:[
+     {q:"Qu'est-ce que j'entends en permanence que personne d'autre n'entend ?",r:"Un bruit constant — sifflement, bourdonnement, tintement — que seule la personne perçoit.",pts:5},
+     {q:"Quand est-ce que c'est le plus difficile ?",r:"La nuit, dans le silence — le bruit paraît alors encore plus fort.",pts:4},
+     {q:"Qu'est-ce que cela peut provoquer sur le long terme ?",r:"Des troubles du sommeil, de l'anxiété, de la dépression et un fort isolement social.",pts:3},
+     {q:"Peut-on l'entendre avec un stéthoscope ?",r:"Non ! C'est un bruit que seule la personne concernée perçoit — totalement invisible.",pts:2},
+     {q:"Comment s'appelle ce trouble de perception auditive ?",r:"Les acouphènes.",pts:1},
+   ]},
+  {id:16,nom:"Apnée du sommeil",cat:"Respiratoire",niveau:2,couleur:"#009688",couleurBg:"#E0F2F1",emoji:"😮‍💨",
+   interdits:["ronfler","respir","nuit","dormir"],
+   info:"L'apnée du sommeil non traitée augmente le risque cardiovasculaire. Elle touche 5 millions de Français.",
+   indices:[
+     {q:"Quand se passent les 'incidents' liés à cette maladie ?",r:"La nuit, pendant le sommeil — la personne ne s'en rend souvent pas compte.",pts:5},
+     {q:"Pourquoi est-on épuisé·e malgré 8 heures de 'sommeil' ?",r:"Parce que le sommeil est constamment interrompu par des micro-réveils — il n'est pas récupérateur.",pts:4},
+     {q:"Quel organe est privé d'oxygène ?",r:"Le cerveau — ce qui explique l'épuisement, les maux de tête, les troubles de la concentration.",pts:3},
+     {q:"Quel traitement courant utilise un masque ?",r:"Un appareil CPAP qui maintient les voies respiratoires ouvertes pendant le sommeil.",pts:2},
+     {q:"Comment s'appelle cette maladie qui implique des 'pauses' respiratoires nocturnes ?",r:"Le syndrome d'apnée du sommeil (SAS).",pts:1},
+   ]},
+  {id:17,nom:"TOC",cat:"Psy",niveau:2,couleur:"#7B5EA7",couleurBg:"#F0EBF8",emoji:"🔄",
+   interdits:["rituel","obsession","compuls","TOC"],
+   info:"Le TOC peut prendre 3 à 8h par jour dans les cas sévères. C'est une vraie maladie neurologique.",
+   indices:[
+     {q:"Que sont ces pensées qui reviennent en boucle contre ma volonté ?",r:"Des pensées intrusives et envahissantes qu'on ne peut pas 'éteindre'.",pts:5},
+     {q:"Que suis-je obligé·e de faire pour calmer ces pensées ?",r:"Des rituels répétitifs — me laver les mains 30 fois, vérifier la porte 10 fois... même si je sais que c'est excessif.",pts:4},
+     {q:"Est-ce que je choisis d'avoir ces rituels ?",r:"Non ! Je sais que c'est excessif mais je ne peux pas m'en empêcher.",pts:3},
+     {q:"Combien de temps ces rituels peuvent-ils prendre par jour ?",r:"De 1 à 8 heures dans les cas sévères — c'est profondément handicapant.",pts:2},
+     {q:"Quelles sont ces 3 lettres qui désignent ce trouble ?",r:"T.O.C. — Trouble Obsessionnel-Compulsif.",pts:1},
+   ]},
+  {id:18,nom:"Mucoviscidose",cat:"Génétique",niveau:2,couleur:"#52b788",couleurBg:"#E8FDF6",emoji:"💚",
+   interdits:["poumon","mucus","mucoviscos","génétique"],
+   info:"La mucoviscidose est une maladie génétique grave. Les traitements ont beaucoup progressé et allongent l'espérance de vie.",
+   indices:[
+     {q:"Quel organe est principalement affecté par cette maladie ?",r:"Les poumons, qui se remplissent progressivement d'un liquide épais.",pts:5},
+     {q:"Pourquoi tousse-t-on beaucoup avec cette maladie ?",r:"Pour expulser le liquide épais qui s'accumule et favorise les infections.",pts:4},
+     {q:"Pourquoi est-ce une maladie 'invisible' ?",r:"Un enfant atteint peut sembler tout à fait normal de l'extérieur, surtout entre les épisodes.",pts:3},
+     {q:"Quelle est l'origine de cette maladie ?",r:"Génétique — transmise par les deux parents porteurs du gène muté.",pts:2},
+     {q:"Ce nom vient du latin 'mucus' et 'viscosus'...",r:"La mucoviscidose.",pts:1},
+   ]},
+  {id:19,nom:"Hémophilie",cat:"Génétique",niveau:3,couleur:"#e63946",couleurBg:"#FEE8EE",emoji:"🩹",
+   interdits:["coagul","sang","saigner","hémoph"],
+   info:"L'hémophilie peut provoquer des hémorragies internes sans aucune blessure visible de l'extérieur.",
+   indices:[
+     {q:"Que ne peut pas faire le sang d'une personne avec cette maladie ?",r:"Se coaguler normalement — le sang ne s'arrête pas de couler en cas de blessure.",pts:5},
+     {q:"Pourquoi une simple chute peut-elle être grave ?",r:"Une hémorragie interne peut survenir même sans blessure visible — dans les muscles ou les articulations.",pts:4},
+     {q:"Pourquoi certains sports sont-ils risqués ?",r:"Tout choc peut provoquer une hémorragie interne grave — invisible de l'extérieur.",pts:3},
+     {q:"Qui est principalement touché selon le sexe ?",r:"Surtout les hommes — c'est une maladie génétique liée au chromosome X.",pts:2},
+     {q:"Comment s'appelle cette maladie du sang bien connue dans l'histoire des familles royales ?",r:"L'hémophilie.",pts:1},
+   ]},
+  {id:20,nom:"VIH",cat:"Infectieux",niveau:3,couleur:"#e63946",couleurBg:"#FEE8EE",emoji:"❤️‍🩹",
+   interdits:["virus","immun","VIH","sida","rétrovir"],
+   info:"Avec les traitements actuels, une personne séropositive avec charge virale indétectable ne transmet plus le virus (U=U).",
+   indices:[
+     {q:"Quel système du corps est attaqué par ce virus ?",r:"Le système immunitaire — le virus détruit progressivement les défenses naturelles du corps.",pts:5},
+     {q:"Que signifie 'charge virale indétectable' ?",r:"Que les traitements modernes réduisent le virus à un niveau non détectable et non transmissible.",pts:4},
+     {q:"Pourquoi cette maladie est-elle invisible ?",r:"Une personne sous traitement efficace peut sembler en parfaite santé — on ne voit rien.",pts:3},
+     {q:"Quelle discrimination subissent encore certaines personnes ?",r:"Au travail, au logement, dans les relations — malgré les traitements très efficaces.",pts:2},
+     {q:"Ces 3 lettres désignent ce virus responsable d'une pandémie mondiale...",r:"V.I.H. — Virus de l'Immunodéficience Humaine.",pts:1},
+   ]},
+];
+
+// ===== ÉTAT =====
+let mode = 'solo';
+let niveauFiltre = 0;
+let difficulte = 'normal';
+let equipes = ['Équipe A','Équipe B'];
+let joueurs = ['Joueur 1','Joueur 2'];
+let scores = {};
+let joueurActuel = 0;
+let carteActuelle = null;
+let indicesRevelés = 0;
+let partieCartes = [];
+let carteIdx = 0;
+let phaseCarte = 'indices'; // 'indices' | 'result'
+let totalParties = 10;
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ===== CONFIG =====
+function goConfig(m) {
+  mode = m;
+  const names = {solo:'🧩 Solo',duo:'🤝 Duo',equipes:'🏆 Équipes'};
+  document.getElementById('conf-mode-badge').textContent = names[m];
+  buildConfigUI();
+  goScreen('s-config');
+}
+
+function buildConfigUI() {
+  const wrap = document.getElementById('config-content');
+  if (mode === 'solo') {
+    wrap.innerHTML = `
+      <div class="config-title">🧩 Mode Solo</div>
+      <div class="config-sub">Teste tes connaissances sur les handicaps invisibles.</div>
+      <div class="solo-setup">
+        <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:8px;">Niveau :</div>
+        <div class="diff-btns">
+          <button class="diff-btn active" onclick="setNiveau(0,this)">🌱🌿🌳 Tous</button>
+          <button class="diff-btn" onclick="setNiveau(1,this)">🌱 6-8 ans</button>
+          <button class="diff-btn" onclick="setNiveau(2,this)">🌿 9-12 ans</button>
+          <button class="diff-btn" onclick="setNiveau(3,this)">🌳 13+</button>
+        </div>
+        <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-top:12px;margin-bottom:8px;">Difficulté :</div>
+        <div class="diff-btns">
+          <button class="diff-btn active" onclick="setDiff('normal',this)">Normal (10 cartes)</button>
+          <button class="diff-btn" onclick="setDiff('challenge',this)">Challenge (15 cartes)</button>
+        </div>
+      </div>
+      <button class="btn-launch" onclick="launchGame()">🃏 Lancer le jeu !</button>`;
+  } else if (mode === 'duo') {
+    wrap.innerHTML = `
+      <div class="config-title">🤝 Mode Duo</div>
+      <div class="config-sub">2 joueurs à tour de rôle. Celui qui a le plus de points gagne !</div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-label">Joueur 1</div>
+          <input class="team-input" id="j1name" placeholder="Prénom" maxlength="12" value="Joueur 1"/>
+        </div>
+        <div class="team-card">
+          <div class="team-label">Joueur 2</div>
+          <input class="team-input" id="j2name" placeholder="Prénom" maxlength="12" value="Joueur 2"/>
+        </div>
+      </div>
+      <div class="solo-setup">
+        <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:8px;">Niveau :</div>
+        <div class="diff-btns">
+          <button class="diff-btn active" onclick="setNiveau(0,this)">Tous</button>
+          <button class="diff-btn" onclick="setNiveau(1,this)">🌱 6-8</button>
+          <button class="diff-btn" onclick="setNiveau(2,this)">🌿 9-12</button>
+          <button class="diff-btn" onclick="setNiveau(3,this)">🌳 13+</button>
+        </div>
+      </div>
+      <button class="btn-launch" onclick="launchDuo()">🃏 Lancer le jeu !</button>`;
+  } else {
+    wrap.innerHTML = `
+      <div class="config-title">🏆 Mode Équipes</div>
+      <div class="config-sub">Un joueur fait deviner à son équipe sans dire les mots interdits !</div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-label">Équipe A</div>
+          <input class="team-input" id="eAname" placeholder="Nom équipe" maxlength="12" value="Équipe A"/>
+        </div>
+        <div class="team-card">
+          <div class="team-label">Équipe B</div>
+          <input class="team-input" id="eBname" placeholder="Nom équipe" maxlength="12" value="Équipe B"/>
+        </div>
+      </div>
+      <div class="solo-setup">
+        <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:8px;">Niveau :</div>
+        <div class="diff-btns">
+          <button class="diff-btn active" onclick="setNiveau(0,this)">Tous</button>
+          <button class="diff-btn" onclick="setNiveau(1,this)">🌱 6-8</button>
+          <button class="diff-btn" onclick="setNiveau(2,this)">🌿 9-12</button>
+          <button class="diff-btn" onclick="setNiveau(3,this)">🌳 13+</button>
+        </div>
+      </div>
+      <button class="btn-launch" onclick="launchEquipes()">🃏 Lancer le jeu !</button>`;
+  }
+}
+
+function setNiveau(n,btn) {
+  niveauFiltre=n;
+  btn.closest('.diff-btns').querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setDiff(d,btn) {
+  difficulte=d; totalParties = d==='challenge'?15:10;
+  btn.closest('.diff-btns').querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function getCartesFiltrees() {
+  let pool = niveauFiltre===0 ? CARTES : CARTES.filter(c=>c.niveau===niveauFiltre);
+  return shuffle(pool).slice(0, Math.min(totalParties, pool.length));
+}
+
+function launchGame() {
+  joueurs = ['Toi'];
+  scores = {0:0};
+  joueurActuel = 0;
+  partieCartes = getCartesFiltrees();
+  carteIdx = 0;
+  goScreen('s-game');
+  renderGameState();
+}
+
+function launchDuo() {
+  joueurs = [document.getElementById('j1name').value||'Joueur 1', document.getElementById('j2name').value||'Joueur 2'];
+  totalParties = 10;
+  scores = {0:0,1:0};
+  joueurActuel = 0;
+  partieCartes = getCartesFiltrees();
+  carteIdx = 0;
+  goScreen('s-game');
+  renderGameState();
+}
+
+function launchEquipes() {
+  equipes = [document.getElementById('eAname').value||'Équipe A', document.getElementById('eBname').value||'Équipe B'];
+  joueurs = equipes;
+  totalParties = 10;
+  scores = {0:0,1:0};
+  joueurActuel = 0;
+  partieCartes = getCartesFiltrees();
+  carteIdx = 0;
+  goScreen('s-game');
+  renderGameState();
+}
+
+// ===== JEU =====
+function renderGameState() {
+  if (carteIdx >= partieCartes.length) { showFin(); return; }
+  carteActuelle = partieCartes[carteIdx];
+  indicesRevelés = 0;
+  phaseCarte = 'indices';
+  document.getElementById('game-badge').textContent = `${carteIdx+1}/${partieCartes.length}`;
+  document.getElementById('progress-fill').style.width = (carteIdx/partieCartes.length*100)+'%';
+  updateScoreBar();
+  renderCarte();
+}
+
+function updateScoreBar() {
+  const bar = document.getElementById('score-bar');
+  bar.innerHTML = '';
+  joueurs.forEach((nom,i)=>{
+    const chip = document.createElement('div');
+    chip.className = 'score-chip'+(i===joueurActuel?' active':'');
+    chip.innerHTML = `<div class="sc-name">${nom}</div><div class="sc-pts">${scores[i]||0}</div><div class="sc-label">points</div>`;
+    bar.appendChild(chip);
+  });
+}
+
+function renderCarte() {
+  const c = carteActuelle;
+  const content = document.getElementById('game-content');
+  const lvlLabels = {1:'🌱 6-8 ans',2:'🌿 9-12 ans',3:'🌳 13 ans +'};
+
+  let indicesHTML = c.indices.map((ind,i)=>`
+    <div class="indice${i<indicesRevelés?' revealed':''}" id="ind-${i}" onclick="revelerIndice(${i})">
+      <div class="indice-header">
+        <div class="indice-num" style="background:${i<indicesRevelés?c.couleur:'#DDD'}">${i+1}</div>
+        <div class="indice-question">${ind.q}</div>
+        <span class="indice-pts-badge" style="background:${c.couleur};color:white;">+${ind.pts}</span>
+        <div class="indice-lock">${i<indicesRevelés?'':'🔒'}</div>
+      </div>
+      <div class="indice-answer">${ind.r}</div>
+    </div>`).join('');
+
+  const mots = c.interdits.map(m=>`<span style="background:#FEE8EE;color:var(--rouge);padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:800;margin:2px;display:inline-block;">${m}...</span>`).join(' ');
+
+  let tourInfo = '';
+  if (joueurs.length > 1) {
+    tourInfo = `<div style="background:${c.couleur}20;border:1.5px solid ${c.couleur}40;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:0.82rem;font-weight:700;color:${c.couleur}">🎭 C'est au tour de <strong>${joueurs[joueurActuel]}</strong></div>`;
+  }
+
+  content.innerHTML = `
+    <div class="main-card">
+      <div class="mc-header" style="background:${c.couleur};">
+        <div class="mc-h-left">
+          <div class="mc-category">${c.emoji} ${c.cat}</div>
+          <div class="mc-num">Carte #${carteIdx+1}</div>
+        </div>
+        <div class="mc-level-badge">${lvlLabels[c.niveau]}</div>
+      </div>
+      <div class="mc-body">
+        ${tourInfo}
+        ${mode==='equipes'?`<div style="background:${c.couleur};color:white;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;"><strong>🎭 Mot à faire deviner :</strong> <span style="font-size:1.2rem;font-weight:900;">${c.nom}</span><br><small>Mots interdits : ${mots}</small></div>`:''}
+        <div class="indices-wrap">${indicesHTML}</div>
+      </div>
+    </div>
+    ${phaseCarte==='indices' && mode!=='equipes' ? `
+    <div class="reponse-zone">
+      <div class="rz-label">💭 Ta réponse (${indicesRevelés+1} indice${indicesRevelés>0?'s':''} révélé${indicesRevelés>0?'s':''}) :</div>
+      <input class="rz-input" id="reponse-input" placeholder="Quelle pathologie ?" autocomplete="off"
+        onkeydown="if(event.key==='Enter')validerReponse()"/>
+      <button class="btn-valider" onclick="validerReponse()">✅ Valider ma réponse</button>
+    </div>
+    <button class="btn-pass" onclick="passerIndice()">
+      ${indicesRevelés < c.indices.length-1 ? '💡 Voir l\'indice suivant (−1 pt max)' : '⏭️ Passer cette carte'}
+    </button>` : ''}
+    ${mode==='equipes' ? `
+    <div style="text-align:center;margin-bottom:12px;">
+      <div style="font-size:0.85rem;color:var(--grey);margin-bottom:10px;">L'équipe a-t-elle trouvé ?</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary" style="flex:1;" onclick="equipesTrouve(true)">✅ Oui, trouvé !</button>
+        <button class="btn-secondary" style="flex:1;" onclick="equipesTrouve(false)">❌ Non, passé</button>
+      </div>
+    </div>` : ''}`;
+}
+
+function revelerIndice(i) {
+  if (i !== indicesRevelés) return;
+  indicesRevelés = i+1;
+  renderCarte();
+  const input = document.getElementById('reponse-input');
+  if (input) input.focus();
+}
+
+function passerIndice() {
+  if (indicesRevelés < carteActuelle.indices.length-1) {
+    indicesRevelés++;
+    renderCarte();
+  } else {
+    showResult(false, '');
+  }
+}
+
+function validerReponse() {
+  const input = document.getElementById('reponse-input');
+  if (!input) return;
+  const rep = input.value.trim().toLowerCase();
+  if (!rep) return;
+  const correct = estCorrect(rep, carteActuelle.nom);
+  showResult(correct, rep);
+}
+
+function estCorrect(rep, nom) {
+  const n = nom.toLowerCase();
+  const r = rep.toLowerCase().replace(/[^a-zàâéèêëîïôûùüç\s]/g,'');
+  const mots_nom = n.split(/[\s\-\/]+/);
+  const mots_rep = r.split(/\s+/);
+  // Tolérance : si au moins 1 mot important de la réponse correspond
+  const importants = mots_nom.filter(m=>m.length>4);
+  if (importants.length===0) return r.includes(n) || n.includes(r);
+  return importants.some(m => mots_rep.some(rm => rm.includes(m.substring(0,5)) || m.includes(rm.substring(0,5))));
+}
+
+function showResult(correct, rep) {
+  const c = carteActuelle;
+  const pts = correct ? Math.max(1, 6-indicesRevelés) : 0;
+  if (correct) scores[joueurActuel] = (scores[joueurActuel]||0) + pts;
+  phaseCarte = 'result';
+  updateScoreBar();
+
+  const content = document.getElementById('game-content');
+  const resultHTML = `
+    <div class="result-card ${correct?'correct':'wrong'}">
+      <div class="result-icon">${correct?'🎉':'😅'}</div>
+      <div class="result-title">${correct?'Bravo !':'C\'était... '+c.nom+' !'}</div>
+      <div class="result-answer">${correct?'Tu as trouvé <strong>'+c.nom+'</strong> après '+indicesRevelés+' indice'+(indicesRevelés>1?'s':'')+'!':'La bonne réponse était <strong>'+c.nom+'</strong>.'}</div>
+      ${pts>0?`<div class="result-pts">+${pts} point${pts>1?'s':''} 🌟</div>`:''}
+    </div>
+    <div class="info-box">
+      <div class="info-title">📚 Le saviez-vous ?</div>
+      <div class="info-text">${c.info}</div>
+    </div>
+    <button class="btn-primary or" onclick="cartesSuivante()">
+      ${carteIdx < partieCartes.length-1 ? 'Carte suivante →' : '🏆 Voir les résultats'}
+    </button>`;
+
+  content.innerHTML += resultHTML;
+  content.querySelector('.reponse-zone')?.remove();
+  content.querySelectorAll('.btn-pass, .btn-valider').forEach(b=>b.remove());
+  content.querySelectorAll('[onclick*="equipesTrouve"]').forEach(b=>b.parentElement?.remove());
+}
+
+function equipesTrouve(found) {
+  const c = carteActuelle;
+  const pts = found ? Math.max(1, 6-indicesRevelés) : 0;
+  if (found) scores[joueurActuel] = (scores[joueurActuel]||0) + pts;
+  phaseCarte = 'result';
+  updateScoreBar();
+
+  const content = document.getElementById('game-content');
+  content.innerHTML += `
+    <div class="result-card ${found?'correct':'wrong'}">
+      <div class="result-icon">${found?'🎉':'⏭️'}</div>
+      <div class="result-title">${found?'Trouvé !':'Passé — C\'était : '+c.nom}</div>
+      ${pts>0?`<div class="result-pts">+${pts} point${pts>1?'s':''} pour ${joueurs[joueurActuel]} 🌟</div>`:''}
+    </div>
+    <div class="info-box">
+      <div class="info-title">📚 Le saviez-vous ?</div>
+      <div class="info-text">${c.info}</div>
+    </div>
+    <button class="btn-primary or" onclick="cartesSuivante()">
+      ${carteIdx < partieCartes.length-1 ? 'Carte suivante →' : '🏆 Voir les résultats'}
+    </button>`;
+}
+
+function cartesSuivante() {
+  carteIdx++;
+  if (joueurs.length > 1) joueurActuel = (joueurActuel+1) % joueurs.length;
+  renderGameState();
+}
+
+function showFin() {
+  const sorted = joueurs.map((nom,i)=>({nom,pts:scores[i]||0})).sort((a,b)=>b.pts-a.pts);
+  const medals = ['🥇','🥈','🥉','🎖️'];
+  const total = partieCartes.length;
+  const maxPts = total * 5;
+  const myPts = scores[0]||0;
+  const pct = Math.round(myPts/maxPts*100);
+  const msg = pct>=80?'Excellent ! Tu connais très bien les handicaps invisibles !':
+              pct>=50?'Bien joué ! Tu as encore des choses à découvrir.':
+              'Continue d\'apprendre — chaque carte est une vie mieux comprise !';
+
+  document.getElementById('end-msg').textContent = msg + ` Tu as découvert ${total} pathologies invisibles. 🐾`;
+  document.getElementById('end-scores').innerHTML =
+    '<div style="font-weight:800;color:rgba(255,255,255,0.6);font-size:0.8rem;margin-bottom:10px;">Scores :</div>'+
+    sorted.map((j,i)=>`<div class="end-score-row">${medals[i]} ${j.nom} <b>${j.pts} pts</b></div>`).join('');
+  goScreen('s-end');
+}
+</script>
+</body>
+</html>

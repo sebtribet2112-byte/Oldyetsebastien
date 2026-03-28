@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Adultes – Handicaps Invisibles – Édition Complète</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --vert:#2d6a4f;--vert2:#52b788;--or:#d4a843;--or2:#f5c842;
+  --rouge:#e63946;--bleu:#118AB2;--violet:#7B5EA7;--orange:#FF8C42;
+  --rose:#E91E8C;--teal:#009688;--dark:#1b2a1b;
+  --bg:#fefae0;--text:#1b2a1b;--grey:#6b7c6b;--soft:#f0faf4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;min-height:100vh;padding-bottom:40px;}
+.screen.active{display:block;}
+
+/* ACCUEIL */
+#s-home{background:linear-gradient(160deg,#0a1a12,#1b3a2d,#2d6a4f);}
+#s-home.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;}
+.home-logo{font-size:3.5rem;margin-bottom:10px;animation:float 3s ease-in-out infinite;}
+.home-title{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,6vw,3rem);color:var(--or);margin-bottom:4px;line-height:1.1;}
+.home-sub{color:rgba(255,255,255,0.65);font-size:0.95rem;margin-bottom:4px;}
+.home-tag{color:rgba(255,255,255,0.4);font-style:italic;font-size:0.8rem;margin-bottom:28px;}
+.home-stats{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.hstat{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:12px 20px;text-align:center;}
+.hstat b{display:block;font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--or2);}
+.hstat span{font-size:0.7rem;color:rgba(255,255,255,0.55);font-weight:700;text-transform:uppercase;}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:500px;margin-bottom:20px;}
+@media(max-width:480px){.cat-grid{grid-template-columns:repeat(2,1fr);}}
+.cat-btn{border:2px solid;border-radius:14px;padding:10px 8px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.78rem;transition:all 0.2s;text-align:center;background:rgba(255,255,255,0.06);}
+.cat-btn:hover{transform:translateY(-2px);}
+.cat-btn.selected{background:rgba(255,255,255,0.2);}
+.cat-icon{font-size:1.4rem;margin-bottom:3px;display:block;}
+.btn-start-big{background:var(--or);color:var(--dark);border:none;padding:15px 40px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;box-shadow:0 5px 0 #9a7020;transition:all 0.15s;margin-bottom:10px;width:100%;max-width:340px;}
+.btn-start-big:hover{transform:translateY(-2px);}
+.btn-rules-sm{background:rgba(255,255,255,0.1);color:white;border:2px solid rgba(255,255,255,0.2);padding:10px 28px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer;}
+
+/* CONFIG ÉQUIPES */
+#s-config{background:var(--bg);}
+#s-config.active{display:flex;flex-direction:column;align-items:center;padding:0 0 40px;}
+.topbar{background:var(--vert);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);width:100%;}
+.topbar-back{background:none;border:none;color:white;font-size:1.3rem;cursor:pointer;padding:4px;}
+.topbar-title{font-family:'Fredoka One',cursive;color:var(--or);font-size:1.1rem;flex:1;}
+.topbar-badge{background:rgba(255,255,255,0.15);color:white;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:800;white-space:nowrap;}
+.config-wrap{padding:16px;max-width:540px;width:100%;}
+.config-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--vert);margin-bottom:4px;}
+.config-sub{font-size:0.82rem;color:var(--grey);margin-bottom:16px;}
+.teams-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.team-setup{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;}
+.team-label{font-weight:800;font-size:0.82rem;margin-bottom:6px;}
+.team-input{width:100%;border:1.5px solid #d8f3dc;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;background:var(--bg);outline:none;text-align:center;}
+.nb-teams-row{display:flex;gap:8px;margin-bottom:14px;}
+.nb-btn{flex:1;padding:8px;border:2px solid #d8f3dc;background:white;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer;color:var(--grey);transition:all 0.2s;}
+.nb-btn.active{background:var(--vert);color:white;border-color:var(--vert);}
+.btn-launch{background:var(--vert);color:white;border:none;padding:14px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 0 #1a3d2d;width:100%;transition:all 0.15s;margin-top:8px;}
+.btn-launch:hover{transform:translateY(-2px);}
+.info-setup{background:white;border:2px solid #d8f3dc;border-radius:12px;padding:12px;font-size:0.82rem;color:var(--grey);line-height:1.6;margin-bottom:14px;}
+
+/* JEU PRINCIPAL */
+#s-game{background:var(--bg);}
+.game-topbar{background:var(--vert);padding:10px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.game-wrap{padding:12px;max-width:640px;margin:0 auto;}
+
+/* SCORES */
+.scores-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;}
+.team-chip{background:white;border:2px solid;border-radius:12px;padding:8px 14px;flex-shrink:0;transition:all 0.3s;text-align:center;min-width:90px;}
+.team-chip.buzz{transform:scale(1.05);box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+.tc-name{font-size:0.8rem;font-weight:800;}
+.tc-pts{font-family:'Fredoka One',cursive;font-size:1.5rem;}
+.tc-round{font-size:0.65rem;color:var(--grey);}
+
+/* QUESTION CARD */
+.q-card{background:white;border-radius:20px;padding:20px;box-shadow:0 6px 24px rgba(0,0,0,0.1);margin-bottom:14px;animation:slideUp 0.3s ease;}
+.q-progress{height:6px;background:#eee;border-radius:99px;margin-bottom:16px;overflow:hidden;}
+.q-progress-fill{height:100%;border-radius:99px;transition:width 0.5s ease;}
+.q-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.q-cat-badge{padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;}
+.q-num{font-size:0.78rem;color:var(--grey);font-weight:700;}
+.q-pts-badge{background:var(--soft);color:var(--vert);padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:800;margin-left:auto;}
+.q-diff{font-size:0.72rem;font-weight:800;}
+.q-text{font-family:'Fredoka One',cursive;font-size:clamp(1rem,3vw,1.25rem);color:var(--text);margin-bottom:16px;line-height:1.4;}
+.q-options{display:flex;flex-direction:column;gap:10px;}
+.q-opt{background:var(--soft);border:2px solid transparent;border-radius:12px;padding:12px 16px;cursor:pointer;font-size:0.92rem;font-weight:700;color:var(--text);text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:10px;}
+.q-opt:hover:not(:disabled){background:#FFE8D6;border-color:var(--orange);transform:translateX(3px);}
+.q-opt.correct{background:#E8FDF6;border-color:var(--vert2);color:#1a7a5e;}
+.q-opt.wrong{background:#FEE8EE;border-color:var(--rouge);color:#c0305a;}
+.q-opt:disabled{cursor:default;}
+.q-opt-letter{width:30px;height:30px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;flex-shrink:0;border:2px solid #ddd;}
+.q-opt.correct .q-opt-letter{background:var(--vert2);color:white;border-color:var(--vert2);}
+.q-opt.wrong .q-opt-letter{background:var(--rouge);color:white;border-color:var(--rouge);}
+
+/* FEEDBACK */
+.q-feedback{margin-top:14px;padding:12px 16px;border-radius:12px;font-size:0.88rem;font-weight:600;line-height:1.5;display:none;animation:slideUp 0.3s ease;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:#E8FDF6;color:#1a7a5e;border:2px solid var(--vert2);}
+.q-feedback.ko{background:#FEE8EE;color:#c0305a;border:2px solid var(--rouge);}
+
+/* BUZZ ZONE */
+.buzz-zone{background:white;border-radius:16px;padding:16px;margin-bottom:12px;border:2px solid #d8f3dc;}
+.buzz-title{font-weight:800;font-size:0.88rem;color:var(--vert);margin-bottom:10px;}
+.buzz-teams{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.buzz-btn{padding:14px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;color:white;transition:all 0.15s;box-shadow:0 3px 0 rgba(0,0,0,0.2);}
+.buzz-btn:hover{transform:translateY(-2px);}
+.buzz-btn:active{transform:translateY(2px);}
+.buzz-btn.buzzed{opacity:0.5;cursor:default;transform:none;}
+
+/* NEXT BTN */
+.btn-next{margin-top:14px;padding:13px 28px;background:var(--or);color:var(--dark);border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;width:100%;box-shadow:0 4px 0 #9a7020;transition:all 0.15s;display:none;}
+.btn-next.show{display:block;}
+.btn-next:hover{transform:translateY(-2px);}
+
+/* CATÉGORIE HEADER */
+.cat-header{background:var(--dark);border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.cat-header-icon{font-size:2.5rem;}
+.cat-header-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--or);}
+.cat-header-sub{font-size:0.82rem;color:rgba(255,255,255,0.6);margin-top:2px;}
+
+/* FIN */
+#s-end{background:linear-gradient(135deg,#0a1a12,#2d6a4f);}
+#s-end.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;}
+.podium{width:100%;max-width:440px;margin-bottom:24px;}
+.podium-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.12);}
+.podium-row.first{background:rgba(212,168,67,0.2);border-color:rgba(212,168,67,0.4);}
+.pr-left{display:flex;align-items:center;gap:10px;}
+.pr-medal{font-size:1.5rem;}
+.pr-name{color:white;font-weight:800;font-size:0.95rem;}
+.pr-detail{font-size:0.72rem;color:rgba(255,255,255,0.55);}
+.pr-pts{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--or2);}
+
+/* RÈGLES */
+#s-rules{background:var(--bg);}
+.rules-wrap{max-width:540px;margin:0 auto;padding:16px;}
+.rules-sec{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;margin-bottom:10px;}
+.rules-sec h3{font-size:0.92rem;font-weight:800;color:var(--vert);margin-bottom:8px;}
+.rules-sec p,.rules-sec li{font-size:0.83rem;color:var(--grey);line-height:1.7;}
+.rules-sec ul{padding-left:16px;}
+
+/* ANIM */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.bounce{animation:bounce 0.4s ease;}
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div class="screen active" id="s-home">
+  <div class="home-logo">🧠</div>
+  <div class="home-title">Quiz Adultes<br>Handicaps Invisibles</div>
+  <div class="home-sub">Édition complète — Toutes les pathologies</div>
+  <div class="home-tag">Conçu pour groupes, formations, associations, classes</div>
+  <div class="home-stats">
+    <div class="hstat"><b>120</b><span>Questions</span></div>
+    <div class="hstat"><b>8</b><span>Catégories</span></div>
+    <div class="hstat"><b>6</b><span>Équipes max</span></div>
+    <div class="hstat"><b>45+</b><span>Pathologies</span></div>
+  </div>
+  <div style="font-family:'Fredoka One',cursive;font-size:1rem;color:rgba(255,255,255,0.6);margin-bottom:12px;max-width:400px;">Choisissez les catégories à jouer :</div>
+  <div class="cat-grid" id="cat-select"></div>
+  <button class="btn-start-big" onclick="goConfig()">🎯 Configurer les équipes</button>
+  <button class="btn-rules-sm" onclick="goScreen('s-rules')" style="margin-top:8px;">📖 Règles</button>
+  <div style="margin-top:18px;font-size:0.7rem;color:rgba(255,255,255,0.25);">© Les aventures d'Oldy et Sébastien · oldyetsebastien.fr</div>
+</div>
+
+<!-- CONFIG -->
+<div class="screen" id="s-config">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">🎯 Configuration</div>
+    <div class="topbar-badge" id="conf-badge">6 équipes max</div>
+  </div>
+  <div class="config-wrap">
+    <div class="config-title">Les équipes</div>
+    <div class="config-sub">De 2 à 6 équipes. Choisissez le nombre puis nommez chaque équipe.</div>
+    <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:8px;">Nombre d'équipes :</div>
+    <div class="nb-teams-row" id="nb-teams-row"></div>
+    <div class="teams-grid" id="teams-grid"></div>
+    <div class="info-setup">
+      🎮 <strong>Mode animateur :</strong> Un animateur lit les questions à voix haute. L'équipe qui répond en premier appuie sur son bouton BUZZ. Si la réponse est bonne : +points. Si fausse : la main passe aux autres équipes.<br><br>
+      📱 <strong>Mode solo tablette :</strong> Chaque joueur répond individuellement depuis son écran.
+    </div>
+    <div style="font-weight:800;font-size:0.85rem;color:var(--vert);margin-bottom:8px;">Questions par catégorie :</div>
+    <div class="nb-teams-row">
+      <button class="nb-btn active" id="qnb-5" onclick="setQNb(5,this)">5 questions</button>
+      <button class="nb-btn" id="qnb-10" onclick="setQNb(10,this)">10 questions</button>
+      <button class="nb-btn" id="qnb-15" onclick="setQNb(15,this)">Toutes</button>
+    </div>
+    <button class="btn-launch" onclick="launchGame()">🚀 Lancer le quiz !</button>
+  </div>
+</div>
+
+<!-- JEU -->
+<div class="screen" id="s-game">
+  <div class="game-topbar">
+    <button class="topbar-back" onclick="confirmQuit()">←</button>
+    <div class="topbar-title" id="game-title-bar">Quiz</div>
+    <div class="topbar-badge" id="game-progress-badge">Q1</div>
+  </div>
+  <div class="game-wrap">
+    <div class="scores-row" id="scores-row"></div>
+    <div id="game-content"></div>
+  </div>
+</div>
+
+<!-- FIN -->
+<div class="screen" id="s-end">
+  <div style="font-size:4rem;margin-bottom:10px;animation:bounce 1s 3;">🏆</div>
+  <div style="font-family:'Fredoka One',cursive;font-size:2.2rem;color:var(--or);margin-bottom:8px;">Résultats !</div>
+  <div style="color:rgba(255,255,255,0.7);font-size:0.9rem;max-width:400px;margin-bottom:24px;line-height:1.6;" id="end-msg">Quiz terminé !</div>
+  <div class="podium" id="podium"></div>
+  <button class="btn-start-big" onclick="goScreen('s-home')" style="max-width:280px;margin-top:0;">🔄 Nouveau quiz</button>
+</div>
+
+<!-- RÈGLES -->
+<div class="screen" id="s-rules">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">📖 Règles du Quiz</div>
+  </div>
+  <div class="rules-wrap">
+    <div class="rules-sec">
+      <h3>🎯 Principe</h3>
+      <p>Quiz en équipes sur les handicaps invisibles. 8 catégories couvrent l'ensemble des pathologies reconnues en France. Idéal pour des formations, sensibilisations, soirées associatives.</p>
+    </div>
+    <div class="rules-sec">
+      <h3>💰 Barème des points</h3>
+      <ul>
+        <li>Question normale : <strong>2 points</strong></li>
+        <li>Question difficile (⭐⭐⭐) : <strong>3 points</strong></li>
+        <li>Question expert (⭐⭐⭐⭐) : <strong>4 points</strong></li>
+        <li>Mauvaise réponse : <strong>-1 point</strong> (en mode buzz)</li>
+      </ul>
+    </div>
+    <div class="rules-sec">
+      <h3>🎮 Mode Groupe / Buzz</h3>
+      <ul>
+        <li>L'animateur lit la question</li>
+        <li>La première équipe qui buzzе répond</li>
+        <li>Bonne réponse → points attribués, question suivante</li>
+        <li>Mauvaise réponse → -1 pt, la main passe aux autres</li>
+      </ul>
+    </div>
+    <div class="rules-sec">
+      <h3>📋 Les 8 catégories</h3>
+      <ul>
+        <li>🧩 Troubles DYS et neurodéveloppement</li>
+        <li>💊 Maladies chroniques</li>
+        <li>🧠 Troubles psychiatriques et psychiques</li>
+        <li>🧬 Maladies génétiques et rares</li>
+        <li>🫀 Maladies cardiovasculaires et neurologiques</li>
+        <li>🫁 Troubles respiratoires et sensoriels</li>
+        <li>⚖️ Droits, lois et reconnaissance</li>
+        <li>🌍 Culture générale et chiffres clés</li>
+      </ul>
+    </div>
+    <button class="btn-launch" onclick="goScreen('s-home')" style="margin-top:8px;">← Accueil</button>
+  </div>
+</div>
+
+<script>
+// ===== CATÉGORIES =====
+const CATEGORIES = [
+  {id:'dys',nom:'Troubles DYS & Neurodév.',icon:'🧩',couleur:'#7B5EA7',bg:'#F0EBF8'},
+  {id:'chron',nom:'Maladies chroniques',icon:'💊',couleur:'#e63946',bg:'#FEE8EE'},
+  {id:'psy',nom:'Psychiatrie & Psy',icon:'🧠',couleur:'#118AB2',bg:'#EBF5FB'},
+  {id:'gene',nom:'Génétique & Maladies rares',icon:'🧬',couleur:'#009688',bg:'#E0F2F1'},
+  {id:'cardio',nom:'Cardio & Neurologique',icon:'🫀',couleur:'#e63946',bg:'#FEE8EE'},
+  {id:'respi',nom:'Respiratoire & Sensoriel',icon:'🫁',couleur:'#FF8C42',bg:'#FFF8F0'},
+  {id:'droits',nom:'Droits & Reconnaissance',icon:'⚖️',couleur:'#2d6a4f',bg:'#E8FDF6'},
+  {id:'culture',nom:'Culture générale & Chiffres',icon:'🌍',couleur:'#d4a843',bg:'#FFF8E8'},
+];
+
+// ===== BANQUE DE QUESTIONS =====
+const QUESTIONS = {
+dys:[
+  {q:"Quel pourcentage de la population est touchée par la dyslexie ?",opts:["2%","5%","10%","20%"],correct:2,expl:"La dyslexie touche environ 10% de la population. C'est le trouble DYS le plus connu.",pts:2,diff:1},
+  {q:"La dyspraxie est un trouble de :",opts:["La mémoire","La coordination des gestes","La vision","L'audition"],correct:1,expl:"La dyspraxie (TDC) est un trouble du développement de la coordination motrice. Les gestes automatiques pour les autres demandent un effort énorme.",pts:2,diff:1},
+  {q:"Le TDAH est lié à un déficit en :",opts:["Sérotonine","Adrénaline","Dopamine","Mélatonine"],correct:2,expl:"Le TDAH est lié à un déficit en dopamine dans le cerveau. Ce n'est pas une question de volonté.",pts:3,diff:2},
+  {q:"La dyscalculie touche spécifiquement :",opts:["La lecture","Les chiffres et le calcul","L'écriture","La parole"],correct:1,expl:"La dyscalculie est un trouble spécifique du traitement des nombres et du raisonnement mathématique.",pts:2,diff:1},
+  {q:"Qu'est-ce que le 'masking' pour les personnes autistes ?",opts:["Un traitement médical","Cacher son autisme pour s'intégrer","Un symptôme de l'autisme","Une thérapie comportementale"],correct:1,expl:"Le masking consiste à dissimuler son autisme. C'est épuisant et peut mener au burn-out autistique.",pts:3,diff:2},
+  {q:"Un enfant HPI (Haut Potentiel Intellectuel) peut souffrir de :",opts:["Manque d'intelligence","Trop de facilité dans tous les domaines","Hypersensibilité, ennui, décalage social","Aucune difficulté particulière"],correct:2,expl:"Le HPI peut causer une vraie souffrance : hypersensibilité, incompréhension des autres, ennui en classe. C'est un handicap invisible quand il n'est pas accompagné.",pts:3,diff:2},
+  {q:"La dysphasie touche principalement :",opts:["La lecture","Le calcul","Le langage oral","La motricité"],correct:2,expl:"La dysphasie est un trouble structurel du développement du langage oral. La personne comprend mais a du mal à s'exprimer.",pts:2,diff:1},
+  {q:"Combien de types de troubles 'DYS' reconnus existent ?",opts:["2","3","5","7"],correct:3,expl:"Il existe 7 troubles DYS reconnus : dyslexie, dysorthographie, dyscalculie, dyspraxie, dysphasie, dysgraphie, et trouble de l'attention.",pts:3,diff:2},
+  {q:"La dysorthographie est souvent associée à :",opts:["La dyscalculie","La dyslexie","La dyspraxie","Le TDAH"],correct:1,expl:"La dysorthographie accompagne fréquemment la dyslexie. Les deux touchent le traitement du langage écrit.",pts:2,diff:2},
+  {q:"Le tiers-temps est un aménagement permettant :",opts:["Un tiers de cours en moins","Un temps supplémentaire lors des examens","Trois professeurs différents","Un aide-soignant en classe"],correct:1,expl:"Le tiers-temps accorde 1/3 de temps supplémentaire lors des épreuves. Il est accordé via le PAP ou la MDPH.",pts:2,diff:1},
+  {q:"Le TSA (Trouble du Spectre Autistique) est classé comme :",opts:["Une maladie mentale","Un trouble du neurodéveloppement","Une maladie rare","Une maladie génétique uniquement"],correct:1,expl:"Le TSA est un trouble du neurodéveloppement. Ce n'est pas une maladie mentale.",pts:2,diff:1},
+  {q:"L'hypersensibilité sensorielle dans l'autisme peut rendre douloureux :",opts:["Le silence uniquement","Les bruits, lumières, textures du quotidien","Uniquement les odeurs","La vue des couleurs vives"],correct:1,expl:"L'hypersensibilité sensorielle peut rendre les stimulations ordinaires (bruit de la cantine, tissu des vêtements, lumière fluorescente) véritablement douloureuses.",pts:2,diff:1},
+  {q:"Le PAP (Plan d'Accompagnement Personnalisé) concerne :",opts:["Uniquement les élèves en situation de handicap sévère","Les élèves avec troubles DYS sans MDPH","Tous les élèves en difficulté scolaire","Uniquement les lycéens"],correct:1,expl:"Le PAP est destiné aux élèves ayant des troubles des apprentissages (DYS) qui n'ont pas forcément de reconnaissance MDPH.",pts:3,diff:2},
+  {q:"La dysgraphie se manifeste principalement par :",opts:["Des fautes d'orthographe","Une écriture illisible ou très laborieuse","Des problèmes de lecture","Des difficultés en maths"],correct:1,expl:"La dysgraphie est un trouble de la production écrite gestuelle. L'écriture est douloureuse, lente ou illisible.",pts:2,diff:1},
+  {q:"Le 'burn-out autistique' survient souvent après :",opts:["Une infection virale","Des années de masking excessif","Un choc émotionnel soudain","Un changement de traitement"],correct:1,expl:"Le burn-out autistique est un épuisement profond causé par des années à masquer son autisme pour s'intégrer.",pts:4,diff:3},
+],
+chron:[
+  {q:"L'endométriose touche en France environ :",opts:["1 femme sur 30","1 femme sur 10","1 femme sur 5","1 femme sur 50"],correct:1,expl:"L'endométriose touche 1 femme sur 10 en France soit environ 2 millions de femmes.",pts:2,diff:1},
+  {q:"Quel est le délai moyen de diagnostic de l'endométriose en France ?",opts:["6 mois","2 ans","7 ans","15 ans"],correct:2,expl:"Il faut en moyenne 7 ans pour diagnostiquer l'endométriose. Ce retard entraîne des années de souffrance non reconnue.",pts:2,diff:1},
+  {q:"La fibromyalgie est caractérisée par :",opts:["Des douleurs articulaires visibles","Des douleurs chroniques diffuses sans marqueur biologique","Une inflammation des muscles","Des fractures répétées"],correct:1,expl:"La fibromyalgie provoque des douleurs chroniques et une fatigue intense, sans marqueur visible dans les analyses biologiques classiques.",pts:2,diff:1},
+  {q:"Le syndrome de fatigue chronique (SFC) se distingue de la fatigue ordinaire car :",opts:["Il disparaît avec le repos","Il n'affecte que les personnes âgées","Il persiste malgré le repos et peut durer des années","Il est causé par un manque de sommeil"],correct:2,expl:"Le SFC est une fatigue profonde et persistante qui ne s'améliore pas avec le repos. Il peut rendre impossible les activités les plus simples.",pts:2,diff:1},
+  {q:"La maladie de Crohn appartient à la catégorie des :",opts:["MICI","Maladies auto-immunes uniquement","Maladies génétiques","Infections bactériennes"],correct:0,expl:"La maladie de Crohn est une MICI (Maladie Inflammatoire Chronique de l'Intestin). Elle provoque des douleurs abdominales, diarrhées et fatigue sévère.",pts:2,diff:1},
+  {q:"La spondylarthrite ankylosante touche principalement :",opts:["Les poumons","La colonne vertébrale et les articulations","Le foie","Les reins"],correct:1,expl:"La spondylarthrite est une maladie inflammatoire chronique touchant la colonne vertébrale et les articulations sacro-iliaques.",pts:3,diff:2},
+  {q:"Le syndrome d'Ehlers-Danlos (SED) implique une anomalie du :",opts:["Système immunitaire","Collagène","Système nerveux central","Pancréas"],correct:1,expl:"Le SED est une maladie du tissu conjonctif liée à une anomalie du collagène. Il provoque une hypermobilité articulaire et des douleurs chroniques invisibles.",pts:3,diff:2},
+  {q:"L'algodystrophie (SDRC) est un syndrome caractérisé par :",opts:["Des maux de tête chroniques","Des douleurs régionales intenses disproportionnées après un traumatisme","Une fatigue musculaire générale","Des crises de tachycardie"],correct:1,expl:"Le SDRC (anciennement algodystrophie) provoque des douleurs intenses et persistantes, souvent disproportionnées par rapport à la blessure initiale.",pts:4,diff:3},
+  {q:"La polyarthrite rhumatoïde est une maladie :",opts:["Infectieuse","Génétique uniquement","Auto-immune","Dégénérative seulement"],correct:2,expl:"La polyarthrite rhumatoïde est une maladie auto-immune dans laquelle le système immunitaire attaque les articulations.",pts:2,diff:1},
+  {q:"Le lupus érythémateux systémique touche surtout :",opts:["Les hommes de 50 ans","Les femmes jeunes (20-40 ans)","Les enfants de moins de 10 ans","Les personnes âgées"],correct:1,expl:"Le lupus touche 9 femmes pour 1 homme, principalement entre 20 et 40 ans. Le soleil peut déclencher des poussées graves.",pts:2,diff:1},
+  {q:"La migraine chronique se distingue de la migraine ordinaire par :",opts:["Son intensité","Sa fréquence : plus de 15 jours par mois","Son traitement","Sa localisation"],correct:1,expl:"On parle de migraine chronique quand les crises surviennent plus de 15 jours par mois pendant plus de 3 mois.",pts:3,diff:2},
+  {q:"L'insuffisance rénale chronique est considérée invisible car :",opts:["Elle est asymptomatique","Ses symptômes (fatigue, œdèmes légers) sont souvent banalisés","Elle ne nécessite pas de traitement","Elle ne se voit pas aux examens"],correct:1,expl:"L'IRC provoque une fatigue, des difficultés de concentration et des troubles divers souvent banalisés avant que la maladie soit avancée.",pts:3,diff:2},
+  {q:"L'hypothyroïdie non traitée peut provoquer :",opts:["Hyperactivité et insomnie","Fatigue intense, dépression, prise de poids","Fièvre chronique","Douleurs articulaires uniquement"],correct:1,expl:"L'hypothyroïdie ralentit le métabolisme et peut provoquer une fatigue intense, une dépression, une prise de poids et des troubles cognitifs.",pts:2,diff:1},
+  {q:"Le SCI (Syndrome du Côlon Irritable) affecte en France :",opts:["1% de la population","5% de la population","15-20% de la population","50% de la population"],correct:2,expl:"Le SCI touche 15 à 20% de la population française. Malgré sa fréquence, il est souvent minimisé.",pts:3,diff:2},
+  {q:"Les maladies cardiaques chroniques sont invisibles car :",opts:["Elles sont bénignes","La personne paraît normale entre les épisodes","Elles ne se traitent pas","Elles ne sont pas reconnues médicalement"],correct:1,expl:"Entre les épisodes, une personne avec insuffisance cardiaque peut sembler tout à fait normale, même si chaque effort est difficile.",pts:2,diff:1},
+],
+psy:[
+  {q:"La dépression est définie comme une maladie neurologique car :",opts:["Elle est contagieuse","Elle modifie la chimie et la structure du cerveau","Elle se transmet génétiquement uniquement","Elle est causée par un choc émotionnel toujours"],correct:1,expl:"La dépression modifie réellement la chimie du cerveau (sérotonine, dopamine). Ce n'est pas un manque de volonté.",pts:2,diff:1},
+  {q:"Le TOC (Trouble Obsessionnel-Compulsif) peut occuper par jour :",opts:["Quelques minutes","30 minutes maximum","Jusqu'à 8 heures dans les cas sévères","Uniquement la nuit"],correct:2,expl:"Dans les cas sévères, le TOC peut monopoliser jusqu'à 8 heures par jour, rendant toute vie normale impossible.",pts:3,diff:2},
+  {q:"Le TSPT peut survenir après :",opts:["Uniquement des guerres","N'importe quel événement traumatisant","Uniquement chez les soldats","Un deuil uniquement"],correct:1,expl:"Le TSPT peut toucher n'importe qui après un événement traumatisant : accident, agression, catastrophe, violence domestique.",pts:2,diff:1},
+  {q:"Le trouble bipolaire touche environ quelle proportion de la population ?",opts:["0.1%","1%","10%","20%"],correct:1,expl:"Le trouble bipolaire touche environ 1% de la population mondiale, soit des millions de personnes.",pts:2,diff:1},
+  {q:"La schizophrénie augmente-t-elle le risque de violence ?",opts:["Oui, fortement","Non, les personnes stabilisées ne sont pas plus dangereuses que la moyenne","Oui, mais seulement en crise","Cela dépend du sexe"],correct:1,expl:"Les personnes schizophrènes stabilisées ne présentent pas de dangerosité particulière. Ce préjugé cause une forte stigmatisation.",pts:2,diff:1},
+  {q:"Le trouble de la personnalité borderline (TPB) se caractérise par :",opts:["Une instabilité émotionnelle intense et des relations difficiles","Un repli sur soi permanent","Une absence d'émotions","Une euphorie permanente"],correct:0,expl:"Le TPB implique une instabilité émotionnelle intense, des relations complexes et une image de soi perturbée. Il est souvent mal compris.",pts:3,diff:2},
+  {q:"La phobie sociale est une forme d'anxiété qui :",opts:["Disparaît toujours seule","Peut empêcher toute vie sociale et professionnelle","Est bénigne et sans conséquences","Touche uniquement les introvertis"],correct:1,expl:"La phobie sociale peut être très invalidante et empêcher d'aller travailler, de parler en public ou même de faire des courses.",pts:2,diff:1},
+  {q:"Qu'est-ce que la dépression post-partum ?",opts:["Une dépression liée à la grossesse ou l'accouchement","Une dépression uniquement chez les pères","Un trouble hormonal bénin","Une dépression saisonnière"],correct:0,expl:"La dépression post-partum touche 15-20% des mères après l'accouchement. Elle peut être sévère et nécessite un traitement.",pts:2,diff:1},
+  {q:"Le trouble anxieux généralisé (TAG) se distingue du stress normal car :",opts:["Il dure moins longtemps","Il est chronique, envahissant et empêche de fonctionner normalement","Il disparaît avec des vacances","Il n'a pas de symptômes physiques"],correct:1,expl:"Le TAG est une anxiété chronique persistante, disproportionnée et envahissante qui peut paralyser la vie quotidienne.",pts:2,diff:1},
+  {q:"Le 'burn-out' est reconnu comme maladie professionnelle en France ?",opts:["Oui, depuis 2010","Non, il n'est pas dans le tableau des maladies professionnelles","Oui, depuis 2020","Oui, uniquement pour les soignants"],correct:1,expl:"Le burn-out n'est toujours pas reconnu comme maladie professionnelle en France, ce qui complique la reconnaissance et l'indemnisation.",pts:4,diff:3},
+  {q:"Le trouble de l'addiction sévère peut être reconnu comme handicap car :",opts:["Non, jamais","Oui, quand il provoque des séquelles neurologiques et psychiatriques invalidantes","Oui, toujours automatiquement","Non, c'est un choix personnel"],correct:1,expl:"La dépendance sévère avec séquelles est reconnue comme pouvant donner droit à la RQTH quand elle est invalidante.",pts:3,diff:2},
+  {q:"Le trouble dissociatif de l'identité (TDI) implique :",opts:["La perte de mémoire uniquement","La présence de plusieurs états identitaires distincts","Une psychose chronique","Un retard mental"],correct:1,expl:"Le TDI implique la coexistence de plusieurs états de personnalité, souvent en réponse à des traumatismes sévères.",pts:4,diff:3},
+  {q:"Quelle proportion des suicides est liée à la dépression non traitée ?",opts:["10%","30%","50-70%","100%"],correct:2,expl:"50 à 70% des suicides sont liés à une dépression non ou mal traitée. C'est pourquoi le diagnostic et le traitement précoces sont essentiels.",pts:3,diff:2},
+  {q:"Les troubles des conduites alimentaires (TCA) sont :",opts:["Des caprices alimentaires","De vraies maladies psychiatriques avec risque vital","Des troubles passagers de l'adolescence","Uniquement liés aux régimes"],correct:1,expl:"Les TCA (anorexie, boulimie, hyperphagie) sont des maladies psychiatriques graves avec le taux de mortalité le plus élevé parmi les troubles psy.",pts:2,diff:1},
+  {q:"Qu'est-ce que la dépression saisonnière ?",opts:["Une dépression qui dure toute l'année","Une dépression liée aux changements de saison, surtout l'hiver","Une dépression bénigne sans traitement","Une dépression inventée"],correct:1,expl:"La dépression saisonnière est liée au manque de lumière en automne/hiver. Elle touche 3% de la population de façon sévère.",pts:2,diff:1},
+],
+gene:[
+  {q:"La drépanocytose est en France :",opts:["Une maladie très rare","La maladie génétique la plus fréquente","Une maladie récente","Une maladie importée uniquement"],correct:1,expl:"La drépanocytose est la maladie génétique la plus fréquente en France devant la mucoviscidose.",pts:2,diff:1},
+  {q:"L'hémophilie provoque une difficulté à :",opts:["Respirer","Coaguler le sang","Digérer","Voir"],correct:1,expl:"L'hémophilie est un trouble de la coagulation. Une blessure interne peut provoquer des hémorragies graves sans signe visible extérieur.",pts:2,diff:1},
+  {q:"Le syndrome de Marfan affecte principalement :",opts:["Le système nerveux central","Le tissu conjonctif (os, artères, yeux)","Les muscles uniquement","Le système immunitaire"],correct:1,expl:"Le syndrome de Marfan est une maladie génétique du tissu conjonctif. Les personnes sont souvent grandes et minces avec une morphologie particulière.",pts:3,diff:2},
+  {q:"Combien de maladies rares sont répertoriées dans le monde ?",opts:["Environ 500","Environ 2 000","Plus de 7 000","Plus de 50 000"],correct:2,expl:"On répertorie plus de 7 000 maladies rares dans le monde. 80% ont une origine génétique.",pts:2,diff:1},
+  {q:"Quelle proportion de la population française est touchée par une maladie rare ?",opts:["1 sur 100","1 sur 17","1 sur 50","1 sur 5"],correct:1,expl:"En France, 1 personne sur 17 est touchée par une maladie rare, soit environ 3 millions de personnes.",pts:3,diff:2},
+  {q:"L'errance diagnostique pour les maladies rares dure en moyenne :",opts:["Quelques semaines","6 mois","5 à 10 ans","Toujours moins d'un an"],correct:2,expl:"L'errance diagnostique dure en moyenne 5 à 10 ans pour les maladies rares. Cette période est souvent très douloureuse.",pts:2,diff:1},
+  {q:"La mucoviscidose affecte principalement quel organe ?",opts:["Le foie","Les poumons","Le cerveau","Les reins"],correct:1,expl:"La mucoviscidose affecte principalement les poumons (accumulation de mucus) mais aussi le pancréas et le système digestif.",pts:2,diff:1},
+  {q:"Le syndrome d'Ehlers-Danlos (SED) est souvent mal diagnostiqué car :",opts:["Il n'a pas de symptômes","Les personnes paraissent souples et athlétiques","Il est très rare","Il n'existe pas de test spécifique seulement"],correct:1,expl:"Les personnes avec SED semblent très souples, ce qui masque la fragilité réelle de leurs articulations et les douleurs chroniques qu'elles endurent.",pts:3,diff:2},
+  {q:"La phénylcétonurie est une maladie métabolique héréditaire qui nécessite :",opts:["Un traitement chirurgical","Un régime alimentaire strict à vie","Une chimiothérapie","Des dialyses régulières"],correct:1,expl:"La phénylcétonurie empêche le métabolisme de la phénylalanine. Un régime strict est essentiel pour éviter des lésions cérébrales graves.",pts:4,diff:3},
+  {q:"La drépanocytose provoque des 'crises vaso-occlusives' qui sont :",opts:["Des éruptions cutanées","Des douleurs intenses causées par l'obstruction des vaisseaux","Des convulsions","Des crises cardiaques"],correct:1,expl:"Les crises vaso-occlusives sont des épisodes de douleurs intenses causés par les globules rouges en faucille qui obstruent les petits vaisseaux.",pts:3,diff:2},
+  {q:"Le chromosome X joue un rôle dans la transmission de :",opts:["La drépanocytose","L'hémophilie","La mucoviscidose","Le diabète de type 1"],correct:1,expl:"L'hémophilie est une maladie liée au chromosome X, ce qui explique qu'elle touche surtout les hommes.",pts:3,diff:2},
+  {q:"Maladies rares : qu'est-ce qu'une maladie 'ultra-rare' ?",opts:["Moins de 100 000 cas en France","Moins de 1 000 cas en France","Moins de 1 cas par million","Uniquement les maladies génétiques"],correct:1,expl:"On parle de maladie ultra-rare quand elle touche moins de 1 000 personnes en France.",pts:4,diff:3},
+  {q:"La myasthénie est une maladie auto-immune qui affecte :",opts:["Les articulations","La jonction neuromusculaire (transmission nerfs-muscles)","Le système cardiovasculaire","La peau"],correct:1,expl:"La myasthénie provoque une faiblesse musculaire variable qui s'aggrave à l'effort. Elle est souvent invisible au repos.",pts:4,diff:3},
+  {q:"La sclérodermie est une maladie auto-immune qui durcit :",opts:["Les os","La peau et les organes internes","Le sang","Les nerfs"],correct:1,expl:"La sclérodermie est une maladie auto-immune qui provoque un durcissement progressif de la peau et des organes internes.",pts:3,diff:2},
+  {q:"Le VIH avec charge virale indétectable signifie :",opts:["La personne est guérie","Le virus est contrôlé et non transmissible (U=U)","La personne est moins contagieuse mais toujours dangereuse","Le traitement a échoué"],correct:1,expl:"U=U (Undetectable = Untransmittable) : une personne séropositive avec charge virale indétectable ne transmet pas le virus. Reconnu par l'OMS.",pts:3,diff:2},
+],
+cardio:[
+  {q:"L'AVC peut laisser des séquelles invisibles comme :",opts:["Uniquement des paralysies visibles","Fatigue cérébrale, troubles cognitifs, aphasie, dépression","Uniquement des maux de tête","Aucune séquelle invisible"],correct:1,expl:"Les séquelles invisibles d'un AVC sont fréquentes : fatigue cérébrale intense, troubles de la mémoire, difficultés du langage (aphasie), dépression post-AVC.",pts:2,diff:1},
+  {q:"Qu'est-ce que l'aphasie ?",opts:["Une paralysie faciale","Un trouble du langage causé par une lésion cérébrale","Une forme de démence","Un trouble visuel"],correct:1,expl:"L'aphasie est un trouble du langage (parler, comprendre, lire, écrire) causé par une lésion cérébrale. Elle est souvent une séquelle d'AVC.",pts:2,diff:1},
+  {q:"La rupture d'anévrisme cérébral peut laisser comme séquelle :",opts:["Uniquement des handicaps moteurs","Fatigue cognitive intense, troubles de la mémoire, hypersensibilités","Aucune séquelle en cas de survie","Uniquement des problèmes de vision"],correct:1,expl:"Les séquelles d'une rupture d'anévrisme ressemblent à celles d'un AVC : fatigue cognitive, troubles mnésiques, sensibilité accrue au bruit et à la lumière.",pts:2,diff:1},
+  {q:"La fatigue post-AVC est caractérisée par :",opts:["Une fatigue légère le soir","Une fatigue intense apparaissant rapidement lors d'activités mentales ou physiques","Une fatigue uniquement physique","Une fatigue qui disparaît en quelques semaines"],correct:1,expl:"La fatigue post-AVC (asthénie cérébrale) est différente de la fatigue ordinaire. Elle survient rapidement et peut nécessiter de longues récupérations.",pts:3,diff:2},
+  {q:"Le traumatisme crânien peut provoquer des séquelles invisibles comme :",opts:["Uniquement la perte de mémoire totale","Troubles de l'attention, fatigue, changements de personnalité","Aucune séquelle si pas de fracture","Uniquement des maux de tête"],correct:1,expl:"Les traumatismes crâniens légers à modérés peuvent provoquer des séquelles invisibles durables : troubles cognitifs, fatigue, irritabilité.",pts:2,diff:1},
+  {q:"L'AVC touche principalement les personnes âgées. Cette affirmation est :",opts:["Vraie, uniquement les plus de 70 ans","Fausse, les AVC chez les jeunes adultes sont en augmentation","Vraie, les moins de 50 ans ne sont pas concernés","Vraie pour les femmes uniquement"],correct:1,expl:"Les AVC chez les jeunes adultes (moins de 50 ans) sont en augmentation. Le stress, le tabac, les contraceptifs oraux sont des facteurs de risque.",pts:3,diff:2},
+  {q:"L'insuffisance cardiaque chronique est invisible car :",opts:["Elle n'a pas de symptômes","La personne peut paraître normale au repos malgré une limite physique réelle","Elle n'est pas reconnue médicalement","Elle guérit toujours seule"],correct:1,expl:"Entre les décompensations, une personne avec insuffisance cardiaque peut paraître normale tout en étant limitée dans ses activités.",pts:2,diff:1},
+  {q:"L'héminégligence après AVC est :",opts:["Une paralysie d'un côté du corps","Le cerveau ignore une partie de l'espace ou du corps","Un trouble de la parole","Une perte de vision partielle"],correct:1,expl:"L'héminégligence est un trouble neurologique où le cerveau ignore un côté de l'espace ou du corps, souvent après un AVC droit.",pts:4,diff:3},
+  {q:"La 'fatigue de compassion' est un handicap invisible touchant :",opts:["Les patients uniquement","Les soignants et aidants proches","Les personnes dépressives","Les parents d'enfants handicapés uniquement"],correct:1,expl:"La fatigue de compassion est un état d'épuisement émotionnel et professionnel touchant les soignants et aidants proches exposés à la souffrance d'autrui.",pts:3,diff:2},
+  {q:"Les séquelles cognitives du COVID long comprennent :",opts:["Uniquement de la fatigue","Brouillard mental, troubles de la mémoire, difficultés de concentration","Aucun trouble cognitif reconnu","Uniquement des troubles cardiaques"],correct:1,expl:"Le COVID long peut provoquer un 'brouillard mental' (brain fog) avec troubles cognitifs durables, reconnu comme handicap invisible.",pts:2,diff:1},
+],
+respi:[
+  {q:"L'apnée du sommeil non traitée peut provoquer à long terme :",opts:["Uniquement de la fatigue légère","Hypertension, maladies cardiovasculaires, AVC, dépression","Seulement des ronflements","Des problèmes dentaires"],correct:1,expl:"L'apnée du sommeil non traitée a des conséquences graves sur la santé cardiovasculaire et mentale. Elle touche 5 millions de Français.",pts:2,diff:1},
+  {q:"La BPCO (Bronchopneumopathie Chronique Obstructive) est invisible car :",opts:["Elle n'a pas de symptômes","L'essoufflement lors d'efforts modérés n'est pas visible de l'extérieur","Elle ne provoque pas d'handicap","Elle se guérit facilement"],correct:1,expl:"La BPCO provoque un essoufflement progressif qui n'est pas visible mais peut rendre très difficiles les activités quotidiennes.",pts:2,diff:1},
+  {q:"L'asthme sévère peut empêcher :",opts:["Uniquement le sport de haut niveau","Toute activité physique et même les activités quotidiennes","Seulement de courir","Uniquement de travailler en extérieur"],correct:1,expl:"L'asthme sévère peut être très invalidant. Une crise peut mettre la vie en danger. Ce n'est pas 'juste de la respiration difficile'.",pts:2,diff:1},
+  {q:"Les acouphènes sévères peuvent provoquer :",opts:["Uniquement une gêne légère","Troubles du sommeil, anxiété sévère, dépression, isolement social","Seulement une perte d'audition","Aucun impact psychologique"],correct:1,expl:"Les acouphènes intenses et permanents peuvent totalement perturber la vie. 10% de la population est concernée.",pts:2,diff:1},
+  {q:"La malvoyance (basse vision) se distingue de la cécité par :",opts:["Elle ne nécessite pas d'aide","Une vision résiduelle présente mais insuffisante pour les activités normales","Elle touche les deux yeux uniquement","Elle est toujours corrigeable par lunettes"],correct:1,expl:"La malvoyance désigne une vision résiduelle qui ne permet pas de fonctionner normalement même avec des corrections optiques.",pts:2,diff:1},
+  {q:"La malentendance partielle est invisible car :",opts:["Elle n'affecte pas la vie quotidienne","La personne peut paraître entendre normalement en face à face mais souffrir en groupe","Elle se voit toujours sur les prothèses","Elle disparaît avec l'âge"],correct:1,expl:"Une personne malentendante peut fonctionner en tête-à-tête mais se trouver en grande difficulté dans les espaces bruyants ou en groupe.",pts:2,diff:1},
+  {q:"L'allergie sévère avec risque d'anaphylaxie est un handicap invisible car :",opts:["C'est bénin et traitable","La menace vitale n'est pas visible mais constante et stressante","Elle disparaît à l'âge adulte","Elle ne nécessite pas d'aménagement"],correct:1,expl:"Une personne avec allergie sévère vit sous la menace constante d'une réaction anaphylactique. Le stress et les aménagements nécessaires impactent quotidiennement.",pts:3,diff:2},
+  {q:"Le traitement principal de l'apnée du sommeil est :",opts:["La chirurgie uniquement","Un appareillage CPAP maintenant les voies respiratoires ouvertes","Des médicaments","Le sommeil sur le côté uniquement"],correct:1,expl:"Le CPAP (Continuous Positive Airway Pressure) est le traitement de référence de l'apnée du sommeil. Il est porté comme un masque la nuit.",pts:2,diff:1},
+  {q:"L'hypersensibilité chimique multiple (SHC) rend difficile :",opts:["Toute activité physique","La présence dans des lieux avec parfums, produits chimiques ordinaires","Uniquement le travail en usine","Les activités en plein air"],correct:1,expl:"Le SHC provoque des réactions intenses aux produits chimiques ordinaires (parfums, produits ménagers, encres). La personne peut difficilement fréquenter des lieux publics.",pts:4,diff:3},
+  {q:"Les acouphènes sont :",opts:["Toujours audibles par l'entourage","Perçus uniquement par la personne concernée","Causés uniquement par des traumatismes sonores","Toujours liés à une surdité"],correct:1,expl:"Les acouphènes sont des perceptions sonores (sifflement, bourdonnement) que seule la personne concernée entend. Ils sont totalement invisibles.",pts:2,diff:1},
+],
+droits:[
+  {q:"La loi du 11 février 2005 en France porte sur :",opts:["Les droits des patients","L'égalité des droits et des chances pour les personnes handicapées","La création de la CMI","L'accessibilité uniquement des bâtiments"],correct:1,expl:"La loi de 2005 est le texte fondateur des droits des personnes handicapées en France. Elle pose le principe d'égalité et oblige la société à s'adapter.",pts:2,diff:1},
+  {q:"La RQTH signifie :",opts:["Reconnaissance de Qualité de Travailleur Handicapé","Registre Qualité des Travailleurs Handicapés","Règlement Qualité du Travail Hospitalier","Reconnaissance Qualifiée du Trouble Handicapant"],correct:0,expl:"La RQTH est la Reconnaissance de la Qualité de Travailleur Handicapé. Elle permet d'obtenir des aménagements au travail et est accessible même pour les handicaps invisibles.",pts:2,diff:1},
+  {q:"La CMI (Carte Mobilité Inclusion) est délivrée par :",opts:["Le médecin traitant","La MDPH","La Sécurité Sociale","Le maire"],correct:1,expl:"La CMI est délivrée par la MDPH (Maison Départementale des Personnes Handicapées). Elle remplace les anciennes cartes d'invalidité et de priorité.",pts:2,diff:1},
+  {q:"La MDPH permet notamment d'obtenir :",opts:["Uniquement des aides financières","RQTH, AAH, PCH, orientations scolaires/professionnelles","Uniquement des places en établissements","Uniquement des remboursements médicaux"],correct:1,expl:"La MDPH est le guichet unique du handicap en France : RQTH, AAH (Allocation Adulte Handicapé), PCH (Prestation de Compensation du Handicap) et bien d'autres.",pts:2,diff:1},
+  {q:"Un employeur peut-il licencier un salarié ayant une RQTH pour son handicap ?",opts:["Oui, si cela nuit à la productivité","Non, c'est une discrimination illégale","Oui, avec un préavis de 6 mois","Oui, avec l'accord du médecin du travail"],correct:1,expl:"Le licenciement d'un salarié en raison de son handicap est une discrimination illégale. Des protections spécifiques s'appliquent aux travailleurs handicapés.",pts:2,diff:1},
+  {q:"L'AAH (Allocation Adulte Handicapé) est attribuée quand le taux d'incapacité est :",opts:["Supérieur à 20%","Supérieur à 50% (avec critères)","Supérieur à 80% uniquement","Peu importe le taux"],correct:1,expl:"L'AAH est attribuée à partir de 50% de taux d'incapacité (avec critères) ou 80% automatiquement. Elle est accordée par la MDPH.",pts:3,diff:2},
+  {q:"Le 'devoir de compensation' de l'État pour les personnes handicapées signifie :",opts:["L'État paye tout les soins","L'État doit compenser les conséquences du handicap sur la vie quotidienne","L'État emploie les personnes handicapées directement","L'État finance uniquement l'accessibilité physique"],correct:1,expl:"Le devoir de compensation implique que la société doit compenser les conséquences du handicap pour permettre une participation égale à la vie sociale.",pts:3,diff:2},
+  {q:"Un employeur de plus de 20 salariés doit employer au moins :",opts:["1% de travailleurs handicapés","6% de travailleurs handicapés","10% de travailleurs handicapés","2% de travailleurs handicapés"],correct:1,expl:"La loi impose aux entreprises de plus de 20 salariés un quota de 6% de travailleurs handicapés (OETH - Obligation d'Emploi des Travailleurs Handicapés).",pts:2,diff:1},
+  {q:"L'AGEFIPH est un organisme qui :",opts:["Gère les dossiers MDPH","Collecte et redistribue les contributions des entreprises n'atteignant pas le quota handicap","Forme les médecins aux handicaps invisibles","Finance les aides techniques uniquement"],correct:1,expl:"L'AGEFIPH collecte les contributions des entreprises ne respectant pas l'OETH et finance des actions pour l'emploi des travailleurs handicapés.",pts:4,diff:3},
+  {q:"Un handicap invisible donne-t-il droit à la CMI priorité (ancienne carte de priorité) ?",opts:["Non, uniquement les handicaps visibles","Oui, si validé par la MDPH, peu importe la visibilité du handicap","Oui, uniquement si le taux est supérieur à 80%","Non, il faut obligatoirement un fauteuil roulant"],correct:1,expl:"La CMI priorité est accessible quel que soit le type de handicap. La MDPH évalue la situation globale, pas la visibilité.",pts:2,diff:1},
+  {q:"L'ALD (Affection de Longue Durée) permet :",opts:["Une exonération totale des charges sociales","Une prise en charge à 100% par l'Assurance Maladie","Une retraite anticipée automatique","Une réduction d'impôts"],correct:1,expl:"L'ALD permet une prise en charge à 100% des soins liés à la pathologie reconnue. Elle est accordée par le médecin traitant et la Sécurité Sociale.",pts:2,diff:1},
+  {q:"Le PPS (Projet Personnalisé de Scolarisation) est destiné à :",opts:["Les élèves étrangers","Les élèves handicapés pour organiser leur parcours scolaire","Les élèves en décrochage scolaire","Les élèves surdoués"],correct:1,expl:"Le PPS est élaboré par la MDPH pour les élèves handicapés. Il organise les modalités de scolarisation et les aménagements nécessaires.",pts:2,diff:1},
+  {q:"La discrimination d'une personne handicapée est punie en France de :",opts:["Un simple avertissement","Jusqu'à 3 ans d'emprisonnement et 45 000€ d'amende","Une amende administrative uniquement","Des sanctions disciplinaires uniquement"],correct:1,expl:"La discrimination basée sur le handicap est un délit pénal punissable de 3 ans d'emprisonnement et 45 000€ d'amende.",pts:3,diff:2},
+  {q:"Le droit à l'aménagement raisonnable au travail signifie :",opts:["L'employeur peut refuser si le coût est important","L'employeur doit adapter le poste si la charge n'est pas disproportionnée","L'aménagement est automatique","Cela ne concerne que les handicaps physiques"],correct:1,expl:"L'aménagement raisonnable oblige l'employeur à adapter le poste sauf si la charge est disproportionnée par rapport à ses moyens.",pts:3,diff:2},
+],
+culture:[
+  {q:"Combien de personnes sont en situation de handicap en France ?",opts:["1 million","3 millions","12 millions","25 millions"],correct:2,expl:"Environ 12 millions de personnes sont en situation de handicap en France, dont 80% ont un handicap invisible.",pts:2,diff:1},
+  {q:"Quelle proportion des handicaps est invisible ?",opts:["20%","40%","60%","80%"],correct:3,expl:"80% des handicaps en France sont invisibles. Contrairement aux idées reçues, la majorité du handicap ne se voit pas.",pts:2,diff:1},
+  {q:"Quelle est la première cause de handicap dans le monde selon l'OMS ?",opts:["Les accidents de la route","La dépression","Les maladies cardiaques","Le diabète"],correct:1,expl:"La dépression est la 1ère cause de handicap dans le monde selon l'OMS. Elle touche 280 millions de personnes.",pts:2,diff:1},
+  {q:"La journée mondiale du handicap est le :",opts:["21 mars","15 septembre","3 décembre","10 octobre"],correct:2,expl:"La Journée Internationale des Personnes Handicapées est célébrée chaque année le 3 décembre.",pts:2,diff:1},
+  {q:"En France, le taux de chômage des personnes handicapées est :",opts:["Identique à la moyenne nationale","Légèrement supérieur","Environ 2 fois la moyenne nationale","3 fois la moyenne nationale"],correct:2,expl:"Le taux de chômage des personnes handicapées est environ 2 fois supérieur à la moyenne nationale, soit environ 18% contre 9%.",pts:2,diff:1},
+  {q:"Le terme 'capacitisme' (ou validisme) désigne :",opts:["La capacité à travailler","La discrimination envers les personnes handicapées","Un test de capacités cognitives","Une loi sur l'accessibilité"],correct:1,expl:"Le capacitisme (validisme) est la discrimination et les préjugés envers les personnes handicapées. Il peut être conscient ou inconscient.",pts:3,diff:2},
+  {q:"Quelle célébrité mondiale est connue pour avoir vécu avec une sclérose latérale amyotrophique (SLA) ?",opts:["Albert Einstein","Stephen Hawking","Charles Darwin","Isaac Newton"],correct:1,expl:"Stephen Hawking a vécu avec la SLA pendant plus de 50 ans. Sa vie illustre comment le handicap n'empêche pas les plus grandes réalisations intellectuelles.",pts:2,diff:1},
+  {q:"Le modèle social du handicap considère que :",opts:["Le handicap est une maladie à guérir","C'est la société qui handicape, pas la déficience elle-même","Le handicap est une punition","Les personnes handicapées doivent s'adapter"],correct:1,expl:"Le modèle social du handicap distingue la déficience (état de santé) du handicap (barrières créées par la société). C'est la société qui doit s'adapter.",pts:3,diff:2},
+  {q:"La 'charge mentale' du handicap désigne :",opts:["Le poids physique des aides techniques","L'effort cognitif constant de gérer sa maladie et les démarches administratives","La fatigue physique uniquement","Le coût financier du handicap"],correct:1,expl:"La charge mentale du handicap comprend la gestion quotidienne des symptômes, des traitements, des démarches administratives et des relations sociales.",pts:3,diff:2},
+  {q:"En France, la Semaine Européenne pour l'Emploi des Personnes Handicapées (SEEPH) a lieu :",opts:["En mars","En juin","En novembre","En décembre"],correct:2,expl:"La SEEPH se déroule chaque année en novembre (3ème semaine). Elle sensibilise les entreprises et le grand public à l'emploi des personnes handicapées.",pts:2,diff:1},
+  {q:"Quel pourcentage des établissements scolaires sont accessibles aux personnes handicapées en France ?",opts:["Presque 100%","Environ 80%","Environ 50%","Moins de 30%"],correct:3,expl:"Malgré les obligations légales, moins de 30% des établissements scolaires sont pleinement accessibles. Le chemin est encore long.",pts:4,diff:3},
+  {q:"L'auto-représentation des personnes handicapées signifie :",opts:["Elles se représentent seules en justice","Elles parlent en leur propre nom plutôt qu'être représentées par d'autres","Elles font leur auto-diagnostic","Elles choisissent leurs traitements seules"],correct:1,expl:"L'auto-représentation est le principe 'Rien sur nous sans nous'. Les personnes handicapées doivent être les actrices principales des décisions qui les concernent.",pts:3,diff:2},
+  {q:"Les aidants proches en France représentent :",opts:["500 000 personnes","2 millions","11 millions","20 millions"],correct:2,expl:"La France compte environ 11 millions d'aidants proches (famille, amis) qui accompagnent une personne en situation de handicap ou de dépendance.",pts:3,diff:2},
+  {q:"L'accessibilité universelle bénéficie :",opts:["Uniquement aux personnes handicapées","À toute la société (poussettes, personnes âgées, livreurs...)","Uniquement aux personnes en fauteuil roulant","Uniquement aux personnes malvoyantes"],correct:1,expl:"L'accessibilité universelle bénéficie à tous : parents avec poussette, personnes âgées, livreurs, blessés temporaires... pas uniquement aux personnes handicapées.",pts:2,diff:1},
+  {q:"La 'neurodiversité' est un concept qui considère :",opts:["Les troubles neurologiques comme des maladies à soigner","Les variations neurologiques (autisme, TDAH, DYS...) comme des variations naturelles humaines","La diversité culturelle des soignants","Un type de thérapie"],correct:1,expl:"La neurodiversité reconnaît que les cerveaux fonctionnent différemment et que ces variations (autisme, TDAH, DYS) sont des expressions naturelles de la diversité humaine.",pts:3,diff:2},
+],
+};
+
+// ===== ÉTAT =====
+let selectedCats = new Set(Object.keys(QUESTIONS));
+let nbEquipes = 3;
+let equipeNames = [];
+let equipeColors = ['#e63946','#118AB2','#52b788','#d4a843','#7B5EA7','#FF8C42'];
+let equipeScores = [];
+let equipeRounds = [];
+let qParCat = 5;
+let partieQuestions = [];
+let qIdx = 0;
+let currentCatIdx = 0;
+let answered = false;
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// INIT ACCUEIL
+function initHome() {
+  const grid = document.getElementById('cat-select');
+  grid.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn selected';
+    btn.style.borderColor = cat.couleur;
+    btn.style.color = cat.couleur;
+    btn.dataset.id = cat.id;
+    btn.innerHTML = `<span class="cat-icon">${cat.icon}</span>${cat.nom}`;
+    btn.onclick = () => toggleCat(cat.id, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleCat(id, btn) {
+  if (selectedCats.has(id)) {
+    if (selectedCats.size <= 1) return;
+    selectedCats.delete(id);
+    btn.classList.remove('selected');
+    btn.style.background = 'rgba(255,255,255,0.04)';
+  } else {
+    selectedCats.add(id);
+    btn.classList.add('selected');
+    btn.style.background = 'rgba(255,255,255,0.2)';
+  }
+}
+
+// CONFIG
+function goConfig() {
+  buildConfigUI();
+  goScreen('s-config');
+}
+
+function buildConfigUI() {
+  const nbRow = document.getElementById('nb-teams-row');
+  nbRow.innerHTML = '';
+  [2,3,4,5,6].forEach(n=>{
+    const btn = document.createElement('button');
+    btn.className = 'nb-btn'+(n===nbEquipes?' active':'');
+    btn.textContent = n+' équipes';
+    btn.onclick = ()=>setNbEquipes(n);
+    nbRow.appendChild(btn);
+  });
+  buildTeamsGrid();
+}
+
+function setNbEquipes(n) {
+  nbEquipes = n;
+  document.querySelectorAll('.nb-btn').forEach(b=>{b.classList.remove('active');if(b.textContent===n+' équipes')b.classList.add('active');});
+  buildTeamsGrid();
+}
+
+function setQNb(n,btn) {
+  qParCat = n===15?999:n;
+  document.querySelectorAll('#s-config .nb-btn').forEach(b=>{
+    if(b.id&&b.id.startsWith('qnb')) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+}
+
+function buildTeamsGrid() {
+  const grid = document.getElementById('teams-grid');
+  grid.innerHTML = '';
+  const defaults = ['Les Champions','Les Empathiques','Les Solidaires','Les Engagés','Les Curieux','Les Militants'];
+  for(let i=0;i<nbEquipes;i++){
+    const div = document.createElement('div');
+    div.className = 'team-setup';
+    div.style.borderColor = equipeColors[i]+'60';
+    div.innerHTML = `<div class="team-label" style="color:${equipeColors[i]}">Équipe ${i+1}</div>
+      <input class="team-input" id="eq${i}" placeholder="${defaults[i]}" maxlength="16" value="${equipeNames[i]||defaults[i]}"/>`;
+    grid.appendChild(div);
+  }
+}
+
+function launchGame() {
+  equipeNames = [];
+  equipeScores = [];
+  equipeRounds = [];
+  for(let i=0;i<nbEquipes;i++){
+    equipeNames.push(document.getElementById('eq'+i)?.value||`Équipe ${i+1}`);
+    equipeScores.push(0);
+    equipeRounds.push(0);
+  }
+
+  // Construire la liste des questions
+  partieQuestions = [];
+  selectedCats.forEach(catId=>{
+    const pool = shuffle([...(QUESTIONS[catId]||[])]).slice(0,qParCat);
+    partieQuestions.push(...pool.map(q=>({...q,catId})));
+  });
+  partieQuestions = shuffle(partieQuestions);
+  qIdx = 0;
+  answered = false;
+  goScreen('s-game');
+  renderQuestion();
+}
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// RENDU JEU
+function renderScores() {
+  const row = document.getElementById('scores-row');
+  row.innerHTML='';
+  equipeNames.forEach((nom,i)=>{
+    const chip=document.createElement('div');
+    chip.className='team-chip';
+    chip.style.borderColor=equipeColors[i];
+    chip.innerHTML=`<div class="tc-name" style="color:${equipeColors[i]}">${nom}</div><div class="tc-pts" style="color:${equipeColors[i]}">${equipeScores[i]}</div><div class="tc-round">pts</div>`;
+    row.appendChild(chip);
+  });
+}
+
+function getCat(id){return CATEGORIES.find(c=>c.id===id)||CATEGORIES[0];}
+
+function renderQuestion(){
+  if(qIdx>=partieQuestions.length){showFin();return;}
+  answered=false;
+  const q=partieQuestions[qIdx];
+  const cat=getCat(q.catId);
+  const pct=Math.round((qIdx/partieQuestions.length)*100);
+  const diffStars='⭐'.repeat(q.diff||1);
+  const letters=['A','B','C','D'];
+
+  document.getElementById('game-title-bar').textContent=`${cat.icon} ${cat.nom}`;
+  document.getElementById('game-progress-badge').textContent=`Q${qIdx+1}/${partieQuestions.length}`;
+  renderScores();
+
+  const content=document.getElementById('game-content');
+  content.innerHTML=`
+    <div class="q-card">
+      <div class="q-progress"><div class="q-progress-fill" style="width:${pct}%;background:${cat.couleur};"></div></div>
+      <div class="q-meta">
+        <span class="q-cat-badge" style="background:${cat.couleur}20;color:${cat.couleur};">${cat.icon} ${cat.nom}</span>
+        <span class="q-num">Q${qIdx+1}</span>
+        <span class="q-diff" style="color:${cat.couleur};">${diffStars}</span>
+        <span class="q-pts-badge">+${q.pts} pts</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options">
+        ${q.opts.map((opt,i)=>`
+          <button class="q-opt" onclick="selectAnswer(${i})" data-idx="${i}">
+            <span class="q-opt-letter">${letters[i]}</span>${opt}
+          </button>`).join('')}
+      </div>
+      <div class="q-feedback" id="q-feedback"></div>
+    </div>
+    <div class="buzz-zone" id="buzz-zone">
+      <div class="buzz-title">🏆 Attribuer les points :</div>
+      <div class="buzz-teams" id="buzz-teams"></div>
+    </div>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">${qIdx<partieQuestions.length-1?'Question suivante →':'🏆 Voir les résultats !'}</button>`;
+
+  buildBuzzTeams();
+}
+
+function buildBuzzTeams(){
+  const wrap=document.getElementById('buzz-teams');
+  wrap.innerHTML='';
+  equipeNames.forEach((nom,i)=>{
+    const btn=document.createElement('button');
+    btn.className='buzz-btn';
+    btn.id=`buzz-${i}`;
+    btn.style.background=equipeColors[i];
+    btn.textContent=`✅ ${nom}`;
+    btn.onclick=()=>buzzEquipe(i);
+    wrap.appendChild(btn);
+  });
+}
+
+function selectAnswer(idx){
+  if(answered)return;
+  answered=true;
+  const q=partieQuestions[qIdx];
+  document.querySelectorAll('.q-opt').forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.correct)btn.classList.add('correct');
+    else if(i===idx)btn.classList.add('wrong');
+  });
+  const fb=document.getElementById('q-feedback');
+  const ok=idx===q.correct;
+  fb.className='q-feedback '+(ok?'ok':'ko')+' show';
+  fb.innerHTML=(ok?'✅ ':'❌ ')+q.expl;
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function buzzEquipe(i){
+  if(!answered){
+    // Mode buzz : révéler la bonne réponse d'abord
+    answered=true;
+    const q=partieQuestions[qIdx];
+    document.querySelectorAll('.q-opt').forEach((btn,bi)=>{
+      btn.disabled=true;
+      if(bi===q.correct)btn.classList.add('correct');
+    });
+    const fb=document.getElementById('q-feedback');
+    fb.className='q-feedback ok show';
+    fb.innerHTML='✅ '+q.expl;
+  }
+  equipeScores[i]+=partieQuestions[qIdx].pts;
+  document.getElementById(`buzz-${i}`).classList.add('buzzed');
+  document.getElementById(`buzz-${i}`).textContent=`✅ +${partieQuestions[qIdx].pts} pts`;
+  renderScores();
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function nextQ(){qIdx++;renderQuestion();}
+
+function confirmQuit(){if(confirm('Quitter le quiz en cours ?'))goScreen('s-home');}
+
+function showFin(){
+  const sorted=equipeNames.map((n,i)=>({nom:n,pts:equipeScores[i],color:equipeColors[i]})).sort((a,b)=>b.pts-a.pts);
+  const medals=['🥇','🥈','🥉','🎖️','🎗️','🏅'];
+  document.getElementById('end-msg').textContent=
+    `Quiz terminé ! ${partieQuestions.length} questions, ${equipeNames.length} équipes. Un grand bravo à tous pour cette session de sensibilisation aux handicaps invisibles ! 🐾`;
+  document.getElementById('podium').innerHTML=sorted.map((e,i)=>`
+    <div class="podium-row ${i===0?'first':''}">
+      <div class="pr-left">
+        <div class="pr-medal">${medals[i]}</div>
+        <div><div class="pr-name">${e.nom}</div><div class="pr-detail">${Math.round(e.pts/(partieQuestions.length*2)*100)}% de réussite</div></div>
+      </div>
+      <div class="pr-pts" style="color:${e.color}">${e.pts}</div>
+    </div>`).join('');
+  goScreen('s-end');
+}
+
+initHome();
+</script>
+</body>
+</html>
