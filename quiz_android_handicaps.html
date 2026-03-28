@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2d6a4f">
+<title>Handicaps Invisibles — Quiz Android</title>
+<style>
+:root{
+  --vert:#2d6a4f;--vert2:#52b788;--or:#d4a843;--or2:#f5c842;
+  --rouge:#e63946;--bleu:#118AB2;--violet:#7B5EA7;--orange:#FF8C42;
+  --rose:#E91E8C;--teal:#009688;--dark:#1b2a1b;
+  --bg:#fefae0;--text:#1b2a1b;--grey:#6b7c6b;--soft:#f0faf4;
+  --card-radius:18px;--btn-radius:14px;
+  --touch-min:52px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;
+}
+body{padding-bottom:env(safe-area-inset-bottom);}
+
+/* ──── ÉCRANS ──── */
+.screen{display:none;min-height:100vh;min-height:100dvh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ──── ACCUEIL ──── */
+#s-home{
+  background:linear-gradient(170deg,#0a1a12 0%,#2d6a4f 60%,#1b3a2d 100%);
+  align-items:center;justify-content:center;text-align:center;
+  padding:24px 20px;gap:0;
+}
+.home-paw{font-size:4rem;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+.home-title{
+  font-size:2rem;font-weight:900;color:var(--or);
+  line-height:1.1;margin-bottom:6px;
+}
+.home-sub{color:rgba(255,255,255,0.65);font-size:0.9rem;margin-bottom:4px;}
+.home-tag{color:rgba(255,255,255,0.4);font-size:0.75rem;font-style:italic;margin-bottom:28px;}
+.home-pills{
+  display:flex;flex-wrap:wrap;justify-content:center;
+  gap:8px;margin-bottom:28px;
+}
+.pill{
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  color:white;padding:6px 14px;border-radius:99px;
+  font-size:0.78rem;font-weight:700;
+}
+.btn-big{
+  display:block;width:100%;max-width:320px;
+  background:var(--or);color:var(--dark);border:none;
+  padding:18px;border-radius:99px;
+  font-size:1.15rem;font-weight:900;
+  cursor:pointer;margin-bottom:12px;
+  box-shadow:0 6px 0 #9a7020;
+  transition:transform 0.1s,box-shadow 0.1s;
+  min-height:var(--touch-min);
+}
+.btn-big:active{transform:translateY(3px);box-shadow:0 3px 0 #9a7020;}
+.btn-sm{
+  background:rgba(255,255,255,0.1);color:white;
+  border:2px solid rgba(255,255,255,0.25);
+  padding:12px 28px;border-radius:99px;
+  font-size:0.9rem;font-weight:800;cursor:pointer;
+  min-height:var(--touch-min);width:100%;max-width:320px;
+}
+
+/* ──── CONFIG JOUEURS ──── */
+#s-config{background:var(--bg);padding:0;}
+.topbar{
+  background:var(--vert);padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 8px rgba(0,0,0,0.25);
+  min-height:56px;
+}
+.topbar-back{
+  background:none;border:none;color:white;
+  font-size:1.5rem;cursor:pointer;padding:4px 8px;
+  min-width:44px;min-height:44px;
+  display:flex;align-items:center;justify-content:center;
+}
+.topbar-title{font-size:1.05rem;font-weight:900;color:var(--or);flex:1;}
+.topbar-badge{
+  background:rgba(255,255,255,0.15);color:white;
+  padding:5px 12px;border-radius:99px;
+  font-size:0.78rem;font-weight:800;white-space:nowrap;
+}
+.config-body{padding:16px;display:flex;flex-direction:column;gap:12px;}
+.config-section{background:white;border:2px solid #d8f3dc;border-radius:var(--card-radius);padding:16px;}
+.config-section h3{font-size:0.88rem;font-weight:800;color:var(--vert);margin-bottom:12px;}
+.player-row{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:10px;
+}
+.player-row:last-child{margin-bottom:0;}
+.player-av{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
+}
+.player-input{
+  flex:1;border:2px solid #d8f3dc;border-radius:10px;
+  padding:10px 12px;font-size:1rem;font-weight:700;
+  background:var(--bg);outline:none;color:var(--dark);
+  min-height:44px;
+}
+.player-input:focus{border-color:var(--vert2);}
+.nb-row{display:flex;gap:8px;}
+.nb-btn{
+  flex:1;padding:12px;border:2px solid #d8f3dc;
+  background:white;border-radius:10px;
+  font-size:0.9rem;font-weight:800;cursor:pointer;
+  color:var(--grey);min-height:44px;
+  transition:all 0.15s;
+}
+.nb-btn.active{background:var(--vert);color:white;border-color:var(--vert);}
+.q-nb-row{display:flex;gap:8px;flex-wrap:wrap;}
+.q-nb-btn{
+  flex:1;padding:10px 8px;border:2px solid #d8f3dc;
+  background:white;border-radius:10px;
+  font-size:0.82rem;font-weight:800;cursor:pointer;
+  color:var(--grey);min-height:44px;min-width:60px;
+}
+.q-nb-btn.active{background:var(--bleu);color:white;border-color:var(--bleu);}
+.info-box{
+  background:var(--soft);border:2px solid #d8f3dc;
+  border-radius:var(--card-radius);padding:14px 16px;
+  font-size:0.82rem;color:var(--grey);line-height:1.6;
+}
+.btn-launch{
+  background:var(--vert);color:white;border:none;
+  padding:18px;border-radius:99px;
+  font-size:1.1rem;font-weight:900;cursor:pointer;
+  box-shadow:0 5px 0 #1a3d2d;
+  min-height:var(--touch-min);
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+.btn-launch:active{transform:translateY(3px);box-shadow:0 2px 0 #1a3d2d;}
+
+/* ──── JEU ──── */
+#s-game{background:var(--bg);padding:0;}
+.scores-strip{
+  background:var(--vert);padding:10px 12px;
+  display:flex;gap:8px;overflow-x:auto;
+}
+.score-chip{
+  background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.2);
+  border-radius:12px;padding:8px 12px;flex-shrink:0;
+  text-align:center;transition:all 0.3s;min-width:80px;
+}
+.score-chip.active-player{
+  background:var(--or);border-color:var(--or);
+  transform:scale(1.05);
+}
+.sc-name{font-size:0.75rem;font-weight:800;color:white;}
+.sc-pts{font-size:1.4rem;font-weight:900;color:white;line-height:1;}
+.sc-lbl{font-size:0.62rem;color:rgba(255,255,255,0.65);}
+.score-chip.active-player .sc-name,
+.score-chip.active-player .sc-pts,
+.score-chip.active-player .sc-lbl{color:var(--dark);}
+
+.game-body{padding:12px;display:flex;flex-direction:column;gap:12px;flex:1;}
+.progress-wrap{padding:0 4px;}
+.progress-bar{height:7px;background:#ddd;border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;transition:width 0.5s ease;}
+.progress-meta{
+  display:flex;justify-content:space-between;
+  font-size:0.75rem;font-weight:700;color:var(--grey);
+  margin-top:5px;
+}
+
+/* CARTE QUESTION */
+.q-card{
+  background:white;border-radius:var(--card-radius);
+  overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  animation:slideUp 0.35s ease;
+}
+.q-card-header{padding:14px 16px 10px;}
+.q-cat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.q-cat-badge{
+  padding:4px 12px;border-radius:99px;
+  font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;
+}
+.q-diff{font-size:0.72rem;font-weight:800;}
+.q-pts-badge{
+  margin-left:auto;background:var(--soft);color:var(--vert);
+  padding:4px 10px;border-radius:99px;font-size:0.72rem;font-weight:800;
+}
+.q-text{
+  font-size:1.05rem;font-weight:800;color:var(--dark);
+  line-height:1.45;
+}
+.q-options{display:flex;flex-direction:column;gap:0;border-top:1px solid #f0f0f0;}
+.q-opt{
+  display:flex;align-items:center;gap:12px;
+  padding:15px 16px;border:none;background:white;
+  border-bottom:1px solid #f5f5f5;cursor:pointer;
+  text-align:left;width:100%;min-height:56px;
+  transition:background 0.15s;
+  -webkit-tap-highlight-color:rgba(0,0,0,0.05);
+}
+.q-opt:last-child{border-bottom:none;border-radius:0 0 var(--card-radius) var(--card-radius);}
+.q-opt:active{background:#f5f5f5;}
+.q-opt.correct{background:#E8FDF6 !important;}
+.q-opt.wrong{background:#FEE8EE !important;}
+.q-opt-letter{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--soft);display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:0.85rem;flex-shrink:0;
+  border:2px solid #d8f3dc;
+}
+.q-opt.correct .q-opt-letter{background:var(--vert2);color:white;border-color:var(--vert2);}
+.q-opt.wrong .q-opt-letter{background:var(--rouge);color:white;border-color:var(--rouge);}
+.q-opt-text{font-size:0.92rem;font-weight:700;color:var(--dark);line-height:1.35;}
+.q-opt.correct .q-opt-text{color:#1a7a5e;}
+.q-opt.wrong .q-opt-text{color:#c0305a;}
+
+/* FEEDBACK */
+.feedback-card{
+  border-radius:var(--card-radius);padding:14px 16px;
+  font-size:0.88rem;font-weight:700;line-height:1.55;
+  display:none;animation:slideUp 0.3s ease;
+}
+.feedback-card.show{display:block;}
+.feedback-card.ok{background:#E8FDF6;color:#1a7a5e;border:2px solid var(--vert2);}
+.feedback-card.ko{background:#FEE8EE;color:#c0305a;border:2px solid var(--rouge);}
+.feedback-title{font-size:1rem;font-weight:900;margin-bottom:5px;}
+
+/* PASSER LE TÉLÉPHONE */
+.pass-card{
+  background:linear-gradient(135deg,var(--dark),#2d3a2d);
+  border-radius:var(--card-radius);padding:18px 16px;
+  text-align:center;display:none;
+  animation:slideUp 0.3s ease;
+}
+.pass-card.show{display:block;}
+.pass-icon{font-size:2.5rem;margin-bottom:8px;}
+.pass-title{font-size:1.1rem;font-weight:900;color:var(--or);margin-bottom:4px;}
+.pass-sub{font-size:0.82rem;color:rgba(255,255,255,0.65);margin-bottom:14px;}
+.btn-next{
+  background:var(--or);color:var(--dark);border:none;
+  padding:16px;border-radius:99px;
+  font-size:1rem;font-weight:900;cursor:pointer;
+  width:100%;box-shadow:0 4px 0 #9a7020;
+  min-height:var(--touch-min);
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+.btn-next:active{transform:translateY(3px);box-shadow:0 1px 0 #9a7020;}
+
+/* ──── FIN ──── */
+#s-end{
+  background:linear-gradient(170deg,#0a1a12,#2d6a4f);
+  align-items:center;justify-content:center;
+  text-align:center;padding:30px 20px;gap:0;
+}
+.end-trophy{font-size:5rem;margin-bottom:12px;animation:bounce 1s 3;}
+.end-title{font-size:2rem;font-weight:900;color:var(--or);margin-bottom:6px;}
+.end-msg{color:rgba(255,255,255,0.7);font-size:0.88rem;max-width:340px;line-height:1.7;margin-bottom:24px;}
+.podium{width:100%;max-width:380px;margin-bottom:24px;}
+.podium-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,0.08);border-radius:14px;
+  padding:13px 16px;margin-bottom:8px;
+  border:1px solid rgba(255,255,255,0.12);
+}
+.podium-row.first{background:rgba(212,168,67,0.2);border-color:rgba(212,168,67,0.4);}
+.pr-left{display:flex;align-items:center;gap:10px;}
+.pr-medal{font-size:1.6rem;}
+.pr-name{color:white;font-weight:800;font-size:0.95rem;}
+.pr-detail{font-size:0.7rem;color:rgba(255,255,255,0.5);}
+.pr-pts{font-size:1.8rem;font-weight:900;color:var(--or2);}
+
+/* ──── RÈGLES ──── */
+#s-rules{background:var(--bg);padding:0;}
+.rules-body{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.rules-sec{background:white;border:2px solid #d8f3dc;border-radius:var(--card-radius);padding:16px;}
+.rules-sec h3{font-size:0.92rem;font-weight:800;color:var(--vert);margin-bottom:8px;}
+.rules-sec p,.rules-sec li{font-size:0.84rem;color:var(--grey);line-height:1.7;}
+.rules-sec ul{padding-left:16px;}
+
+/* ──── ANIMATIONS ──── */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+</style>
+</head>
+<body>
+
+<!-- ══════ ACCUEIL ══════ -->
+<div class="screen active" id="s-home">
+  <div class="home-paw">🧠</div>
+  <div class="home-title">Handicaps<br>Invisibles</div>
+  <div class="home-sub">Quiz complet adultes — Toutes pathologies</div>
+  <div class="home-tag">Oldy &amp; Sébastien · oldyetsebastien.fr</div>
+  <div class="home-pills">
+    <span class="pill">📱 Optimisé Android</span>
+    <span class="pill">👥 Multi-joueurs</span>
+    <span class="pill">150+ questions</span>
+    <span class="pill">🩺 Toutes pathologies</span>
+  </div>
+  <button class="btn-big" onclick="goScreen('s-config')">🎮 Nouvelle partie</button>
+  <button class="btn-sm" onclick="goScreen('s-rules')">📖 Règles du jeu</button>
+  <div style="margin-top:20px;font-size:0.7rem;color:rgba(255,255,255,0.25);">© 2026 TRIBET Sébastien</div>
+</div>
+
+<!-- ══════ CONFIG ══════ -->
+<div class="screen" id="s-config">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">Configuration</div>
+  </div>
+  <div class="config-body">
+    <div class="config-section">
+      <h3>👥 Nombre de joueurs</h3>
+      <div class="nb-row" id="nb-row"></div>
+    </div>
+    <div class="config-section" id="players-section">
+      <h3>✏️ Noms des joueurs</h3>
+      <div id="players-inputs"></div>
+    </div>
+    <div class="config-section">
+      <h3>🎯 Questions par joueur</h3>
+      <div class="q-nb-row" id="qnb-row"></div>
+    </div>
+    <div class="info-box">
+      📱 <strong>Mode passage de téléphone :</strong> chaque joueur répond à ses questions sur le téléphone, puis le passe au suivant. Les scores s'accumulent automatiquement.
+    </div>
+    <button class="btn-launch" onclick="launchGame()">🚀 Lancer la partie !</button>
+  </div>
+</div>
+
+<!-- ══════ JEU ══════ -->
+<div class="screen" id="s-game">
+  <div class="topbar">
+    <button class="topbar-back" onclick="confirmQuit()">←</button>
+    <div class="topbar-title" id="game-topbar-title">Quiz</div>
+    <div class="topbar-badge" id="game-badge">Q1</div>
+  </div>
+  <div class="scores-strip" id="scores-strip"></div>
+  <div class="game-body">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-meta">
+        <span id="prog-left"></span>
+        <span id="prog-right"></span>
+      </div>
+    </div>
+    <div id="q-card-wrap"></div>
+    <div class="feedback-card" id="feedback-card"></div>
+    <div class="pass-card" id="pass-card">
+      <div class="pass-icon">📱</div>
+      <div class="pass-title" id="pass-title">Passe le téléphone !</div>
+      <div class="pass-sub" id="pass-sub">C'est au tour du joueur suivant</div>
+      <button class="btn-next" id="btn-next" onclick="nextAction()">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ FIN ══════ -->
+<div class="screen" id="s-end">
+  <div class="end-trophy">🏆</div>
+  <div class="end-title">Résultats !</div>
+  <div class="end-msg" id="end-msg">Bravo à tous !</div>
+  <div class="podium" id="podium"></div>
+  <button class="btn-big" onclick="goScreen('s-home')" style="background:var(--or);">🔄 Rejouer</button>
+</div>
+
+<!-- ══════ RÈGLES ══════ -->
+<div class="screen" id="s-rules">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goScreen('s-home')">←</button>
+    <div class="topbar-title">Règles du jeu</div>
+  </div>
+  <div class="rules-body">
+    <div class="rules-sec">
+      <h3>🎯 Principe</h3>
+      <p>Quiz sur toutes les pathologies invisibles reconnues en France. Questions à choix multiples avec explication après chaque réponse. Le joueur avec le plus de points gagne !</p>
+    </div>
+    <div class="rules-sec">
+      <h3>📱 Mode passage de téléphone</h3>
+      <ul>
+        <li>Chaque joueur répond à ses questions tour à tour</li>
+        <li>Après chaque série, le téléphone est passé au suivant</li>
+        <li>Les scores s'accumulent automatiquement</li>
+        <li>À la fin, le classement s'affiche</li>
+      </ul>
+    </div>
+    <div class="rules-sec">
+      <h3>💰 Points</h3>
+      <ul>
+        <li>⭐ Question normale : <strong>2 points</strong></li>
+        <li>⭐⭐ Question difficile : <strong>3 points</strong></li>
+        <li>⭐⭐⭐ Question expert : <strong>4 points</strong></li>
+        <li>❌ Mauvaise réponse : <strong>0 point</strong></li>
+      </ul>
+    </div>
+    <div class="rules-sec">
+      <h3>🩺 Pathologies couvertes</h3>
+      <p>Toutes les pathologies du handicap invisible : troubles DYS, TDAH, TSA, psychiatrie, maladies chroniques, génétiques, neurologiques, cardiovasculaires, anévrisme, épilepsie, pacemaker, sensorielles, et droits & lois.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// BANQUE COMPLÈTE — TOUTES PATHOLOGIES
+// ═══════════════════════════════════════════════
+const QUESTIONS = [
+
+// ── DYS & NEURODÉVELOPPEMENT ──────────────────
+{q:"La dyslexie touche environ quelle proportion de la population ?",o:["2%","5%","10%","20%"],c:2,e:"La dyslexie touche ~10% de la population. C'est un trouble neurologique de la lecture, sans lien avec l'intelligence.",cat:"🧩 DYS",pts:2},
+{q:"Le TDAH est causé par un déficit de quelle substance dans le cerveau ?",o:["Sérotonine","Dopamine","Mélatonine","Adrénaline"],c:1,e:"Le TDAH est lié à un déficit en dopamine. Ce n'est pas un manque de volonté — c'est neurologique.",cat:"🧩 DYS",pts:2},
+{q:"La dyspraxie est un trouble de :",o:["La mémoire","La coordination des gestes","La vision","La parole"],c:1,e:"La dyspraxie (TDC) touche la coordination motrice. Les gestes automatiques demandent un effort énorme.",cat:"🧩 DYS",pts:2},
+{q:"La dyscalculie touche spécifiquement :",o:["La lecture","L'écriture","Les chiffres et le calcul","La mémoire"],c:2,e:"La dyscalculie est un trouble spécifique du traitement des nombres et du raisonnement mathématique.",cat:"🧩 DYS",pts:2},
+{q:"La dysorthographie accompagne fréquemment :",o:["La dyscalculie","La dyslexie","La dyspraxie","Le TDAH"],c:1,e:"La dysorthographie va souvent avec la dyslexie. Les deux touchent le traitement du langage écrit.",cat:"🧩 DYS",pts:2},
+{q:"Combien de troubles DYS reconnus en France ?",o:["3","5","7","10"],c:2,e:"Il existe 7 troubles DYS : dyslexie, dysorthographie, dyscalculie, dyspraxie, dysphasie, dysgraphie, et trouble de l'attention.",cat:"🧩 DYS",pts:3},
+{q:"Le 'masking' chez les personnes autistes consiste à :",o:["Porter un masque médical","Cacher son autisme pour s'intégrer","Un type de traitement","Un symptôme visible"],c:1,e:"Le masking (camouflage) est l'effort de dissimuler son autisme. C'est épuisant et peut mener au burn-out autistique.",cat:"🧩 DYS",pts:3},
+{q:"Un enfant HPI peut souffrir de :",o:["Manque d'intelligence","Facilité dans tous les domaines","Hypersensibilité et décalage social","Aucune difficulté"],c:2,e:"Le HPI peut causer une vraie souffrance : hypersensibilité, incompréhension des autres, ennui, décalage social.",cat:"🧩 DYS",pts:3},
+{q:"Le tiers-temps aux examens est accordé via :",o:["Le médecin traitant","La CAF","Le PAP ou la MDPH","L'école seule"],c:2,e:"Le tiers-temps est accordé par la MDPH ou le PAP (Plan d'Accompagnement Personnalisé) selon la situation de l'élève.",cat:"🧩 DYS",pts:2},
+{q:"La dysphasie est un trouble du :",o:["Calcul","Langage oral","Geste","Comportement"],c:1,e:"La dysphasie est un trouble structurel du développement du langage oral. La personne comprend mais s'exprime difficilement.",cat:"🧩 DYS",pts:2},
+{q:"Le burn-out autistique survient souvent après :",o:["Une infection virale","Des années de masking excessif","Un choc physique","Un changement alimentaire"],c:1,e:"Le burn-out autistique est un effondrement profond causé par des années à masquer son autisme. Il peut nécessiter des semaines de récupération.",cat:"🧩 DYS",pts:4},
+{q:"L'hypersensibilité sensorielle de l'autisme peut rendre douloureux :",o:["Uniquement les sons très forts","Les bruits, lumières et textures du quotidien","Seulement les odeurs","La couleur rouge uniquement"],c:1,e:"L'hypersensibilité sensorielle TSA peut rendre le bruit d'une cantine, le tissu d'un vêtement ou une lumière fluorescente véritablement douloureux.",cat:"🧩 DYS",pts:2},
+
+// ── MALADIES CHRONIQUES ───────────────────────
+{q:"L'endométriose touche en France :",o:["1 femme sur 30","1 femme sur 10","1 femme sur 5","1 femme sur 3"],c:1,e:"L'endométriose touche 1 femme sur 10 en France, soit ~2 millions de femmes. Pourtant diagnostiquée en moyenne après 7 ans.",cat:"💊 Chronique",pts:2},
+{q:"Le délai moyen de diagnostic de l'endométriose en France est de :",o:["6 mois","2 ans","7 ans","15 ans"],c:2,e:"Il faut en moyenne 7 ans pour diagnostiquer l'endométriose. Ce retard entraîne des années de souffrance non reconnue.",cat:"💊 Chronique",pts:2},
+{q:"La fibromyalgie se caractérise par :",o:["Douleurs articulaires visibles","Douleurs chroniques diffuses sans marqueur biologique","Inflammation musculaire aiguë","Fractures spontanées"],c:1,e:"La fibromyalgie provoque des douleurs chroniques intenses et une fatigue profonde, invisibles dans les analyses biologiques classiques.",cat:"💊 Chronique",pts:2},
+{q:"Le syndrome de fatigue chronique (SFC) :",o:["Disparaît après une bonne nuit","Persiste malgré le repos, peut durer des années","Touche uniquement les personnes âgées","Est une forme de dépression"],c:1,e:"Le SFC est une maladie invalidante. La fatigue est profonde et ne récupère pas avec le repos, même après des heures de sommeil.",cat:"💊 Chronique",pts:2},
+{q:"La maladie de Crohn appartient aux :",o:["Maladies auto-immunes seulement","MICI (Maladies Inflammatoires Chroniques de l'Intestin)","Infections bactériennes","Maladies génétiques uniquement"],c:1,e:"La maladie de Crohn est une MICI. Elle provoque des douleurs abdominales, diarrhées et fatigue sévère, souvent invisibles de l'extérieur.",cat:"💊 Chronique",pts:2},
+{q:"La spondylarthrite ankylosante touche principalement :",o:["Les poumons","La colonne vertébrale et articulations sacro-iliaques","Le foie","Les reins"],c:1,e:"La spondylarthrite est une maladie inflammatoire chronique de la colonne vertébrale. Elle peut devenir très invalidante malgré une apparence normale.",cat:"💊 Chronique",pts:3},
+{q:"Le lupus érythémateux est aggravé par :",o:["Le froid","Le soleil (UV)","L'exercice","Le bruit"],c:1,e:"Les rayons UV du soleil peuvent déclencher des poussées graves de lupus. C'est pourquoi les personnes atteintes évitent le soleil.",cat:"💊 Chronique",pts:2},
+{q:"La migraine chronique se définit par :",o:["Plus de 5 crises par an","Plus de 15 jours de céphalées par mois","Des migraines hebdomadaires uniquement","Une migraine avec aura seulement"],c:1,e:"On parle de migraine chronique quand les crises surviennent plus de 15 jours par mois pendant plus de 3 mois consécutifs.",cat:"💊 Chronique",pts:3},
+{q:"Le SCI (Syndrome du Côlon Irritable) touche en France :",o:["1% de la population","5%","15-20%","50%"],c:2,e:"Le SCI touche 15 à 20% de la population française. Malgré sa fréquence, il est souvent minimisé et banalisé.",cat:"💊 Chronique",pts:3},
+{q:"L'hypothyroïdie non traitée peut provoquer :",o:["Hyperactivité et insomnie","Fatigue intense, dépression et prise de poids","Fièvre chronique","Douleurs articulaires uniquement"],c:1,e:"L'hypothyroïdie ralentit le métabolisme et peut provoquer fatigue intense, dépression, prise de poids et troubles cognitifs.",cat:"💊 Chronique",pts:2},
+{q:"La polyarthrite rhumatoïde est :",o:["Une maladie infectieuse","Une maladie auto-immune des articulations","Uniquement génétique","Une maladie dégénérative senile"],c:1,e:"La polyarthrite rhumatoïde est une maladie auto-immune : le système immunitaire attaque les articulations. Elle peut toucher des personnes très jeunes.",cat:"💊 Chronique",pts:2},
+{q:"Le syndrome d'Ehlers-Danlos (SED) est souvent mal diagnostiqué car :",o:["Il n'a pas de symptômes","Les personnes paraissent souples et athlétiques","Il est trop rare","Aucun test n'existe"],c:1,e:"Les personnes avec SED semblent souples. Mais cette souplesse masque une fragilité articulaire réelle et des douleurs chroniques intenses.",cat:"💊 Chronique",pts:3},
+
+// ── ÉPILEPSIE ────────────────────────────────
+{q:"L'épilepsie touche en France environ :",o:["50 000 personnes","600 000 personnes","3 millions","10 millions"],c:1,e:"L'épilepsie touche 600 000 personnes en France. Entre les crises, les personnes épileptiques mènent une vie tout à fait normale.",cat:"⚡ Épilepsie",pts:2},
+{q:"Lors d'une crise d'épilepsie, il NE FAUT PAS :",o:["Allonger la personne sur le côté","Éloigner les objets dangereux","Mettre quelque chose dans la bouche","Appeler les secours si besoin"],c:2,e:"Il ne faut JAMAIS mettre quoi que ce soit dans la bouche d'une personne en crise. On l'allonge sur le côté et on écarte les objets dangereux.",cat:"⚡ Épilepsie",pts:2},
+{q:"Les crises d'épilepsie peuvent être déclenchées par :",o:["Uniquement le stress","Lumières stroboscopiques, manque de sommeil, stress","Uniquement les émotions fortes","Uniquement certains aliments"],c:1,e:"Les déclencheurs d'épilepsie sont variés : lumières clignotantes, manque de sommeil, stress, alcool, fièvre... Ils varient selon les personnes.",cat:"⚡ Épilepsie",pts:2},
+{q:"L'épilepsie est invisible car :",o:["Elle n'existe pas vraiment","Entre les crises la personne semble totalement normale","Elle ne provoque aucune gêne","Elle est toujours légère"],c:1,e:"L'épilepsie est un handicap invisible par excellence : entre les crises, la personne est indiscernable. Seule la crise imprévisible révèle la maladie.",cat:"⚡ Épilepsie",pts:2},
+{q:"Une crise d'épilepsie généralisée dure en général :",o:["30 secondes à 3 minutes","10 à 20 minutes","1 heure","Quelques secondes seulement"],c:0,e:"Une crise tonico-clonique généralisée dure généralement 1 à 3 minutes. Au-delà de 5 minutes (état de mal), c'est une urgence médicale.",cat:"⚡ Épilepsie",pts:3},
+{q:"La conduite automobile est autorisée pour une personne épileptique :",o:["Jamais","Si elle est sans crise depuis 6 mois à 1 an selon le type","Toujours avec accompagnateur","Uniquement les trajets courts"],c:1,e:"La conduite est possible après une période sans crise (6 mois à 1 an selon le type d'épilepsie) et avec avis médical favorable.",cat:"⚡ Épilepsie",pts:3},
+
+// ── ANÉVRISME & MALADIES VASCULAIRES ─────────
+{q:"Qu'est-ce qu'un anévrisme cérébral ?",o:["Un caillot dans une artère","Une dilatation anormale d'une artère cérébrale","Un AVC ischémique","Une tumeur cérébrale"],c:1,e:"Un anévrisme cérébral est une dilatation en poche d'une artère du cerveau. Il peut être silencieux avant de se rompre brutalement.",cat:"🫀 Vasculaire",pts:3},
+{q:"L'anévrisme carotido-ophtalmique se situe :",o:["Dans la nuque","À la jonction de la carotide interne et de l'artère ophtalmique","Dans le cervelet","Derrière les oreilles"],c:1,e:"L'anévrisme carotido-ophtalmique naît à la jonction entre la carotide interne et l'artère ophtalmique. Il peut comprimer le nerf optique.",cat:"🫀 Vasculaire",pts:4},
+{q:"L'hémorragie sous-arachnoïdienne est causée par :",o:["Un AVC ischémique","La rupture d'un anévrisme dans l'espace sous-arachnoïdien","Un traumatisme crânien léger","Une migraine sévère"],c:1,e:"L'hémorragie sous-arachnoïdienne (HSA) survient quand un anévrisme se rompt dans l'espace entre le cerveau et ses enveloppes (méninges).",cat:"🫀 Vasculaire",pts:4},
+{q:"Le signe caractéristique de la rupture d'anévrisme est :",o:["Une douleur progressive","Un 'coup de tonnerre' : céphalée brutale et intense jamais ressentie","Des vertiges légers","Une fièvre soudaine"],c:1,e:"La rupture d'anévrisme provoque une céphalée dite 'en coup de tonnerre' : brutale, intense, décrite comme la pire douleur de la vie.",cat:"🫀 Vasculaire",pts:3},
+{q:"Les séquelles invisibles d'une rupture d'anévrisme sont :",o:["Aucune si opéré à temps","Fatigue cognitive, troubles de la mémoire, céphalées chroniques","Uniquement des paralysies","Perte de vision permanente"],c:1,e:"Après une rupture d'anévrisme, les séquelles invisibles sont fréquentes : fatigue cérébrale, troubles mnésiques, maux de tête chroniques, hypersensibilités au bruit et à la lumière.",cat:"🫀 Vasculaire",pts:3},
+{q:"L'anévrisme méningé touche :",o:["Uniquement les personnes âgées","Souvent les 40-60 ans, parfois plus jeunes","Uniquement les hommes","Les enfants en priorité"],c:1,e:"Les anévrismes cérébraux/méningés touchent souvent des personnes entre 40 et 60 ans, mais peuvent survenir à tout âge, même jeune.",cat:"🫀 Vasculaire",pts:3},
+{q:"Après une rupture d'anévrisme, le vasospasme est :",o:["Un effet positif de guérison","Un spasme des artères cérébrales pouvant causer un AVC secondaire","Une complication bénigne","Un médicament de traitement"],c:1,e:"Le vasospasme est une complication grave survenant 4 à 14 jours après la rupture : les artères se contractent, pouvant causer un AVC ischémique.",cat:"🫀 Vasculaire",pts:4},
+{q:"L'AVC peut laisser comme séquelle invisible :",o:["Uniquement des paralysies visibles","Fatigue cérébrale, aphasie, troubles cognitifs, dépression","Aucune séquelle si traité rapidement","Uniquement des maux de tête"],c:1,e:"Les séquelles invisibles d'AVC sont très fréquentes : fatigue cérébrale intense, aphasie (trouble du langage), troubles de la mémoire et de la concentration.",cat:"🫀 Vasculaire",pts:2},
+{q:"L'héminégligence après AVC est :",o:["Une paralysie d'un côté","Le cerveau ignore une partie de l'espace ou du corps","Un trouble de la parole uniquement","Une perte de vision"],c:1,e:"L'héminégligence est un trouble neurologique où le cerveau ignore un côté de l'espace ou du corps, survenant souvent après un AVC droit.",cat:"🫀 Vasculaire",pts:4},
+{q:"L'aphasie est :",o:["Une paralysie faciale","Un trouble du langage causé par une lésion cérébrale","Une forme de démence précoce","Un trouble visuel"],c:1,e:"L'aphasie est un trouble du langage (parler, comprendre, lire, écrire) causé par une lésion cérébrale. Elle peut être partielle ou totale.",cat:"🫀 Vasculaire",pts:2},
+
+// ── STIMULATEUR CARDIAQUE (PACEMAKER) ────────
+{q:"Un stimulateur cardiaque implanté (pacemaker) est un dispositif :",o:["Externe et visible","Implanté sous la peau pour réguler le rythme cardiaque","Temporaire seulement","Uniquement pour les personnes âgées"],c:1,e:"Le pacemaker est un petit dispositif implanté sous la peau, qui envoie des impulsions électriques pour maintenir un rythme cardiaque normal.",cat:"💓 Pacemaker",pts:2},
+{q:"Le pacemaker constitue un handicap invisible car :",o:["Il est toujours visible","La personne a l'air normale mais dépend d'un appareil vital","Il ne provoque aucune contrainte","Il disparaît après 1 an"],c:1,e:"Rien ne distingue visuellement une personne avec pacemaker. Pourtant, elle dépend d'un appareil vital et doit éviter certains champs électromagnétiques.",cat:"💓 Pacemaker",pts:2},
+{q:"Les personnes avec pacemaker doivent éviter :",o:["Les avions","Certains champs électromagnétiques intenses (IRM non compatible, induction forte)","La marche rapide","Les voyages en train"],c:1,e:"Les porteurs de pacemaker doivent éviter certains champs magnétiques intenses. Des IRM compatibles existent aujourd'hui, mais pas tous les appareils.",cat:"💓 Pacemaker",pts:3},
+{q:"Un défibrillateur automatique implantable (DAI) diffère du pacemaker car :",o:["Il est externe","Il peut délivrer un choc électrique pour corriger une arythmie grave","Il surveille uniquement sans agir","Il est temporaire"],c:1,e:"Le DAI surveille le rythme cardiaque et peut délivrer un choc électrique (défibrillation) en cas de trouble du rythme potentiellement mortel.",cat:"💓 Pacemaker",pts:3},
+{q:"Le porteur d'un pacemaker peut-il faire du sport ?",o:["Jamais","Oui, avec des adaptations selon le type de pacemaker et l'avis médical","Uniquement la natation","Uniquement la marche"],c:1,e:"La plupart des porteurs de pacemaker peuvent faire du sport avec des adaptations. L'intensité et le type dépendent de la condition cardiaque et du dispositif.",cat:"💓 Pacemaker",pts:3},
+{q:"En France, environ combien de personnes ont un pacemaker ?",o:["10 000","50 000","750 000","5 millions"],c:2,e:"En France, environ 750 000 personnes ont un pacemaker implanté. La plupart mènent une vie quasi-normale, rendant ce handicap totalement invisible.",cat:"💓 Pacemaker",pts:4},
+{q:"Le pacemaker nécessite un suivi régulier car :",o:["Il peut être retiré si guérison","Sa pile se décharge (durée de vie 7-15 ans)","Il grossit avec le temps","Il doit être rechargé quotidiennement"],c:1,e:"La pile d'un pacemaker dure en général 7 à 15 ans selon l'utilisation. Un suivi régulier (télécardiologie ou consultation) est indispensable.",cat:"💓 Pacemaker",pts:3},
+
+// ── PSYCHIATRIE & SANTÉ PSYCHIQUE ────────────
+{q:"La dépression est neurologique car :",o:["Elle est contagieuse","Elle modifie réellement la chimie du cerveau","Elle est uniquement génétique","Elle est causée par une infection"],c:1,e:"La dépression modifie la chimie du cerveau (sérotonine, dopamine, noradrénaline). Ce n'est pas un manque de volonté — c'est une vraie maladie.",cat:"🧠 Psychiatrie",pts:2},
+{q:"Le TOC peut occuper jusqu'à combien d'heures par jour ?",o:["30 minutes","1 heure","Jusqu'à 8 heures dans les cas sévères","Quelques minutes seulement"],c:2,e:"Dans les cas sévères, le TOC peut monopoliser jusqu'à 8 heures par jour, rendant toute vie normale très difficile.",cat:"🧠 Psychiatrie",pts:3},
+{q:"Le TSPT peut survenir après :",o:["Uniquement les guerres","N'importe quel événement traumatisant","Uniquement les agressions physiques","Un deuil uniquement"],c:1,e:"Le TSPT peut toucher n'importe qui après un traumatisme : accident, agression, catastrophe, violence, rupture brutale...",cat:"🧠 Psychiatrie",pts:2},
+{q:"Le trouble bipolaire touche environ :",o:["0.1% de la population","1%","10%","20%"],c:1,e:"Le trouble bipolaire touche environ 1% de la population mondiale. Stabilisé sous traitement, il permet une vie presque normale.",cat:"🧠 Psychiatrie",pts:2},
+{q:"Le trouble borderline se caractérise principalement par :",o:["Un repli sur soi permanent","Une instabilité émotionnelle intense et des relations complexes","L'absence totale d'émotions","Une euphorie permanente"],c:1,e:"Le trouble de la personnalité borderline implique une instabilité émotionnelle intense, des relations tumultueuses et une image de soi perturbée.",cat:"🧠 Psychiatrie",pts:3},
+{q:"La schizophrénie stabilisée :",o:["Rend la personne dangereuse","Ne rend pas la personne plus dangereuse que la moyenne","Nécessite une hospitalisation permanente","Empêche toute vie sociale"],c:1,e:"Les personnes schizophrènes stabilisées ne présentent pas de dangerosité particulière. Ce préjugé cause une immense stigmatisation injuste.",cat:"🧠 Psychiatrie",pts:2},
+{q:"Le burn-out est reconnu comme maladie professionnelle en France ?",o:["Oui, depuis 2010","Non, pas encore dans le tableau des maladies professionnelles","Oui depuis 2020","Oui pour les soignants uniquement"],c:1,e:"Le burn-out n'est pas encore reconnu comme maladie professionnelle en France, ce qui complique la reconnaissance et l'indemnisation des victimes.",cat:"🧠 Psychiatrie",pts:4},
+{q:"Quel pourcentage des suicides est lié à la dépression non traitée ?",o:["10%","30%","50-70%","90%"],c:2,e:"50 à 70% des suicides sont liés à une dépression non ou mal traitée. La prise en charge précoce est cruciale.",cat:"🧠 Psychiatrie",pts:3},
+{q:"La dépression post-partum touche :",o:["Uniquement les mères","15-20% des mères après accouchement","Seulement les primipares","Uniquement lors de naissances difficiles"],c:1,e:"La dépression post-partum touche 15 à 20% des mères et parfois les pères. Elle peut être sévère et nécessite un traitement adapté.",cat:"🧠 Psychiatrie",pts:2},
+{q:"Les troubles des conduites alimentaires (TCA) ont :",o:["Le taux de mortalité le plus bas","Le taux de mortalité le plus élevé parmi les troubles psychiatriques","Aucun impact vital","Un impact uniquement psychologique"],c:1,e:"Les TCA (anorexie, boulimie) ont le taux de mortalité le plus élevé parmi les troubles psychiatriques. Ce sont des maladies graves.",cat:"🧠 Psychiatrie",pts:2},
+
+// ── GÉNÉTIQUE & MALADIES RARES ───────────────
+{q:"La drépanocytose est en France :",o:["Une maladie très rare","La maladie génétique la plus fréquente","Une maladie récente","Une maladie importée uniquement"],c:1,e:"La drépanocytose est la maladie génétique la plus fréquente en France. Les crises vaso-occlusives sont des douleurs intenses et invisibles.",cat:"🧬 Génétique",pts:2},
+{q:"L'hémophilie est une maladie qui empêche :",o:["La digestion","La coagulation normale du sang","La respiration","La mobilité"],c:1,e:"L'hémophilie est un trouble de la coagulation. Une hémorragie interne peut survenir sans blessure visible, rendant ce handicap totalement invisible.",cat:"🧬 Génétique",pts:2},
+{q:"Combien de maladies rares sont répertoriées dans le monde ?",o:["Environ 500","Environ 2 000","Plus de 7 000","Plus de 50 000"],c:2,e:"On répertorie plus de 7 000 maladies rares dans le monde. 80% ont une origine génétique et beaucoup sont des handicaps invisibles.",cat:"🧬 Génétique",pts:2},
+{q:"En France, 1 personne sur combien est touchée par une maladie rare ?",o:["1/100","1/17","1/50","1/5"],c:1,e:"1 personne sur 17 est touchée par une maladie rare en France, soit environ 3 millions de personnes — souvent avec un handicap invisible.",cat:"🧬 Génétique",pts:3},
+{q:"L'errance diagnostique des maladies rares dure en moyenne :",o:["Quelques semaines","6 mois","5 à 10 ans","Toujours moins d'un an"],c:2,e:"L'errance diagnostique dure en moyenne 5 à 10 ans pour les maladies rares. Cette période de souffrance sans nom est une épreuve supplémentaire.",cat:"🧬 Génétique",pts:2},
+{q:"La mucoviscidose affecte principalement :",o:["Le foie","Les poumons (accumulation de mucus)","Le cerveau","Les articulations"],c:1,e:"La mucoviscidose affecte principalement les poumons et le pancréas. Les progrès thérapeutiques ont considérablement allongé l'espérance de vie.",cat:"🧬 Génétique",pts:2},
+{q:"Le VIH avec charge virale indétectable signifie :",o:["La personne est guérie","Le virus est contrôlé et non transmissible (U=U)","La personne est moins contagieuse","Le traitement a échoué"],c:1,e:"U=U (Undetectable = Untransmittable) : reconnu par l'OMS. Une personne séropositive avec charge virale indétectable ne transmet plus le virus.",cat:"🧬 Génétique",pts:3},
+{q:"La myasthénie grave est une maladie auto-immune qui touche :",o:["Les articulations","La jonction neuromusculaire (transmission nerfs-muscles)","Le système cardiovasculaire","Les reins"],c:1,e:"La myasthénie provoque une faiblesse musculaire variable qui s'aggrave à l'effort et s'améliore au repos. Elle est souvent invisible au repos.",cat:"🧬 Génétique",pts:4},
+{q:"La phénylcétonurie nécessite :",o:["Une intervention chirurgicale","Un régime alimentaire strict à vie sans phénylalanine","Une chimiothérapie","Des transfusions régulières"],c:1,e:"La phénylcétonurie empêche le métabolisme de la phénylalanine. Un régime strict est essentiel pour éviter des lésions cérébrales irréversibles.",cat:"🧬 Génétique",pts:4},
+
+// ── RESPIRATOIRE & SENSORIEL ─────────────────
+{q:"L'apnée du sommeil non traitée peut provoquer à long terme :",o:["Uniquement de la fatigue","Hypertension, maladies cardiovasculaires, AVC","Seulement des ronflements","Des problèmes dentaires"],c:1,e:"L'apnée du sommeil non traitée a des conséquences graves : hypertension, risque d'AVC, dépression, accidents de la route par somnolence.",cat:"🫁 Respiratoire",pts:2},
+{q:"La BPCO est invisible car :",o:["Elle n'a aucun symptôme","L'essoufflement à l'effort n'est pas visible de l'extérieur","Elle ne provoque aucun handicap","Elle se guérit facilement"],c:1,e:"La BPCO (Bronchopneumopathie Chronique Obstructive) provoque un essoufflement progressif qui n'est pas visible mais peut rendre très difficiles les activités simples.",cat:"🫁 Respiratoire",pts:2},
+{q:"Les acouphènes sévères peuvent provoquer :",o:["Uniquement une gêne légère","Troubles du sommeil, anxiété, dépression, isolement social","Seulement une perte d'audition","Aucun impact psychologique"],c:1,e:"Les acouphènes intenses et permanents peuvent totalement perturber la vie. 10% de la population est concernée, dont 1% de façon sévère.",cat:"🫁 Respiratoire",pts:2},
+{q:"La malvoyance (basse vision) se distingue de la cécité car :",o:["Elle ne nécessite pas d'aide","Il existe une vision résiduelle insuffisante même avec correction","Elle touche seulement un œil","Elle est toujours corrigeable"],c:1,e:"La malvoyance désigne une vision résiduelle qui ne permet pas de fonctionner normalement même avec des verres correcteurs.",cat:"🫁 Respiratoire",pts:2},
+{q:"L'allergie sévère avec risque anaphylactique est un handicap invisible car :",o:["C'est bénin","La menace vitale est constante mais invisible","Elle disparaît à l'âge adulte","Elle ne nécessite aucun aménagement"],c:1,e:"Une personne avec allergie sévère vit sous la menace permanente d'une réaction mortelle. Le stress et les adaptations quotidiennes sont invisibles mais omniprésents.",cat:"🫁 Respiratoire",pts:3},
+{q:"Le traitement principal de l'apnée du sommeil est :",o:["La chirurgie uniquement","L'appareillage CPAP (masque nocturne)","Des médicaments","Dormir sur le côté uniquement"],c:1,e:"Le CPAP (Continuous Positive Airway Pressure) maintient les voies respiratoires ouvertes pendant le sommeil. Il transforme la vie des personnes atteintes.",cat:"🫁 Respiratoire",pts:2},
+
+// ── DROITS & RECONNAISSANCE ──────────────────
+{q:"La loi du 11 février 2005 porte sur :",o:["Les droits des patients","L'égalité des droits et des chances des personnes handicapées","La création de la CMI","L'accessibilité des bâtiments uniquement"],c:1,e:"La loi de 2005 est le texte fondateur des droits des personnes handicapées en France. Elle impose à la société de s'adapter — pas l'inverse.",cat:"⚖️ Droits",pts:2},
+{q:"RQTH signifie :",o:["Registre Qualité des Travailleurs Handicapés","Reconnaissance de la Qualité de Travailleur Handicapé","Règlement Qualité du Travail Hospitalier","Reconnaissance Qualifiée du Trouble Handicapant"],c:1,e:"La RQTH (Reconnaissance de la Qualité de Travailleur Handicapé) permet d'obtenir des aménagements au travail, accessible même pour les handicaps invisibles.",cat:"⚖️ Droits",pts:2},
+{q:"La CMI est délivrée par :",o:["Le médecin traitant","La MDPH","La Sécurité Sociale","Le Préfet"],c:1,e:"La CMI (Carte Mobilité Inclusion) est délivrée par la MDPH. Elle est accessible quel que soit le type de handicap, visible ou invisible.",cat:"⚖️ Droits",pts:2},
+{q:"Le quota d'emploi des travailleurs handicapés pour les entreprises de +20 salariés est de :",o:["1%","3%","6%","10%"],c:2,e:"Les entreprises de plus de 20 salariés ont l'obligation d'employer au moins 6% de travailleurs handicapés (OETH).",cat:"⚖️ Droits",pts:2},
+{q:"Discriminer une personne à cause de son handicap est puni de :",o:["Un simple avertissement","Jusqu'à 3 ans de prison et 45 000€ d'amende","Une amende administrative","Des sanctions disciplinaires"],c:1,e:"La discrimination basée sur le handicap est un délit pénal punissable de 3 ans d'emprisonnement et 45 000€ d'amende en France.",cat:"⚖️ Droits",pts:3},
+{q:"L'ALD (Affection de Longue Durée) permet :",o:["Une exonération fiscale","Une prise en charge à 100% par l'Assurance Maladie","Une retraite anticipée","Une réduction de cotisations"],c:1,e:"L'ALD assure une prise en charge à 100% par l'Assurance Maladie pour les soins liés à la pathologie reconnue.",cat:"⚖️ Droits",pts:2},
+{q:"Le principe 'Rien sur nous sans nous' signifie :",o:["Les soignants décident seuls","Les personnes handicapées participent aux décisions qui les concernent","L'État gère seul","Aucune aide externe n'est acceptée"],c:1,e:"'Rien sur nous sans nous' est le principe d'auto-représentation : les personnes handicapées doivent être actrices des décisions qui les concernent.",cat:"⚖️ Droits",pts:3},
+
+// ── CULTURE GÉNÉRALE ─────────────────────────
+{q:"Quelle proportion des handicaps en France est invisible ?",o:["20%","40%","60%","80%"],c:3,e:"80% des handicaps en France sont invisibles. Contrairement aux idées reçues, la majorité du handicap ne se voit pas.",cat:"🌍 Culture",pts:2},
+{q:"Combien de personnes sont en situation de handicap en France ?",o:["1 million","3 millions","12 millions","25 millions"],c:2,e:"Environ 12 millions de personnes sont en situation de handicap en France, dont 80% ont un handicap invisible.",cat:"🌍 Culture",pts:2},
+{q:"La 1ère cause de handicap dans le monde selon l'OMS est :",o:["Les accidents de la route","La dépression","Les maladies cardiaques","Le diabète"],c:1,e:"La dépression est la 1ère cause de handicap dans le monde selon l'OMS. Elle touche 280 millions de personnes.",cat:"🌍 Culture",pts:2},
+{q:"Le terme 'validisme' (capacitisme) désigne :",o:["La capacité à travailler","La discrimination envers les personnes handicapées","Un test de capacité physique","Une loi sur l'accessibilité"],c:1,e:"Le validisme est la discrimination et les préjugés envers les personnes handicapées. Il peut être inconscient, comme supposer qu'une personne 'a l'air bien'.",cat:"🌍 Culture",pts:3},
+{q:"La Journée Internationale des Personnes Handicapées est le :",o:["21 mars","15 septembre","3 décembre","10 octobre"],c:2,e:"La Journée Mondiale du Handicap est célébrée le 3 décembre chaque année.",cat:"🌍 Culture",pts:2},
+{q:"Le taux de chômage des personnes handicapées est :",o:["Identique à la moyenne","Légèrement plus élevé","Environ 2 fois la moyenne nationale","4 fois la moyenne"],c:2,e:"Le taux de chômage des personnes handicapées est environ 2 fois supérieur à la moyenne nationale (~18% contre ~9%).",cat:"🌍 Culture",pts:2},
+{q:"La France compte environ combien d'aidants proches ?",o:["500 000","2 millions","11 millions","20 millions"],c:2,e:"La France compte environ 11 millions d'aidants proches qui accompagnent une personne en situation de handicap ou de dépendance.",cat:"🌍 Culture",pts:3},
+{q:"Le modèle social du handicap considère que :",o:["Le handicap est une maladie à guérir","C'est la société qui handicape, pas la déficience","Le handicap est inévitable","Les personnes doivent s'adapter seules"],c:1,e:"Le modèle social distingue la déficience (état de santé) du handicap (créé par les barrières sociales). C'est la société qui doit s'adapter.",cat:"🌍 Culture",pts:3},
+];
+
+// ═══════════════════════════════════════════════
+// ÉTAT DU JEU
+// ═══════════════════════════════════════════════
+let nbJoueurs = 3;
+let qParJoueur = 10;
+let joueurs = [];
+let scores = [];
+let joueurActuel = 0;
+let qJoueurActuel = 0;
+let qTotalesJoueur = 0;
+let questionActuelle = null;
+let questionnaireJoueur = [];
+let answered = false;
+let allQuestions = [];
+
+const CAT_COLORS = {
+  "🧩 DYS": "#7B5EA7",
+  "💊 Chronique": "#e63946",
+  "⚡ Épilepsie": "#FF8C42",
+  "🫀 Vasculaire": "#e63946",
+  "💓 Pacemaker": "#E91E8C",
+  "🧠 Psychiatrie": "#118AB2",
+  "🧬 Génétique": "#009688",
+  "🫁 Respiratoire": "#FF8C42",
+  "⚖️ Droits": "#2d6a4f",
+  "🌍 Culture": "#d4a843",
+};
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── CONFIG ──
+function initConfig(){
+  // Nb joueurs
+  const nbRow = document.getElementById('nb-row');
+  nbRow.innerHTML='';
+  [2,3,4,5,6].forEach(n=>{
+    const btn=document.createElement('button');
+    btn.className='nb-btn'+(n===nbJoueurs?' active':'');
+    btn.textContent=n+' joueurs';
+    btn.onclick=()=>setNb(n);
+    nbRow.appendChild(btn);
+  });
+  buildPlayersInputs();
+  // Q par joueur
+  const qRow=document.getElementById('qnb-row');
+  qRow.innerHTML='';
+  [5,10,15,20].forEach(n=>{
+    const btn=document.createElement('button');
+    btn.className='q-nb-btn'+(n===qParJoueur?' active':'');
+    btn.textContent=n+' Q';
+    btn.onclick=()=>setQNb(n,btn);
+    qRow.appendChild(btn);
+  });
+}
+
+function setNb(n){
+  nbJoueurs=n;
+  document.querySelectorAll('.nb-btn').forEach(b=>{
+    b.classList.toggle('active',b.textContent===n+' joueurs');
+  });
+  buildPlayersInputs();
+}
+
+function setQNb(n,btn){
+  qParJoueur=n;
+  document.querySelectorAll('.q-nb-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+const AV_EMOJIS=['🧑','👩','🧒','👨','👧','🧓'];
+const AV_BG=['#FFE8D6','#D6EAF8','#D5F5E3','#FEF9E7','#F0EBF8','#E0F2F1'];
+const DEFAULT_NAMES=['Joueur 1','Joueur 2','Joueur 3','Joueur 4','Joueur 5','Joueur 6'];
+
+function buildPlayersInputs(){
+  const wrap=document.getElementById('players-inputs');
+  wrap.innerHTML='';
+  for(let i=0;i<nbJoueurs;i++){
+    const row=document.createElement('div');
+    row.className='player-row';
+    row.innerHTML=`
+      <div class="player-av" style="background:${AV_BG[i]}">${AV_EMOJIS[i]}</div>
+      <input class="player-input" id="pname${i}" placeholder="${DEFAULT_NAMES[i]}" maxlength="14" value="${joueurs[i]||''}"/>`;
+    wrap.appendChild(row);
+  }
+}
+
+// ── LANCER ──
+function launchGame(){
+  joueurs=[];
+  scores=[];
+  for(let i=0;i<nbJoueurs;i++){
+    const v=document.getElementById('pname'+i)?.value.trim();
+    joueurs.push(v||DEFAULT_NAMES[i]);
+    scores.push(0);
+  }
+  allQuestions=shuffle([...QUESTIONS]);
+  joueurActuel=0;
+  startTourJoueur();
+  goScreen('s-game');
+}
+
+function startTourJoueur(){
+  qJoueurActuel=0;
+  answered=false;
+  const pool=allQuestions.slice(joueurActuel*qParJoueur, (joueurActuel+1)*qParJoueur);
+  questionnaireJoueur=pool.length>=qParJoueur?pool:shuffle([...QUESTIONS]).slice(0,qParJoueur);
+  qTotalesJoueur=questionnaireJoueur.length;
+  renderScores();
+  renderQuestion();
+}
+
+// ── SCORES ──
+function renderScores(){
+  const strip=document.getElementById('scores-strip');
+  strip.innerHTML='';
+  joueurs.forEach((nom,i)=>{
+    const chip=document.createElement('div');
+    chip.className='score-chip'+(i===joueurActuel?' active-player':'');
+    chip.innerHTML=`<div class="sc-name">${AV_EMOJIS[i]} ${nom}</div><div class="sc-pts">${scores[i]}</div><div class="sc-lbl">pts</div>`;
+    strip.appendChild(chip);
+  });
+}
+
+// ── QUESTION ──
+function renderQuestion(){
+  answered=false;
+  document.getElementById('feedback-card').className='feedback-card';
+  document.getElementById('feedback-card').innerHTML='';
+  document.getElementById('pass-card').className='pass-card';
+
+  if(qJoueurActuel>=qTotalesJoueur){
+    showPassPhone();return;
+  }
+
+  const q=questionnaireJoueur[qJoueurActuel];
+  questionActuelle=q;
+  const pct=Math.round((qJoueurActuel/qTotalesJoueur)*100);
+  const catColor=CAT_COLORS[q.cat]||'#2d6a4f';
+  const diffStars=q.pts===2?'⭐':q.pts===3?'⭐⭐':'⭐⭐⭐';
+  const letters=['A','B','C','D'];
+
+  document.getElementById('game-topbar-title').textContent=joueurs[joueurActuel];
+  document.getElementById('game-badge').textContent=`Q${qJoueurActuel+1}/${qTotalesJoueur}`;
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-fill').style.background=catColor;
+  document.getElementById('prog-left').textContent=q.cat;
+  document.getElementById('prog-right').textContent=diffStars+' +'+q.pts+'pts';
+
+  const wrap=document.getElementById('q-card-wrap');
+  const optsHTML=q.o.map((opt,i)=>`
+    <button class="q-opt" onclick="selectAnswer(${i})" data-idx="${i}">
+      <span class="q-opt-letter">${letters[i]}</span>
+      <span class="q-opt-text">${opt}</span>
+    </button>`).join('');
+
+  wrap.innerHTML=`
+    <div class="q-card">
+      <div class="q-card-header">
+        <div class="q-cat-row">
+          <span class="q-cat-badge" style="background:${catColor}20;color:${catColor};">${q.cat}</span>
+          <span class="q-diff" style="color:${catColor}">${diffStars}</span>
+          <span class="q-pts-badge">+${q.pts} pts</span>
+        </div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="q-options">${optsHTML}</div>
+    </div>`;
+}
+
+function selectAnswer(idx){
+  if(answered)return;
+  answered=true;
+  const q=questionActuelle;
+  const correct=(idx===q.c);
+  if(correct) scores[joueurActuel]+=q.pts;
+  renderScores();
+
+  document.querySelectorAll('.q-opt').forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.c) btn.classList.add('correct');
+    else if(i===idx) btn.classList.add('wrong');
+  });
+
+  const fb=document.getElementById('feedback-card');
+  fb.className='feedback-card '+(correct?'ok':'ko')+' show';
+  fb.innerHTML=`<div class="feedback-title">${correct?'✅ Bonne réponse !':'❌ Mauvaise réponse'}</div>${q.e}`;
+
+  setTimeout(()=>{
+    qJoueurActuel++;
+    if(qJoueurActuel>=qTotalesJoueur){
+      showPassPhone();
+    } else {
+      renderQuestion();
+      window.scrollTo(0,0);
+    }
+  }, correct?2200:3000);
+}
+
+function showPassPhone(){
+  document.getElementById('q-card-wrap').innerHTML='';
+  document.getElementById('feedback-card').className='feedback-card';
+
+  const isLast=(joueurActuel===joueurs.length-1);
+  const nextPlayer=isLast?null:joueurs[joueurActuel+1];
+
+  const pass=document.getElementById('pass-card');
+  pass.className='pass-card show';
+
+  if(isLast){
+    document.getElementById('pass-title').textContent='Quiz terminé !';
+    document.getElementById('pass-sub').textContent='Tous les joueurs ont répondu. Voyons les résultats !';
+    document.getElementById('btn-next').textContent='🏆 Voir les résultats';
+  } else {
+    document.getElementById('pass-title').textContent=`Passe le téléphone à ${nextPlayer} !`;
+    document.getElementById('pass-sub').textContent=`${joueurs[joueurActuel]} a terminé ses questions. Score : ${scores[joueurActuel]} pts`;
+    document.getElementById('btn-next').textContent=`C'est mon tour, ${nextPlayer} →`;
+  }
+}
+
+function nextAction(){
+  joueurActuel++;
+  if(joueurActuel>=joueurs.length){
+    showFin();
+  } else {
+    startTourJoueur();
+    goScreen('s-game');
+    window.scrollTo(0,0);
+  }
+}
+
+function showFin(){
+  const sorted=joueurs.map((n,i)=>({nom:n,pts:scores[i],av:AV_EMOJIS[i]})).sort((a,b)=>b.pts-a.pts);
+  const medals=['🥇','🥈','🥉','🎖️','🎗️','🏅'];
+  const total=qParJoueur*joueurs.length;
+  const maxPts=total*2;
+
+  document.getElementById('end-msg').textContent=
+    `${joueurs.length} joueurs · ${qParJoueur} questions chacun · ${total} questions au total. Bravo à tous pour cette session de sensibilisation ! 🐾`;
+
+  document.getElementById('podium').innerHTML=sorted.map((j,i)=>`
+    <div class="podium-row ${i===0?'first':''}">
+      <div class="pr-left">
+        <div class="pr-medal">${medals[i]}</div>
+        <div>
+          <div class="pr-name">${j.av} ${j.nom}</div>
+          <div class="pr-detail">${j.pts} pts — ${Math.round(j.pts/(qParJoueur*2)*100)}% de réussite</div>
+        </div>
+      </div>
+      <div class="pr-pts">${j.pts}</div>
+    </div>`).join('');
+
+  goScreen('s-end');
+}
+
+function confirmQuit(){
+  if(confirm('Quitter la partie en cours ?')) goScreen('s-home');
+}
+
+// INIT
+goScreen('s-home');
+window.addEventListener('load',()=>{
+  nbJoueurs=3; qParJoueur=10;
+  joueurs=[];
+  initConfig();
+  goScreen('s-home');
+});
+document.getElementById('s-config').querySelector('.topbar-back').onclick=()=>{
+  initConfig();goScreen('s-home');
+};
+</script>
+</body>
+</html>
