@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2d6a4f">
+<title>Quiz – Handicaps Invisibles</title>
+<style>
+:root{
+  --vert:#2d6a4f;--vert2:#52b788;--or:#d4a843;
+  --rouge:#e63946;--bleu:#118AB2;--violet:#7B5EA7;--orange:#FF8C42;
+  --bg:#fefae0;--text:#1b2a1b;--grey:#6b7c6b;--soft:#f0faf4;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;}
+.screen{display:none;min-height:100vh;min-height:100dvh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* JOIN */
+#s-join{
+  background:linear-gradient(160deg,#0a1a12,#2d6a4f);
+  align-items:center;justify-content:center;padding:24px 20px;gap:16px;text-align:center;
+}
+.join-icon{font-size:3.5rem;}
+.join-title{font-size:1.8rem;font-weight:900;color:var(--or);}
+.join-sub{color:rgba(255,255,255,0.65);font-size:0.85rem;}
+.join-card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;width:100%;max-width:340px;}
+.join-label{font-size:0.75rem;font-weight:800;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;text-align:left;}
+.join-input{
+  width:100%;background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.25);
+  border-radius:10px;padding:14px;color:white;font-size:1.1rem;font-weight:800;
+  outline:none;margin-bottom:14px;text-align:center;letter-spacing:3px;
+  text-transform:uppercase;
+}
+.join-input::placeholder{color:rgba(255,255,255,0.3);letter-spacing:0;}
+.join-name-input{
+  width:100%;background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.25);
+  border-radius:10px;padding:12px;color:white;font-size:1rem;font-weight:700;
+  outline:none;margin-bottom:14px;
+}
+.join-name-input::placeholder{color:rgba(255,255,255,0.3);}
+.btn-join{
+  background:var(--or);color:var(--text);border:none;padding:16px;
+  border-radius:99px;font-size:1.05rem;font-weight:900;cursor:pointer;width:100%;
+  box-shadow:0 5px 0 #9a7020;
+}
+.join-error{color:var(--rouge);font-size:0.82rem;background:rgba(230,57,70,0.15);border-radius:8px;padding:8px 12px;display:none;}
+
+/* ATTENTE */
+#s-wait{background:var(--bg);align-items:center;justify-content:center;padding:24px;text-align:center;gap:16px;}
+.wait-icon{font-size:3rem;animation:spin 3s linear infinite;}
+.wait-title{font-size:1.3rem;font-weight:900;color:var(--vert);}
+.wait-sub{font-size:0.85rem;color:var(--grey);line-height:1.6;}
+.wait-code{font-size:2rem;font-weight:900;color:var(--or);letter-spacing:6px;font-family:monospace;}
+.wait-players{background:white;border:2px solid #d8f3dc;border-radius:14px;padding:14px;width:100%;max-width:320px;}
+.wp-title{font-size:0.8rem;font-weight:800;color:var(--vert);margin-bottom:8px;}
+.wp-list{font-size:0.82rem;color:var(--grey);line-height:1.8;}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+/* TOPBAR */
+.topbar{background:var(--vert);padding:12px 16px;display:flex;align-items:center;gap:10px;min-height:56px;}
+.topbar-title{font-size:1rem;font-weight:900;color:var(--or);flex:1;}
+.topbar-badge{background:rgba(255,255,255,0.15);color:white;padding:5px 12px;border-radius:99px;font-size:0.78rem;font-weight:800;}
+
+/* QUIZ */
+#s-quiz{background:var(--bg);}
+.quiz-body{padding:12px;display:flex;flex-direction:column;gap:12px;flex:1;}
+.prog-wrap{padding:0 2px;}
+.prog-bar{height:7px;background:#ddd;border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;transition:width 0.5s;background:var(--vert2);}
+.prog-meta{display:flex;justify-content:space-between;font-size:0.72rem;font-weight:700;color:var(--grey);margin-top:4px;}
+.q-card{background:white;border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);animation:slideUp 0.3s ease;}
+.q-header{padding:14px 16px 10px;}
+.q-cat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.q-cat{padding:4px 12px;border-radius:99px;font-size:0.68rem;font-weight:800;text-transform:uppercase;}
+.q-pts{margin-left:auto;background:var(--soft);color:var(--vert);padding:4px 10px;border-radius:99px;font-size:0.72rem;font-weight:800;}
+.q-text{font-size:1.05rem;font-weight:800;color:var(--text);line-height:1.45;}
+.q-options{border-top:1px solid #f0f0f0;}
+.q-opt{
+  display:flex;align-items:center;gap:12px;padding:15px 16px;
+  border:none;background:white;border-bottom:1px solid #f5f5f5;
+  cursor:pointer;text-align:left;width:100%;min-height:56px;
+}
+.q-opt:last-child{border-bottom:none;border-radius:0 0 18px 18px;}
+.q-opt:active{background:#f0f0f0;}
+.q-opt.correct{background:#E8FDF6;}
+.q-opt.wrong{background:#FEE8EE;}
+.q-letter{width:34px;height:34px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;flex-shrink:0;border:2px solid #d8f3dc;}
+.q-opt.correct .q-letter{background:var(--vert2);color:white;border-color:var(--vert2);}
+.q-opt.wrong .q-letter{background:var(--rouge);color:white;border-color:var(--rouge);}
+.q-opt-txt{font-size:0.92rem;font-weight:700;color:var(--text);line-height:1.35;}
+.q-opt.correct .q-opt-txt{color:#1a7a5e;}
+.q-opt.wrong .q-opt-txt{color:#c0305a;}
+.feedback{border-radius:14px;padding:13px 15px;font-size:0.86rem;font-weight:700;line-height:1.5;display:none;animation:slideUp 0.3s ease;}
+.feedback.show{display:block;}
+.feedback.ok{background:#E8FDF6;color:#1a7a5e;border:2px solid var(--vert2);}
+.feedback.ko{background:#FEE8EE;color:#c0305a;border:2px solid var(--rouge);}
+.fb-title{font-size:0.95rem;font-weight:900;margin-bottom:4px;}
+.score-mini{background:white;border:2px solid #d8f3dc;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.sm-left{font-size:0.8rem;font-weight:800;color:var(--grey);}
+.sm-pts{font-size:1.5rem;font-weight:900;color:var(--or);}
+
+/* FIN JOUEUR */
+#s-done{background:linear-gradient(160deg,#0a1a12,#2d6a4f);align-items:center;justify-content:center;padding:30px 20px;gap:16px;text-align:center;}
+.done-icon{font-size:4rem;animation:bounce 1s 3;}
+.done-title{font-size:1.8rem;font-weight:900;color:var(--or);}
+.done-score-card{background:rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;width:100%;max-width:300px;}
+.done-pts{font-size:3.5rem;font-weight:900;color:var(--or2);line-height:1;}
+.done-sub{color:rgba(255,255,255,0.65);font-size:0.85rem;margin-top:4px;}
+.done-wait{color:rgba(255,255,255,0.5);font-size:0.82rem;font-style:italic;}
+.done-results{background:rgba(255,255,255,0.08);border-radius:14px;padding:16px;width:100%;max-width:340px;display:none;}
+.dr-title{font-size:0.85rem;font-weight:800;color:var(--or);margin-bottom:10px;}
+.dr-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);color:white;font-size:0.85rem;}
+.dr-row:last-child{border:none;}
+.dr-row b{color:var(--or2);}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+</style>
+</head>
+<body>
+
+<!-- ══ JOIN ══ -->
+<div class="screen active" id="s-join">
+  <div class="join-icon">🧠</div>
+  <div class="join-title">Quiz Handicaps Invisibles</div>
+  <div class="join-sub">Entrez le code donné par l'animateur</div>
+  <div class="join-card">
+    <div class="join-label">Code de session</div>
+    <input class="join-input" id="code-input" placeholder="XXXXXX" maxlength="6" oninput="this.value=this.value.toUpperCase()"/>
+    <div class="join-label">Votre prénom</div>
+    <input class="join-name-input" id="name-input" placeholder="Votre prénom" maxlength="14"/>
+    <div class="join-error" id="join-error">Code invalide ou session introuvable.</div>
+    <button class="btn-join" onclick="rejoindre()">🚀 Rejoindre la session</button>
+  </div>
+  <div style="font-size:0.7rem;color:rgba(255,255,255,0.25);margin-top:8px;">© Oldy & Sébastien · oldyetsebastien.fr</div>
+</div>
+
+<!-- ══ ATTENTE ══ -->
+<div class="screen" id="s-wait">
+  <div class="wait-icon">⏳</div>
+  <div class="wait-title">Vous êtes connecté !</div>
+  <div class="wait-sub">En attente que l'animateur lance la partie...</div>
+  <div class="wait-code" id="wait-code">——</div>
+  <div class="wait-players">
+    <div class="wp-title">👥 Joueurs dans la session :</div>
+    <div class="wp-list" id="wait-players-list">Chargement...</div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="screen" id="s-quiz">
+  <div class="topbar">
+    <div class="topbar-title" id="quiz-topbar-name">Quiz</div>
+    <div class="topbar-badge" id="quiz-badge">Q1</div>
+  </div>
+  <div class="quiz-body">
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-meta"><span id="prog-cat"></span><span id="prog-pts"></span></div>
+    </div>
+    <div class="score-mini">
+      <div class="sm-left">🌟 Mon score</div>
+      <div class="sm-pts" id="score-mini">0 pts</div>
+    </div>
+    <div id="q-wrap"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<!-- ══ TERMINÉ ══ -->
+<div class="screen" id="s-done">
+  <div class="done-icon">🎉</div>
+  <div class="done-title">Terminé !</div>
+  <div class="done-score-card">
+    <div class="done-pts" id="done-pts">0</div>
+    <div class="done-sub" id="done-sub">points</div>
+  </div>
+  <div class="done-wait" id="done-wait">En attente des autres joueurs et des résultats finals...</div>
+  <div class="done-results" id="done-results">
+    <div class="dr-title">🏆 Résultats Finals</div>
+    <div id="done-results-list"></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════
+// 🔥 MÊME CONFIGURATION FIREBASE QUE quiz_host.html
+// ═══════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
+  authDomain: "quiz-oldy-sebastien.firebaseapp.com",
+  databaseURL: "https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "quiz-oldy-sebastien",
+  storageBucket: "quiz-oldy-sebastien.firebasestorage.app",
+  messagingSenderId: "315241947179",
+  appId: "1:315241947179:web:48c53a445565654e338a6e"
+};
+
+// ═══════════════════════════════════════════════
+// BANQUE DE QUESTIONS (identique à quiz_host)
+// ═══════════════════════════════════════════════
+const QUESTIONS = [
+{q:"La dyslexie touche environ quelle proportion de la population ?",o:["2%","5%","10%","20%"],c:2,e:"La dyslexie touche ~10% de la population. Trouble neurologique de la lecture, sans lien avec l'intelligence.",cat:"🧩 DYS",pts:2},
+{q:"Le TDAH est causé par un déficit de :",o:["Sérotonine","Dopamine","Mélatonine","Adrénaline"],c:1,e:"Le TDAH est lié à un déficit en dopamine. Ce n'est pas un manque de volonté — c'est neurologique.",cat:"🧩 DYS",pts:2},
+{q:"La dyspraxie est un trouble de :",o:["La mémoire","La coordination des gestes","La vision","La parole"],c:1,e:"La dyspraxie touche la coordination motrice. Les gestes automatiques demandent un effort énorme.",cat:"🧩 DYS",pts:2},
+{q:"Le 'masking' chez les personnes autistes consiste à :",o:["Porter un masque médical","Cacher son autisme pour s'intégrer","Un type de traitement","Un symptôme visible"],c:1,e:"Le masking est l'effort de dissimuler son autisme. Épuisant, il peut mener au burn-out autistique.",cat:"🧩 DYS",pts:3},
+{q:"L'endométriose touche en France :",o:["1/30","1/10","1/5","1/3"],c:1,e:"L'endométriose touche 1 femme sur 10 en France. Diagnostiquée en moyenne après 7 ans de souffrance.",cat:"💊 Chronique",pts:2},
+{q:"La fibromyalgie se caractérise par :",o:["Douleurs articulaires visibles","Douleurs chroniques diffuses sans marqueur biologique","Inflammation aiguë","Fractures spontanées"],c:1,e:"La fibromyalgie : douleurs chroniques intenses et fatigue profonde, invisibles dans les analyses.",cat:"💊 Chronique",pts:2},
+{q:"L'épilepsie touche en France environ :",o:["50 000","600 000","3 millions","10 millions"],c:1,e:"L'épilepsie touche 600 000 personnes en France. Entre les crises, la vie semble tout à fait normale.",cat:"⚡ Épilepsie",pts:2},
+{q:"Lors d'une crise d'épilepsie, il NE FAUT PAS :",o:["Allonger sur le côté","Éloigner les objets","Mettre qqch dans la bouche","Appeler les secours"],c:2,e:"Ne jamais mettre quoi que ce soit dans la bouche d'une personne en crise. On l'allonge sur le côté.",cat:"⚡ Épilepsie",pts:2},
+{q:"Un anévrisme cérébral est :",o:["Un caillot dans une artère","Une dilatation anormale d'une artère cérébrale","Un AVC ischémique","Une tumeur"],c:1,e:"Un anévrisme cérébral est une dilatation en poche d'une artère du cerveau. Il peut se rompre brutalement.",cat:"🫀 Vasculaire",pts:3},
+{q:"L'anévrisme carotido-ophtalmique se situe :",o:["Dans la nuque","À la jonction carotide interne / artère ophtalmique","Dans le cervelet","Derrière les oreilles"],c:1,e:"L'anévrisme carotido-ophtalmique naît à la jonction entre la carotide interne et l'artère ophtalmique.",cat:"🫀 Vasculaire",pts:4},
+{q:"L'hémorragie sous-arachnoïdienne est causée par :",o:["Un AVC ischémique","La rupture d'un anévrisme dans l'espace sous-arachnoïdien","Un traumatisme léger","Une migraine"],c:1,e:"L'HSA survient quand un anévrisme se rompt dans l'espace entre le cerveau et les méninges.",cat:"🫀 Vasculaire",pts:4},
+{q:"Le signe caractéristique de la rupture d'anévrisme est :",o:["Une douleur progressive","Un 'coup de tonnerre' : céphalée brutale intense","Des vertiges légers","Une fièvre soudaine"],c:1,e:"La rupture d'anévrisme provoque une céphalée 'en coup de tonnerre' : la pire douleur de la vie.",cat:"🫀 Vasculaire",pts:3},
+{q:"Le vasospasme après rupture d'anévrisme peut causer :",o:["Une guérison accélérée","Un AVC secondaire","Une infection","Une amélioration du débit"],c:1,e:"Le vasospasme (4-14j après rupture) contracte les artères et peut provoquer un AVC ischémique secondaire.",cat:"🫀 Vasculaire",pts:4},
+{q:"Un stimulateur cardiaque (pacemaker) est :",o:["Externe et visible","Implanté sous la peau pour réguler le rythme cardiaque","Temporaire seulement","Uniquement pour personnes âgées"],c:1,e:"Le pacemaker est implanté sous la peau. Il envoie des impulsions électriques pour maintenir un rythme cardiaque normal.",cat:"💓 Pacemaker",pts:2},
+{q:"Les porteurs de pacemaker doivent éviter :",o:["Les avions","Certains champs électromagnétiques intenses","La marche rapide","Les voyages en train"],c:1,e:"Certains champs magnétiques intenses (IRM non compatible, induction forte) peuvent perturber le pacemaker.",cat:"💓 Pacemaker",pts:3},
+{q:"La pile d'un pacemaker dure généralement :",o:["1-2 ans","3-5 ans","7-15 ans","30 ans"],c:2,e:"La pile d'un pacemaker dure en général 7 à 15 ans selon l'utilisation. Un suivi régulier est indispensable.",cat:"💓 Pacemaker",pts:3},
+{q:"En France, environ combien de personnes ont un pacemaker ?",o:["10 000","50 000","750 000","5 millions"],c:2,e:"~750 000 personnes ont un pacemaker en France. La plupart mènent une vie normale, ce handicap est totalement invisible.",cat:"💓 Pacemaker",pts:4},
+{q:"La dépression modifie réellement :",o:["L'apparence physique","La chimie et structure du cerveau","Uniquement l'humeur","La mémoire à court terme"],c:1,e:"La dépression modifie la chimie du cerveau (sérotonine, dopamine). Ce n'est pas un manque de volonté.",cat:"🧠 Psychiatrie",pts:2},
+{q:"Le trouble bipolaire touche :",o:["0.1%","1%","10%","20%"],c:1,e:"Le trouble bipolaire touche ~1% de la population mondiale. Stabilisé, il permet une vie quasi-normale.",cat:"🧠 Psychiatrie",pts:2},
+{q:"La drépanocytose est en France :",o:["Très rare","La maladie génétique la plus fréquente","Récente","Importée uniquement"],c:1,e:"La drépanocytose est la maladie génétique la plus fréquente en France. Les crises vaso-occlusives sont invisibles mais très douloureuses.",cat:"🧬 Génétique",pts:2},
+{q:"Le VIH avec charge virale indétectable signifie :",o:["La personne est guérie","Virus contrôlé, non transmissible (U=U)","Moins contagieux","Traitement échoué"],c:1,e:"U=U reconnu par l'OMS : une personne séropositive avec charge virale indétectable ne transmet plus le virus.",cat:"🧬 Génétique",pts:3},
+{q:"80% des handicaps en France sont :",o:["Physiques et visibles","Invisibles","Cognitifs","Auditifs"],c:1,e:"80% des handicaps en France sont invisibles. La majorité du handicap ne se voit pas.",cat:"🌍 Culture",pts:2},
+{q:"La RQTH signifie :",o:["Registre Qualité Travailleurs Handicapés","Reconnaissance Qualité Travailleur Handicapé","Règlement Qualité Travail Hospitalier","Reconnaiss. Qualifiée Trouble Handicapant"],c:1,e:"La RQTH (Reconnaissance de la Qualité de Travailleur Handicapé) permet des aménagements au travail.",cat:"⚖️ Droits",pts:2},
+{q:"Le quota emploi travailleurs handicapés est de :",o:["1%","3%","6%","10%"],c:2,e:"Les entreprises de plus de 20 salariés doivent employer au moins 6% de travailleurs handicapés (OETH).",cat:"⚖️ Droits",pts:2},
+{q:"L'apnée du sommeil non traitée peut provoquer :",o:["Fatigue légère","Hypertension, maladies cardiovasculaires, AVC","Ronflements seulement","Problèmes dentaires"],c:1,e:"L'apnée du sommeil non traitée a des conséquences graves : hypertension, risque d'AVC, dépression.",cat:"🫁 Respiratoire",pts:2},
+{q:"La migraine chronique = plus de X jours/mois de céphalées ?",o:["5 jours","10 jours","15 jours","30 jours"],c:2,e:"Migraine chronique = plus de 15 jours de céphalées par mois pendant plus de 3 mois consécutifs.",cat:"💊 Chronique",pts:3},
+{q:"Le SED (Ehlers-Danlos) est souvent mal diagnostiqué car :",o:["Pas de symptômes","Les personnes paraissent souples et athlétiques","Trop rare","Aucun test"],c:1,e:"La souplesse apparente du SED masque une fragilité articulaire réelle et des douleurs chroniques intenses.",cat:"💊 Chronique",pts:3},
+{q:"Le lupus est aggravé par :",o:["Le froid","Les UV du soleil","L'exercice","Le bruit"],c:1,e:"Les UV peuvent déclencher des poussées graves de lupus. Les personnes doivent éviter le soleil.",cat:"💊 Chronique",pts:2},
+{q:"L'héminégligence après AVC est :",o:["Une paralysie","Le cerveau ignore une partie de l'espace ou du corps","Un trouble de la parole","Une perte de vision"],c:1,e:"L'héminégligence est un trouble neurologique : le cerveau ignore un côté de l'espace ou du corps.",cat:"🫀 Vasculaire",pts:4},
+{q:"Combien de maladies rares répertoriées dans le monde ?",o:["500","2 000","Plus de 7 000","Plus de 50 000"],c:2,e:"Plus de 7 000 maladies rares sont répertoriées. 80% ont une origine génétique.",cat:"🧬 Génétique",pts:2},
+];
+
+const CAT_COLORS = {
+  "🧩 DYS":"#7B5EA7","💊 Chronique":"#e63946","⚡ Épilepsie":"#FF8C42",
+  "🫀 Vasculaire":"#e63946","💓 Pacemaker":"#E91E8C","🧠 Psychiatrie":"#118AB2",
+  "🧬 Génétique":"#009688","🫁 Respiratoire":"#FF8C42","⚖️ Droits":"#2d6a4f","🌍 Culture":"#d4a843",
+};
+
+// ÉTAT
+let app, db;
+let monCode = null;
+let monNom = null;
+let monId = null;
+let sessionRef = null;
+let monRef = null;
+let mesQuestions = [];
+let qIdx = 0;
+let monScore = 0;
+let answered = false;
+
+// Lire code depuis URL
+window.onload = () => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if (code) document.getElementById('code-input').value = code.toUpperCase();
+  try {
+    app = firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+  } catch(e) { console.warn('Firebase:', e); }
+};
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ── REJOINDRE ──
+async function rejoindre() {
+  if (!db) { alert('Firebase non configuré.'); return; }
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const nom = document.getElementById('name-input').value.trim();
+  if (!code || code.length < 4) { showError('Entrez un code valide.'); return; }
+  if (!nom) { showError('Entrez votre prénom.'); return; }
+
+  const snap = await db.ref('sessions/' + code).once('value');
+  if (!snap.exists()) { showError('Session introuvable. Vérifiez le code.'); return; }
+
+  const session = snap.val();
+  if (session.statut === 'done') { showError('Cette session est terminée.'); return; }
+
+  monCode = code;
+  monNom = nom;
+  monId = 'joueur_' + Date.now() + '_' + Math.random().toString(36).substr(2,4);
+  sessionRef = db.ref('sessions/' + code);
+  monRef = sessionRef.child('joueurs/' + monId);
+
+  await monRef.set({
+    nom, score: 0, reponses: 0, statut: 'waiting',
+    joinedAt: Date.now()
+  });
+
+  document.getElementById('wait-code').textContent = code;
+  goScreen('s-wait');
+  ecouterLobby();
+}
+
+function showError(msg) {
+  const err = document.getElementById('join-error');
+  err.textContent = msg;
+  err.style.display = 'block';
+  setTimeout(() => err.style.display = 'none', 3000);
+}
+
+// ── LOBBY ──
+function ecouterLobby() {
+  sessionRef.child('joueurs').on('value', snap => {
+    const joueurs = snap.val() || {};
+    const list = Object.values(joueurs);
+    document.getElementById('wait-players-list').innerHTML =
+      list.map(j => `• ${j.nom}`).join('<br>') || 'Aucun joueur';
+  });
+
+  sessionRef.child('statut').on('value', snap => {
+    const statut = snap.val();
+    if (statut === 'playing') demarrerQuiz();
+    if (statut === 'done') afficherResultats();
+  });
+}
+
+// ── QUIZ ──
+function demarrerQuiz() {
+  sessionRef.once('value', snap => {
+    const session = snap.val();
+    const nbQ = session.qParJoueur || 10;
+    mesQuestions = shuffle([...QUESTIONS]).slice(0, nbQ);
+    qIdx = 0; monScore = 0; answered = false;
+    monRef.update({ statut: 'playing' });
+    document.getElementById('quiz-topbar-name').textContent = monNom;
+    goScreen('s-quiz');
+    renderQuestion();
+  });
+}
+
+function renderQuestion() {
+  if (qIdx >= mesQuestions.length) { terminerQuiz(); return; }
+  answered = false;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+
+  const q = mesQuestions[qIdx];
+  const pct = Math.round(qIdx / mesQuestions.length * 100);
+  const catColor = CAT_COLORS[q.cat] || '#2d6a4f';
+  const letters = ['A','B','C','D'];
+  const diffStars = q.pts===2?'⭐':q.pts===3?'⭐⭐':'⭐⭐⭐';
+
+  document.getElementById('quiz-badge').textContent = `Q${qIdx+1}/${mesQuestions.length}`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-cat').textContent = q.cat;
+  document.getElementById('prog-pts').textContent = diffStars + ' +' + q.pts + 'pts';
+  document.getElementById('score-mini').textContent = monScore + ' pts';
+
+  document.getElementById('q-wrap').innerHTML = `
+    <div class="q-card">
+      <div class="q-header">
+        <div class="q-cat-row">
+          <span class="q-cat" style="background:${catColor}20;color:${catColor};">${q.cat}</span>
+          <span class="q-pts">+${q.pts} pts</span>
+        </div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="q-options">
+        ${q.o.map((opt,i)=>`
+          <button class="q-opt" onclick="selectAnswer(${i})" data-idx="${i}">
+            <span class="q-letter">${letters[i]}</span>
+            <span class="q-opt-txt">${opt}</span>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+async function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = mesQuestions[qIdx];
+  const correct = idx === q.c;
+  if (correct) monScore += q.pts;
+
+  document.querySelectorAll('.q-opt').forEach((btn,i)=>{
+    btn.disabled = true;
+    if (i===q.c) btn.classList.add('correct');
+    else if (i===idx) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (correct?'ok':'ko') + ' show';
+  fb.innerHTML = `<div class="fb-title">${correct?'✅ Bonne réponse !':'❌ Mauvaise réponse'}</div>${q.e}`;
+
+  // Envoyer à Firebase
+  await monRef.update({ score: monScore, reponses: qIdx + 1 });
+  // Envoyer activité
+  await sessionRef.child('activite').push({
+    nom: monNom, emoji: '🧑',
+    question: q.q.substring(0, 35) + '...',
+    correct, pts: correct ? q.pts : 0,
+    t: Date.now()
+  });
+
+  document.getElementById('score-mini').textContent = monScore + ' pts';
+
+  setTimeout(() => {
+    qIdx++;
+    renderQuestion();
+    window.scrollTo(0,0);
+  }, correct ? 2000 : 2800);
+}
+
+async function terminerQuiz() {
+  await monRef.update({ statut: 'done', score: monScore, reponses: mesQuestions.length });
+  document.getElementById('done-pts').textContent = monScore;
+  document.getElementById('done-sub').textContent = `points sur ${mesQuestions.length * 2} possibles`;
+  goScreen('s-done');
+
+  // Écouter fin de session
+  sessionRef.child('statut').on('value', snap => {
+    if (snap.val() === 'done') afficherResultats();
+  });
+}
+
+function afficherResultats() {
+  sessionRef.child('joueurs').once('value', snap => {
+    const joueurs = snap.val() || {};
+    const sorted = Object.values(joueurs).sort((a,b)=>(b.score||0)-(a.score||0));
+    const medals = ['🥇','🥈','🥉','🎖️','🎗️'];
+    document.getElementById('done-wait').style.display = 'none';
+    const dr = document.getElementById('done-results');
+    dr.style.display = 'block';
+    document.getElementById('done-results-list').innerHTML =
+      sorted.map((j,i)=>`<div class="dr-row">${medals[i]||'🏅'} ${j.nom} <b>${j.score||0} pts</b></div>`).join('');
+  });
+}
+</script>
+</body>
+</html>
