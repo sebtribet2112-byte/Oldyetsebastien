@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rendons visible l'invisible — Les Jugements | Oldy et Sébastien</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800;900&family=Patrick+Hand&display=swap');
+
+:root {
+  --orange: #F4801A;
+  --orange-light: #FFF0E0;
+  --teal: #1A7FA4;
+  --teal-light: #E0F4FB;
+  --navy: #1A2340;
+  --red: #E84040;
+  --green: #3AAA6B;
+  --yellow: #FFD93D;
+  --pink: #F7A8C4;
+  --purple: #9B59B6;
+  --bg: #FFF8F0;
+  --panel-border: 3px solid var(--navy);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--navy);
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  background: var(--navy);
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--orange) 0 40px, var(--teal) 40px 80px);
+}
+.header-logo {
+  font-family: 'Bangers', cursive;
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  color: var(--orange);
+  line-height: 1;
+}
+.header-sub {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.header-tag {
+  margin-left: auto;
+  background: var(--orange);
+  color: white;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 50px;
+  letter-spacing: 1px;
+}
+
+/* ===== INTRO TITRE ===== */
+.intro {
+  text-align: center;
+  padding: 40px 20px 10px;
+}
+.intro-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  color: var(--navy);
+  letter-spacing: 3px;
+  line-height: 1.1;
+}
+.intro-title span { color: var(--orange); }
+.intro-desc {
+  max-width: 600px;
+  margin: 16px auto 0;
+  font-size: 1.05rem;
+  color: #555;
+  line-height: 1.7;
+  font-weight: 600;
+}
+.intro-ribbon {
+  display: inline-block;
+  background: var(--teal);
+  color: white;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 8px 24px;
+  border-radius: 50px;
+  margin-top: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===== BD CONTAINER ===== */
+.bd-book {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 16px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* ===== STRIP ===== */
+.strip {
+  background: white;
+  border: var(--panel-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 6px 6px 0 var(--navy);
+}
+
+.strip-header {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: var(--panel-border);
+}
+.strip-num {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  color: white;
+  background: var(--navy);
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.strip-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.strip-title .tag {
+  display: inline-block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: var(--orange);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 50px;
+  vertical-align: middle;
+  margin-left: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: none;
+}
+
+.panel {
+  border-right: var(--panel-border);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  position: relative;
+  min-height: 260px;
+}
+.panel:last-child { border-right: none; }
+
+.panel-scene {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 8px 0;
+  position: relative;
+  background: var(--bg);
+  border-bottom: 2px solid var(--navy);
+  min-height: 200px;
+}
+
+.panel-caption {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.85rem;
+  color: #444;
+  line-height: 1.5;
+  padding: 10px 10px;
+  text-align: center;
+  background: white;
+}
+
+/* ===== BULLES ===== */
+.bubble {
+  position: absolute;
+  background: white;
+  border: 2.5px solid var(--navy);
+  border-radius: 18px;
+  padding: 7px 12px;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 130px;
+  z-index: 10;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--navy);
+}
+.bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -7px; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: white;
+  z-index: 1;
+}
+.bubble.left::after { left: 20px; }
+.bubble.left::before { left: 20px; }
+.bubble.right::after { left: auto; right: 20px; }
+.bubble.right::before { left: auto; right: 20px; }
+
+.bubble.thought {
+  border-radius: 50%;
+  padding: 8px 14px;
+}
+.bubble.thought::after { display: none; }
+.bubble.thought::before { display: none; }
+.bubble-dots {
+  position: absolute;
+  display: flex; gap: 3px;
+  z-index: 10;
+}
+.bubble-dot { width: 6px; height: 6px; background: var(--navy); border-radius: 50%; }
+
+.bubble.angry { border-color: var(--red); color: var(--red); font-weight: 800; }
+.bubble.angry::after { border-top-color: var(--red); }
+.bubble.kind { border-color: var(--green); }
+.bubble.info { border-color: var(--teal); background: var(--teal-light); font-size: 0.78rem; }
+.bubble.info::after { border-top-color: var(--teal); }
+
+.top-bubble {
+  top: 8px;
+}
+
+/* ===== DÉCORS ===== */
+.decor-parking {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 28px;
+  background: #CCC;
+  border-top: 3px solid #999;
+}
+.decor-parking-sign {
+  position: absolute;
+  bottom: 28px; left: 10px;
+  width: 24px; height: 36px;
+  background: var(--teal);
+  border: 2px solid var(--navy);
+  border-radius: 4px 4px 0 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 900; color: white;
+}
+.decor-parking-sign::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 3px; height: 8px;
+  background: var(--navy);
+}
+.decor-road-line {
+  position: absolute;
+  bottom: 10px; left: 0; right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, white 0 20px, transparent 20px 40px);
+}
+.decor-sky {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 40px;
+  background: linear-gradient(180deg, #D6EFFC 0%, #F0FAFF 100%);
+}
+.decor-seat {
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 50px;
+  background: #6fa8c0;
+  border: 2px solid var(--navy);
+  border-radius: 8px 8px 0 0;
+}
+.decor-seat::after {
+  content: '';
+  position: absolute;
+  top: -18px; left: 5px; right: 5px;
+  height: 20px;
+  background: #6fa8c0;
+  border: 2px solid var(--navy);
+  border-radius: 8px 8px 0 0;
+}
+.decor-desk {
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 70px; height: 14px;
+  background: #c8a882;
+  border: 2px solid var(--navy);
+  border-radius: 4px;
+}
+.decor-floor {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 16px;
+  background: #E0D6CC;
+  border-top: 2px solid #B0A090;
+}
+
+/* ===== PERSONNAGE SÉBASTIEN ===== */
+.seb {
+  position: relative;
+  width: 52px;
+  flex-shrink: 0;
+}
+.seb .head {
+  width: 36px; height: 38px;
+  background: #FDDBB4;
+  border: 2.5px solid var(--navy);
+  border-radius: 50% 50% 48% 48%;
+  margin: 0 auto;
+  position: relative;
+}
+.seb .hair {
+  position: absolute;
+  top: -4px; left: -2px; right: -2px;
+  height: 16px;
+  background: #6B3A2A;
+  border-radius: 50% 50% 0 0;
+  border: 2px solid var(--navy);
+}
+.seb .eyes {
+  position: absolute;
+  top: 13px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 6px;
+}
+.seb .eye {
+  width: 5px; height: 6px;
+  background: var(--navy);
+  border-radius: 50%;
+}
+.seb .smile {
+  position: absolute;
+  bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 14px; height: 7px;
+  border: 2px solid var(--navy);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+}
+.seb .mouth-neutral {
+  position: absolute;
+  bottom: 10px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 2px;
+  background: var(--navy);
+  border-radius: 2px;
+}
+.seb .mouth-sad {
+  position: absolute;
+  bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 14px; height: 7px;
+  border: 2px solid var(--navy);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+.seb .neck {
+  width: 14px; height: 8px;
+  background: #FDDBB4;
+  border-left: 2.5px solid var(--navy);
+  border-right: 2.5px solid var(--navy);
+  margin: 0 auto;
+}
+.seb .body {
+  width: 44px; height: 42px;
+  border: 2.5px solid var(--navy);
+  border-radius: 8px 8px 0 0;
+  margin: 0 auto;
+  position: relative;
+}
+.seb .body.blue { background: #5B9BD5; }
+.seb .body.orange { background: var(--orange); }
+.seb .body.green { background: var(--green); }
+.seb .arms {
+  position: absolute;
+  top: 4px; left: -14px; right: -14px;
+  height: 20px;
+}
+.seb .arm-l, .seb .arm-r {
+  position: absolute;
+  width: 14px; height: 20px;
+  background: inherit;
+  border: 2px solid var(--navy);
+  border-radius: 6px;
+  top: 0;
+}
+.seb .arm-l { left: 0; transform: rotate(-15deg); }
+.seb .arm-r { right: 0; transform: rotate(15deg); }
+.seb .legs {
+  display: flex; justify-content: center; gap: 4px;
+  margin-top: -2px;
+}
+.seb .leg {
+  width: 16px; height: 26px;
+  background: #2C3E70;
+  border: 2.5px solid var(--navy);
+  border-radius: 0 0 6px 6px;
+}
+.seb .feet {
+  display: flex; justify-content: center; gap: 2px;
+}
+.seb .foot {
+  width: 18px; height: 8px;
+  background: #222;
+  border: 2px solid var(--navy);
+  border-radius: 0 6px 6px 0;
+}
+.seb .foot.l { border-radius: 6px 0 0 6px; }
+.seb .badge {
+  position: absolute;
+  top: -6px; right: -8px;
+  width: 18px; height: 18px;
+  background: var(--teal);
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; color: white; font-weight: 900;
+}
+.seb .cane {
+  position: absolute;
+  right: -8px; top: 10px;
+  width: 4px; height: 36px;
+  background: var(--navy);
+  border-radius: 2px;
+  transform: rotate(10deg);
+}
+
+/* ===== PERSONNAGE OLDY ===== */
+.oldy {
+  position: relative;
+  width: 54px;
+  flex-shrink: 0;
+}
+.oldy .body {
+  width: 48px; height: 30px;
+  background: white;
+  border: 2.5px solid var(--navy);
+  border-radius: 40% 50% 30% 30%;
+  position: relative;
+  margin: 0 auto;
+}
+.oldy .spot {
+  position: absolute;
+  background: #D4732A;
+  border-radius: 50%;
+}
+.oldy .spot1 { width: 18px; height: 14px; top: 4px; left: 5px; }
+.oldy .spot2 { width: 12px; height: 10px; top: 8px; right: 6px; }
+.oldy .tail {
+  position: absolute;
+  right: -12px; top: -4px;
+  width: 14px; height: 8px;
+  background: white;
+  border: 2.5px solid var(--navy);
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+.oldy .head {
+  width: 34px; height: 30px;
+  background: white;
+  border: 2.5px solid var(--navy);
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+}
+.oldy .ear {
+  position: absolute;
+  width: 14px; height: 22px;
+  background: #D4732A;
+  border: 2.5px solid var(--navy);
+  top: 4px;
+}
+.oldy .ear-l { left: -5px; border-radius: 40% 0 0 50%; transform: rotate(-10deg); }
+.oldy .ear-r { right: -5px; border-radius: 0 40% 50% 0; transform: rotate(10deg); }
+.oldy .nose {
+  position: absolute;
+  bottom: 6px; left: 50%; transform: translateX(-50%);
+  width: 14px; height: 8px;
+  background: #333;
+  border-radius: 50%;
+}
+.oldy .eye-d {
+  position: absolute;
+  width: 5px; height: 5px;
+  background: var(--navy);
+  border-radius: 50%;
+  top: 10px;
+}
+.oldy .eye-d.l { left: 7px; }
+.oldy .eye-d.r { right: 7px; }
+.oldy .spot-head {
+  position: absolute;
+  width: 14px; height: 10px;
+  background: #D4732A;
+  border-radius: 50%;
+  top: 3px; left: 4px;
+}
+.oldy .legs-d {
+  display: flex; justify-content: center; gap: 4px;
+  margin-top: -3px;
+}
+.oldy .leg-d {
+  width: 9px; height: 16px;
+  background: white;
+  border: 2.5px solid var(--navy);
+  border-radius: 0 0 4px 4px;
+}
+
+/* ===== PERSONNAGE JUGEUR ===== */
+.judge {
+  position: relative;
+  width: 46px;
+  flex-shrink: 0;
+}
+.judge .head {
+  width: 32px; height: 34px;
+  background: #FDDBB4;
+  border: 2.5px solid var(--navy);
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+}
+.judge .hair-j {
+  position: absolute;
+  top: -3px; left: -2px; right: -2px;
+  height: 14px;
+  border-radius: 50% 50% 0 0;
+  border: 2px solid var(--navy);
+}
+.judge .brows {
+  position: absolute;
+  top: 10px; left: 3px; right: 3px;
+  display: flex; justify-content: space-between;
+}
+.judge .brow {
+  width: 8px; height: 3px;
+  background: var(--navy);
+  border-radius: 2px;
+  transform: rotate(-15deg);
+}
+.judge .brow.r { transform: rotate(15deg); }
+.judge .eye-j {
+  position: absolute;
+  width: 5px; height: 5px;
+  background: var(--navy);
+  border-radius: 50%;
+  top: 16px;
+}
+.judge .eye-j.l { left: 6px; }
+.judge .eye-j.r { right: 6px; }
+.judge .frown {
+  position: absolute;
+  bottom: 6px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 6px;
+  border: 2px solid var(--navy);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+.judge .neck-j {
+  width: 12px; height: 7px;
+  background: #FDDBB4;
+  border-left: 2.5px solid var(--navy);
+  border-right: 2.5px solid var(--navy);
+  margin: 0 auto;
+}
+.judge .body-j {
+  width: 40px; height: 40px;
+  border: 2.5px solid var(--navy);
+  border-radius: 8px 8px 0 0;
+  margin: 0 auto;
+  position: relative;
+}
+.judge .body-j.gray { background: #9E9E9E; }
+.judge .body-j.red2 { background: #E57373; }
+.judge .body-j.purple { background: var(--purple); }
+.judge .legs-j {
+  display: flex; justify-content: center; gap: 4px;
+  margin-top: -2px;
+}
+.judge .leg-j {
+  width: 14px; height: 24px;
+  background: #444;
+  border: 2px solid var(--navy);
+  border-radius: 0 0 4px 4px;
+}
+.judge .feet-j {
+  display: flex; justify-content: center; gap: 2px;
+}
+.judge .foot-j {
+  width: 16px; height: 7px;
+  background: #111;
+  border: 2px solid var(--navy);
+  border-radius: 0 5px 5px 0;
+}
+.judge .foot-j.l { border-radius: 5px 0 0 5px; }
+
+/* ===== CHARACTER GROUP ===== */
+.char-group {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 5;
+  padding-bottom: 2px;
+}
+
+/* ===== VOITURE CSS ===== */
+.car {
+  width: 80px; height: 40px;
+  position: relative;
+  margin: 0 auto;
+}
+.car .car-body {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 26px;
+  background: #5B9BD5;
+  border: 2.5px solid var(--navy);
+  border-radius: 6px 6px 4px 4px;
+}
+.car .car-top {
+  position: absolute;
+  bottom: 20px; left: 14px; right: 14px;
+  height: 22px;
+  background: #7ABCE8;
+  border: 2.5px solid var(--navy);
+  border-radius: 8px 8px 0 0;
+}
+.car .wheel {
+  position: absolute;
+  bottom: -5px;
+  width: 16px; height: 16px;
+  background: #333;
+  border: 2.5px solid var(--navy);
+  border-radius: 50%;
+}
+.car .wheel.l { left: 6px; }
+.car .wheel.r { right: 6px; }
+.car .window {
+  position: absolute;
+  top: 4px; left: 6px; right: 6px;
+  height: 12px;
+  background: rgba(200,230,255,0.8);
+  border: 1.5px solid var(--navy);
+  border-radius: 4px 4px 0 0;
+}
+
+/* ===== PANEL BG COLORS ===== */
+.bg-1 { background: #FFF5E8; }
+.bg-2 { background: #E8F5FF; }
+.bg-3 { background: #F0FFE8; }
+.bg-4 { background: #FFF0F5; }
+
+/* ===== MORAL BOX ===== */
+.moral-box {
+  padding: 14px 20px;
+  border-top: var(--panel-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.moral-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.moral-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-weight: 700;
+  color: var(--navy);
+}
+.moral-text em {
+  font-style: normal;
+  color: var(--orange);
+}
+
+/* ===== STRIP COLORS ===== */
+.strip.s1 .strip-header { background: #FFF0E0; }
+.strip.s1 .strip-title { color: var(--orange); }
+.strip.s2 .strip-header { background: var(--teal-light); }
+.strip.s2 .strip-title { color: var(--teal); }
+.strip.s3 .strip-header { background: #F0FFE8; }
+.strip.s3 .strip-title { color: var(--green); }
+.strip.s4 .strip-header { background: #F5F0FF; }
+.strip.s4 .strip-title { color: var(--purple); }
+
+/* ===== FINALE ===== */
+.finale {
+  background: var(--navy);
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+  margin: 0 16px 40px;
+  max-width: 900px;
+  margin: 0 auto 60px;
+}
+.finale::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at center, rgba(244,128,26,0.15) 0%, transparent 70%);
+}
+.finale-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  letter-spacing: 3px;
+  color: var(--orange);
+  margin-bottom: 16px;
+}
+.finale-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  max-width: 520px;
+  margin: 0 auto 20px;
+  opacity: 0.9;
+}
+.finale-url {
+  display: inline-block;
+  background: var(--orange);
+  color: white;
+  font-weight: 900;
+  padding: 10px 28px;
+  border-radius: 50px;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-decoration: none;
+  margin-top: 8px;
+}
+.finale-chars {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: white; }
+  .site-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .strip { break-inside: avoid; box-shadow: none; }
+  .finale { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .strip-header, .moral-box, .panel-scene { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (max-width: 600px) {
+  .panels { grid-template-columns: 1fr; }
+  .panel { border-right: none; border-bottom: var(--panel-border); }
+  .panel:last-child { border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div>
+    <div class="header-logo">Oldy & Sébastien</div>
+    <div class="header-sub">Rendons visible l'invisible</div>
+  </div>
+  <div class="header-tag">🐾 Sensibilisation</div>
+</header>
+
+<!-- INTRO -->
+<div class="intro">
+  <div class="intro-title">Ne juge pas ce que tu <span>ne vois pas</span></div>
+  <div class="intro-desc">
+    Le handicap invisible ne se voit pas. Mais les jugements, eux, se ressentent profondément.
+    Voici 4 situations du quotidien vécues par des millions de personnes.
+  </div>
+  <div class="intro-ribbon">✦ 4 histoires vraies ✦ tout public ✦</div>
+</div>
+
+<!-- ===== BD ===== -->
+<div class="bd-book">
+
+  <!-- ================ STRIP 1 : T'as pas l'air malade ================ -->
+  <div class="strip s1">
+    <div class="strip-header">
+      <div class="strip-num">1</div>
+      <div class="strip-title">"T'as pas l'air malade !"<span class="tag">Quotidien</span></div>
+    </div>
+    <div class="panels">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-scene bg-1">
+          <div class="decor-sky"></div>
+          <!-- Bulle jugeur -->
+          <div class="bubble angry top-bubble" style="top:8px; left:10px; max-width:115px; font-size:0.78rem;">
+            T'as pas l'air malade toi ! T'inventes !
+          </div>
+          <!-- Personnages -->
+          <div class="char-group" style="margin-top: 80px;">
+            <!-- Juge -->
+            <div class="judge">
+              <div class="head">
+                <div class="hair-j" style="background:#8B4513;"></div>
+                <div class="brows"><div class="brow"></div><div class="brow r"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="frown"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j gray">
+                <div style="position:absolute;top:4px;left:50%;transform:translateX(-50%);width:18px;height:3px;background:rgba(255,255,255,0.4);border-radius:2px;"></div>
+              </div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+            <!-- Sébastien triste -->
+            <div class="seb">
+              <div class="head">
+                <div class="hair"></div>
+                <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                <div class="mouth-sad"></div>
+              </div>
+              <div class="neck"></div>
+              <div class="body blue"></div>
+              <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+              <div class="feet"><div class="foot l"></div><div class="foot"></div></div>
+            </div>
+            <!-- Oldy -->
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Une personne doute de la maladie de Sébastien parce qu'elle ne se voit pas.</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-scene bg-1">
+          <!-- Bulle sébastien -->
+          <div class="bubble kind top-bubble" style="top:8px; right:8px; max-width:125px; font-size:0.78rem;">
+            Mon cerveau, ma douleur… tout ça est réel. Mais invisible.
+          </div>
+          <div class="char-group" style="margin-top: 80px;">
+            <div class="seb">
+              <div class="head">
+                <div class="hair"></div>
+                <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                <div class="mouth-neutral"></div>
+              </div>
+              <div class="neck"></div>
+              <div class="body orange"></div>
+              <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+              <div class="feet"><div class="foot l"></div><div class="foot"></div></div>
+            </div>
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+          </div>
+          <!-- Icônes invisibles -->
+          <div style="position:absolute;top:50px;left:8px;font-size:1.2rem;">🧠</div>
+          <div style="position:absolute;top:70px;left:16px;font-size:0.9rem;color:#999;">❤️</div>
+          <div style="position:absolute;top:55px;right:12px;font-size:1rem;">⚡</div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Sébastien explique que la maladie n'a pas besoin d'être visible pour être réelle.</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-scene bg-1">
+          <!-- Bulle oldy -->
+          <div class="bubble info top-bubble" style="top:8px; left:8px; max-width:130px; font-size:0.76rem;">
+            12 millions de Français vivent avec un handicap invisible. Le doute fait mal aussi !
+          </div>
+          <div class="char-group" style="margin-top: 86px;">
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Oldy rappelle : ne pas voir une maladie ne signifie pas qu'elle n'existe pas !</div>
+      </div>
+
+    </div>
+    <div class="moral-box">
+      <div class="moral-icon">💡</div>
+      <div class="moral-text">
+        <em>À retenir :</em> Une maladie invisible est une maladie réelle. Le diabète, la fibromyalgie, l'épilepsie, la dépression… ne se voient pas, mais se vivent chaque jour. Avant de douter, demande-toi : est-ce que j'ai toutes les informations ?
+      </div>
+    </div>
+  </div>
+
+  <!-- ================ STRIP 2 : Place de parking PMR ================ -->
+  <div class="strip s2">
+    <div class="strip-header">
+      <div class="strip-num">2</div>
+      <div class="strip-title">La place de parking PMR<span class="tag">Espace public</span></div>
+    </div>
+    <div class="panels">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-scene bg-2">
+          <div class="decor-sky"></div>
+          <!-- Voiture + macaron -->
+          <div style="position:absolute; top:50px; left:50%; transform:translateX(-50%);">
+            <div class="car">
+              <div class="car-top"><div class="window"></div></div>
+              <div class="car-body"></div>
+              <div class="wheel l"></div><div class="wheel r"></div>
+            </div>
+            <div style="position:absolute;top:-14px;right:6px;background:var(--teal);color:white;font-weight:900;font-size:0.6rem;padding:3px 6px;border-radius:4px;border:2px solid var(--navy);">PMR ♿</div>
+          </div>
+          <!-- Jugeur -->
+          <div class="bubble angry" style="top:8px; right:6px; max-width:120px; font-size:0.78rem;">
+            Honte ! Il/elle a l'air en pleine forme !
+          </div>
+          <div class="char-group" style="margin-top: 140px;">
+            <div class="judge">
+              <div class="head">
+                <div class="hair-j" style="background:#222;"></div>
+                <div class="brows"><div class="brow"></div><div class="brow r"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="frown"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j red2"></div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+          </div>
+          <div class="decor-parking">
+            <div class="decor-road-line"></div>
+          </div>
+          <div class="decor-parking-sign">♿</div>
+        </div>
+        <div class="panel-caption">Un passant s'énerve en voyant quelqu'un sortir d'un véhicule sur une place PMR sans fauteuil roulant.</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-scene bg-2">
+          <div class="decor-sky"></div>
+          <!-- Sébastien avec badge -->
+          <div class="bubble kind" style="top:8px; left:6px; max-width:130px; font-size:0.78rem;">
+            J'ai une carte… mais ma maladie ne se voit pas toujours.
+          </div>
+          <div class="char-group" style="margin-top: 90px;">
+            <div class="seb">
+              <div class="head">
+                <div class="hair"></div>
+                <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                <div class="mouth-neutral"></div>
+                <div class="badge">♿</div>
+              </div>
+              <div class="neck"></div>
+              <div class="body green">
+                <div class="arms">
+                  <div class="arm-l" style="background:#3AAA6B;"></div>
+                  <div class="arm-r" style="background:#3AAA6B;"></div>
+                </div>
+              </div>
+              <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+              <div class="feet"><div class="foot l"></div><div class="foot"></div></div>
+            </div>
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+          </div>
+          <div class="decor-parking"><div class="decor-road-line"></div></div>
+        </div>
+        <div class="panel-caption">Sébastien montre sa carte de stationnement. Sa maladie l'oblige à ne pas marcher longtemps, même si ça ne se voit pas.</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-scene bg-2">
+          <div class="decor-sky"></div>
+          <div class="bubble info" style="top:8px; left:8px; max-width:135px; font-size:0.75rem;">
+            La carte PMR ne concerne pas que les fauteuils roulants ! Elle couvre aussi douleur, fatigue, maladies cardiaques…
+          </div>
+          <div class="char-group" style="margin-top: 86px;">
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+            <div class="judge">
+              <div class="head">
+                <div class="hair-j" style="background:#222;"></div>
+                <div class="brows"><div class="brow" style="transform:none;"></div><div class="brow r" style="transform:none;"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="smile"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j red2"></div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+          </div>
+          <div class="decor-parking"><div class="decor-road-line"></div></div>
+        </div>
+        <div class="panel-caption">Le passant comprend qu'il a eu tort de juger si vite. Oldy sourit : on peut toujours apprendre !</div>
+      </div>
+
+    </div>
+    <div class="moral-box" style="border-top-color: var(--teal);">
+      <div class="moral-icon">🚗</div>
+      <div class="moral-text">
+        <em>À retenir :</em> La carte de stationnement PMR est attribuée par la MDPH selon des critères médicaux stricts. Elle concerne les personnes qui ont du mal à marcher — pas seulement celles en fauteuil. Avant de juger une place occupée : tu ne connais pas l'histoire de cette personne.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================ STRIP 3 : Transports en commun ================ -->
+  <div class="strip s3">
+    <div class="strip-header">
+      <div class="strip-num">3</div>
+      <div class="strip-title">La place assise prioritaire<span class="tag">Transport</span></div>
+    </div>
+    <div class="panels">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-scene bg-3">
+          <!-- Bus / Tram décor -->
+          <div style="position:absolute;top:0;left:0;right:0;height:50px;background:#DDD;border-bottom:2.5px solid var(--navy);">
+            <div style="position:absolute;top:8px;left:12px;right:12px;height:26px;background:rgba(200,230,255,0.7);border-radius:4px;border:2px solid var(--navy);"></div>
+            <div style="position:absolute;top:2px;left:6px;font-size:0.6rem;color:#777;font-weight:800;">🚌 PRIORITAIRE</div>
+          </div>
+          <!-- Regards hostiles -->
+          <div class="bubble angry" style="top:55px; right:4px; max-width:110px; font-size:0.76rem;">
+            Il est jeune ! Il devrait se lever !
+          </div>
+          <div class="char-group" style="margin-top: 80px; gap: 6px;">
+            <!-- Sébastien assis -->
+            <div style="position:relative;">
+              <div class="seb">
+                <div class="head">
+                  <div class="hair"></div>
+                  <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                  <div class="mouth-sad"></div>
+                </div>
+                <div class="neck"></div>
+                <div class="body blue"></div>
+              </div>
+              <div class="decor-seat" style="position:relative;width:44px;height:36px;left:auto;transform:none;"></div>
+            </div>
+            <!-- Deux jugeurs debout -->
+            <div class="judge" style="transform: scale(0.85); transform-origin: bottom;">
+              <div class="head">
+                <div class="hair-j" style="background:#A0522D;"></div>
+                <div class="brows"><div class="brow"></div><div class="brow r"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="frown"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j gray"></div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Assis sur une place prioritaire, Sébastien sent les regards hostiles d'autres passagers.</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-scene bg-3">
+          <div style="position:absolute;top:0;left:0;right:0;height:50px;background:#DDD;border-bottom:2.5px solid var(--navy);">
+            <div style="position:absolute;top:8px;left:12px;right:12px;height:26px;background:rgba(200,230,255,0.7);border-radius:4px;border:2px solid var(--navy);"></div>
+          </div>
+          <!-- Bulle pensée sébastien -->
+          <div class="bubble thought" style="top:55px; left:6px; max-width:120px; font-size:0.75rem; padding:8px 10px;">
+            Ma maladie, ça se ressent à l'intérieur. Personne ne voit mes crises ou ma douleur.
+          </div>
+          <div class="bubble-dots" style="top:108px; left:40px;"><div class="bubble-dot"></div><div class="bubble-dot" style="width:5px;height:5px;"></div><div class="bubble-dot" style="width:4px;height:4px;"></div></div>
+          <div class="char-group" style="margin-top: 85px;">
+            <div style="position:relative;">
+              <div class="seb">
+                <div class="head">
+                  <div class="hair"></div>
+                  <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                  <div class="mouth-neutral"></div>
+                </div>
+                <div class="neck"></div>
+                <div class="body blue"></div>
+              </div>
+              <div class="decor-seat" style="position:relative;width:44px;height:36px;left:auto;transform:none;"></div>
+            </div>
+            <!-- Eclair douleur -->
+            <div style="font-size:1.4rem; margin-bottom: 30px;">⚡</div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Sébastien pense à sa fatigue chronique intense. Se lever lui serait très difficile aujourd'hui.</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-scene bg-3">
+          <div style="position:absolute;top:0;left:0;right:0;height:50px;background:#DDD;border-bottom:2.5px solid var(--navy);">
+            <div style="position:absolute;top:8px;left:12px;right:12px;height:26px;background:rgba(200,230,255,0.7);border-radius:4px;border:2px solid var(--navy);"></div>
+          </div>
+          <div class="bubble info" style="top:55px; left:6px; max-width:130px; font-size:0.75rem;">
+            Ces places existent pour tous les handicaps, même ceux qu'on ne voit pas !
+          </div>
+          <div class="char-group" style="margin-top: 85px; gap: 6px;">
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+            <div class="judge" style="transform: scale(0.85); transform-origin: bottom;">
+              <div class="head">
+                <div class="hair-j" style="background:#A0522D;"></div>
+                <div class="brows"><div class="brow" style="transform:none;"></div><div class="brow r" style="transform:none;"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="smile"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j gray"></div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Oldy explique la loi : les places prioritaires concernent toutes les personnes en situation de handicap, visibles ou non.</div>
+      </div>
+
+    </div>
+    <div class="moral-box" style="border-top-color: var(--green);">
+      <div class="moral-icon">🚌</div>
+      <div class="moral-text">
+        <em>À retenir :</em> Les places assises prioritaires dans les transports en commun sont réservées à toute personne handicapée — pas uniquement celles avec un équipement visible. La loi française reconnaît les handicaps invisibles. Un jeune assis peut vivre avec une maladie chronique, de l'épilepsie, ou une douleur intense.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================ STRIP 4 : Travail / École ================ -->
+  <div class="strip s4">
+    <div class="strip-header">
+      <div class="strip-num">4</div>
+      <div class="strip-title">Les aménagements au travail & à l'école<span class="tag">Pro / Scolaire</span></div>
+    </div>
+    <div class="panels">
+
+      <!-- Panel 1 -->
+      <div class="panel">
+        <div class="panel-scene bg-4">
+          <div class="decor-sky"></div>
+          <!-- bureau décor -->
+          <div style="position:absolute;top:40px;left:50%;transform:translateX(-55%);width:70px;height:8px;background:#c8a882;border:2px solid var(--navy);border-radius:4px;"></div>
+          <!-- Bulle jugeur -->
+          <div class="bubble angry" style="top:8px; right:4px; max-width:120px; font-size:0.78rem;">
+            Encore absent·e ?! C'est du favoritisme ces aménagements !
+          </div>
+          <div class="char-group" style="margin-top: 68px; gap: 8px;">
+            <!-- Sébastien à bureau -->
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;">
+              <div class="seb">
+                <div class="head">
+                  <div class="hair"></div>
+                  <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                  <div class="mouth-sad"></div>
+                </div>
+                <div class="neck"></div>
+                <div class="body orange"></div>
+                <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+              </div>
+              <div class="decor-desk" style="position:relative;transform:none;left:auto;width:52px;"></div>
+            </div>
+            <!-- Deux collègues -->
+            <div class="judge" style="transform:scale(0.82);transform-origin:bottom;">
+              <div class="head">
+                <div class="hair-j" style="background:#2C3E50;"></div>
+                <div class="brows"><div class="brow"></div><div class="brow r"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="frown"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j purple"></div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Des collègues critiquent les aménagements accordés à Sébastien : télétravail, horaires adaptés, absences médicales.</div>
+      </div>
+
+      <!-- Panel 2 -->
+      <div class="panel">
+        <div class="panel-scene bg-4">
+          <div class="decor-sky"></div>
+          <!-- Sébastien explique avec docs -->
+          <div class="bubble kind" style="top:8px; left:6px; max-width:130px; font-size:0.76rem;">
+            Ces aménagements viennent d'un dossier RQTH. C'est un droit reconnu, pas un privilège.
+          </div>
+          <!-- Document RQTH -->
+          <div style="position:absolute;top:50px;right:8px;width:32px;height:40px;background:white;border:2px solid var(--navy);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;font-weight:900;color:var(--teal);text-align:center;padding:2px;">RQTH<br/>✓</div>
+          <div class="char-group" style="margin-top: 100px;">
+            <div class="seb">
+              <div class="head">
+                <div class="hair"></div>
+                <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                <div class="mouth-neutral"></div>
+              </div>
+              <div class="neck"></div>
+              <div class="body green">
+                <div class="arms">
+                  <div class="arm-l" style="background:#3AAA6B;"></div>
+                  <div class="arm-r" style="background:#3AAA6B;transform:rotate(-40deg);"></div>
+                </div>
+              </div>
+              <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+              <div class="feet"><div class="foot l"></div><div class="foot"></div></div>
+            </div>
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Sébastien montre sa reconnaissance RQTH. Ces aménagements lui permettent de travailler malgré sa maladie.</div>
+      </div>
+
+      <!-- Panel 3 -->
+      <div class="panel">
+        <div class="panel-scene bg-4">
+          <div class="decor-sky"></div>
+          <div class="bubble info" style="top:8px; left:6px; max-width:130px; font-size:0.75rem;">
+            Sans ces aménagements, beaucoup ne pourraient tout simplement plus travailler ou étudier.
+          </div>
+          <div class="char-group" style="margin-top: 86px; gap: 6px;">
+            <div class="oldy">
+              <div class="head">
+                <div class="ear ear-l"></div><div class="ear ear-r"></div>
+                <div class="spot-head"></div>
+                <div class="eye-d l"></div><div class="eye-d r"></div>
+                <div class="nose"></div>
+              </div>
+              <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+              <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+            </div>
+            <div class="judge" style="transform:scale(0.82);transform-origin:bottom;">
+              <div class="head">
+                <div class="hair-j" style="background:#2C3E50;"></div>
+                <div class="brows"><div class="brow" style="transform:none;"></div><div class="brow r" style="transform:none;"></div></div>
+                <div class="eye-j l"></div><div class="eye-j r"></div>
+                <div class="smile"></div>
+              </div>
+              <div class="neck-j"></div>
+              <div class="body-j purple"></div>
+              <div class="legs-j"><div class="leg-j"></div><div class="leg-j"></div></div>
+              <div class="feet-j"><div class="foot-j l"></div><div class="foot-j"></div></div>
+            </div>
+          </div>
+          <div class="decor-floor"></div>
+        </div>
+        <div class="panel-caption">Le collègue comprend. Les aménagements ne sont pas des avantages, mais des outils d'égalité des chances.</div>
+      </div>
+
+    </div>
+    <div class="moral-box" style="border-top-color: var(--purple);">
+      <div class="moral-icon">🏫</div>
+      <div class="moral-text">
+        <em>À retenir :</em> La RQTH (Reconnaissance de la Qualité de Travailleur Handicapé) est attribuée par la MDPH. Elle permet des aménagements de poste légaux. Ces mesures ne sont pas des faveurs : elles sont indispensables pour permettre à une personne handicapée de participer au monde du travail ou de l'école.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FINALE -->
+<div class="finale" style="max-width:900px; margin: 0 16px 60px; border-radius: 16px; padding:40px 20px; text-align:center; background:var(--navy); color:white; position:relative; overflow:hidden;">
+  <div style="position:relative;z-index:1;">
+    <!-- Petits persos -->
+    <div class="finale-chars">
+      <div class="seb" style="transform:scale(1.1);">
+        <div class="head"><div class="hair"></div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="smile"></div></div>
+        <div class="neck"></div>
+        <div class="body orange"></div>
+        <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+        <div class="feet"><div class="foot l"></div><div class="foot"></div></div>
+      </div>
+      <div class="oldy" style="transform:scale(1.1);">
+        <div class="head">
+          <div class="ear ear-l"></div><div class="ear ear-r"></div>
+          <div class="spot-head"></div>
+          <div class="eye-d l"></div><div class="eye-d r"></div>
+          <div class="nose"></div>
+        </div>
+        <div class="body"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+        <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+      </div>
+    </div>
+    <div class="finale-title">Rendons visible l'invisible !</div>
+    <div class="finale-text">
+      Le handicap invisible touche 80 % des personnes handicapées en France.<br>
+      Avant de juger, rappelle-toi : <strong>tu ne vois qu'une infime partie de la réalité de l'autre.</strong><br><br>
+      La bienveillance, ça ne coûte rien — et ça change tout.
+    </div>
+    <div style="font-size: 1.2rem; margin-bottom: 14px;">🐾 ❤️ 🐾</div>
+    <a class="finale-url" href="https://www.oldyetsebastien.fr" target="_blank">www.oldyetsebastien.fr</a>
+    <div style="margin-top:16px;font-size:0.75rem;opacity:0.5;">© Sébastien TRIBET — Oldy & Sébastien — Tous droits réservés</div>
+  </div>
+</div>
+
+<!-- BOUTON IMPRESSION -->
+<div style="text-align:center;padding:0 16px 40px;">
+  <button onclick="window.print()" style="background:var(--orange);color:white;border:none;padding:14px 32px;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;border-radius:50px;cursor:pointer;letter-spacing:1px;box-shadow:4px 4px 0 var(--navy);">
+    🖨️ Imprimer / Enregistrer en PDF
+  </button>
+</div>
+
+</body>
+</html>

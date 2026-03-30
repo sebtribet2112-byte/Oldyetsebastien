@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oldy et Sébastien — Sensibilisation au handicap invisible</title>
+<meta name="description" content="Les aventures d'Oldy et Sébastien : jeux, quiz, BD et outils pédagogiques pour sensibiliser tout public au handicap invisible. Créé par Sébastien TRIBET.">
+<meta property="og:title" content="Oldy et Sébastien — Handicap invisible">
+<meta property="og:description" content="Jeux, quiz, BD et outils de sensibilisation au handicap invisible, pour enfants et adultes.">
+<meta property="og:url" content="https://www.oldyetsebastien.fr">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800;900&family=Patrick+Hand&display=swap');
+
+:root {
+  --orange: #F4801A;
+  --orange-light: #FFF0E0;
+  --teal: #1A7FA4;
+  --teal-light: #E0F4FB;
+  --navy: #1A2340;
+  --green: #3AAA6B;
+  --yellow: #FFD93D;
+  --purple: #9B59B6;
+  --red: #E84040;
+  --bg: #FFF8F0;
+  --text: #1A2340;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ===== NAV ===== */
+nav {
+  background: var(--navy);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 3px 0 var(--orange);
+}
+.nav-logo {
+  font-family: 'Bangers', cursive;
+  font-size: 1.7rem;
+  letter-spacing: 2px;
+  color: var(--orange);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.nav-links a {
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.nav-links a:hover { background: rgba(255,255,255,0.1); color: white; }
+.nav-links a.cta-nav {
+  background: var(--orange);
+  color: white;
+  margin-left: 6px;
+}
+.nav-links a.cta-nav:hover { background: #d96e0e; }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 88vh;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fond animé */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.18;
+  animation: drift 10s ease-in-out infinite alternate;
+}
+.hero-blob.b1 { width: 500px; height: 500px; background: var(--orange); top: -100px; left: -100px; animation-delay: 0s; }
+.hero-blob.b2 { width: 400px; height: 400px; background: var(--teal); bottom: -80px; right: -60px; animation-delay: -4s; }
+.hero-blob.b3 { width: 300px; height: 300px; background: var(--purple); top: 30%; left: 40%; animation-delay: -7s; }
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(30px, 20px) scale(1.05); }
+}
+
+/* Grille de points décorative */
+.hero-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Bande déco bas */
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--orange) 0 80px, var(--teal) 80px 160px);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(244,128,26,0.15);
+  border: 1px solid rgba(244,128,26,0.35);
+  color: var(--orange);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 22px;
+  animation: fadeDown 0.6s ease both;
+}
+
+.hero-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  color: white;
+  letter-spacing: 3px;
+  line-height: 1;
+  animation: fadeDown 0.6s 0.1s ease both;
+}
+.hero-title .highlight {
+  color: var(--orange);
+  display: inline-block;
+  position: relative;
+}
+.hero-title .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--orange);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.hero-sub {
+  margin-top: 20px;
+  color: rgba(255,255,255,0.65);
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  line-height: 1.7;
+  font-weight: 600;
+  animation: fadeDown 0.6s 0.2s ease both;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 34px;
+  animation: fadeDown 0.6s 0.3s ease both;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  padding: 14px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 4px 0 #a0540e, 4px 8px 20px rgba(244,128,26,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.5px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #a0540e, 4px 12px 28px rgba(244,128,26,0.4); }
+.btn-primary:active { transform: translateY(1px); box-shadow: 0 2px 0 #a0540e; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 13px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  border: 2px solid rgba(255,255,255,0.3);
+  transition: all 0.18s;
+}
+.btn-secondary:hover { border-color: white; background: rgba(255,255,255,0.08); }
+
+/* Stats hero */
+.hero-stats {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  margin-top: 44px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: fadeDown 0.6s 0.4s ease both;
+}
+.hero-stat {
+  padding: 16px 28px;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat-num {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  color: var(--orange);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SECTION COMMUNE ===== */
+section {
+  padding: 64px 24px;
+}
+.section-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--orange);
+  margin-bottom: 10px;
+}
+.section-label::before, .section-label::after {
+  content: '✦';
+  font-size: 0.6rem;
+}
+.section-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 2px;
+  line-height: 1.1;
+  color: var(--navy);
+}
+.section-desc {
+  margin-top: 12px;
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.7;
+  font-weight: 600;
+  max-width: 560px;
+}
+
+/* ===== SECTION : PROJET ===== */
+.projet {
+  background: white;
+  border-bottom: 3px solid var(--navy);
+}
+.projet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-top: 40px;
+}
+.projet-text p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 14px;
+}
+.projet-text strong { color: var(--navy); }
+.projet-text .tag-inline {
+  display: inline-block;
+  background: var(--orange-light);
+  color: var(--orange);
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 3px 12px;
+  border-radius: 50px;
+  margin: 3px 2px;
+}
+
+/* Personnages SVG-like CSS */
+.perso-scene {
+  background: var(--bg);
+  border: 3px solid var(--navy);
+  border-radius: 20px;
+  padding: 30px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 6px 6px 0 var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+.perso-scene::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--orange) 0 20px, var(--teal) 20px 40px);
+}
+.perso-duo {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}
+.seb { position: relative; width: 54px; flex-shrink: 0; }
+.seb .head { width: 38px; height: 40px; background: #FDDBB4; border: 2.5px solid var(--navy); border-radius: 50% 50% 48% 48%; margin: 0 auto; position: relative; }
+.seb .hair { position: absolute; top: -5px; left: -2px; right: -2px; height: 18px; background: #6B3A2A; border-radius: 50% 50% 0 0; border: 2px solid var(--navy); }
+.seb .eyes { position: absolute; top: 15px; left: 0; right: 0; display: flex; justify-content: center; gap: 7px; }
+.seb .eye { width: 5px; height: 6px; background: var(--navy); border-radius: 50%; }
+.seb .smile { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 14px; height: 7px; border: 2px solid var(--navy); border-top: none; border-radius: 0 0 10px 10px; }
+.seb .neck { width: 14px; height: 9px; background: #FDDBB4; border-left: 2.5px solid var(--navy); border-right: 2.5px solid var(--navy); margin: 0 auto; }
+.seb .body { width: 46px; height: 44px; border: 2.5px solid var(--navy); border-radius: 8px 8px 0 0; margin: 0 auto; background: var(--orange); position: relative; }
+.seb .legs { display: flex; justify-content: center; gap: 4px; margin-top: -2px; }
+.seb .leg { width: 17px; height: 28px; background: #2C3E70; border: 2.5px solid var(--navy); border-radius: 0 0 6px 6px; }
+.seb .feet { display: flex; justify-content: center; gap: 2px; }
+.seb .foot { width: 19px; height: 9px; background: #222; border: 2px solid var(--navy); border-radius: 0 6px 6px 0; }
+.seb .foot.l { border-radius: 6px 0 0 6px; }
+.oldy { position: relative; width: 56px; flex-shrink: 0; }
+.oldy .head { width: 36px; height: 32px; background: white; border: 2.5px solid var(--navy); border-radius: 50%; margin: 0 auto; position: relative; }
+.oldy .ear { position: absolute; width: 15px; height: 23px; background: #D4732A; border: 2.5px solid var(--navy); top: 4px; }
+.oldy .ear-l { left: -5px; border-radius: 40% 0 0 50%; transform: rotate(-10deg); }
+.oldy .ear-r { right: -5px; border-radius: 0 40% 50% 0; transform: rotate(10deg); }
+.oldy .nose { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 14px; height: 8px; background: #333; border-radius: 50%; }
+.oldy .eye-d { position: absolute; width: 5px; height: 5px; background: var(--navy); border-radius: 50%; top: 10px; }
+.oldy .eye-d.l { left: 7px; } .oldy .eye-d.r { right: 7px; }
+.oldy .spot-head { position: absolute; width: 14px; height: 10px; background: #D4732A; border-radius: 50%; top: 3px; left: 4px; }
+.oldy .body-d { width: 50px; height: 32px; background: white; border: 2.5px solid var(--navy); border-radius: 40% 50% 30% 30%; margin: 0 auto; position: relative; }
+.oldy .spot { position: absolute; background: #D4732A; border-radius: 50%; }
+.oldy .spot1 { width: 18px; height: 14px; top: 5px; left: 5px; }
+.oldy .spot2 { width: 12px; height: 10px; top: 8px; right: 6px; }
+.oldy .tail { position: absolute; right: -12px; top: -5px; width: 14px; height: 9px; background: white; border: 2.5px solid var(--navy); border-radius: 50%; transform: rotate(-30deg); }
+.oldy .legs-d { display: flex; justify-content: center; gap: 4px; margin-top: -3px; }
+.oldy .leg-d { width: 9px; height: 16px; background: white; border: 2.5px solid var(--navy); border-radius: 0 0 4px 4px; }
+
+.perso-bubble {
+  background: white;
+  border: 2.5px solid var(--navy);
+  border-radius: 16px;
+  padding: 10px 16px;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 220px;
+  position: relative;
+  margin-top: 6px;
+}
+.perso-bubble::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: var(--navy);
+}
+.perso-bubble::after {
+  content: '';
+  position: absolute;
+  top: -7px; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: white;
+  z-index: 1;
+}
+
+/* ===== SECTION : HIGHLIGHTS ===== */
+.highlights {
+  background: var(--navy);
+  padding: 64px 24px;
+  position: relative;
+}
+.highlights::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--orange) 0 80px, var(--teal) 80px 160px);
+}
+.highlights .section-title { color: white; }
+.highlights .section-label { color: var(--orange); }
+.highlights .section-desc { color: rgba(255,255,255,0.55); }
+
+.hl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 36px;
+}
+.hl-card {
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.18s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.hl-card:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.25);
+  transform: translateY(-3px);
+}
+.hl-card-icon { font-size: 2rem; }
+.hl-card-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.hl-card-desc {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.6;
+  font-weight: 600;
+  flex: 1;
+}
+.hl-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--orange);
+  margin-top: 4px;
+}
+.hl-card-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+}
+
+/* ===== SECTION : CHIFFRES ===== */
+.chiffres {
+  background: var(--orange);
+  padding: 56px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.chiffres::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0.04) 0px,
+    rgba(255,255,255,0.04) 2px,
+    transparent 2px,
+    transparent 16px
+  );
+}
+.chiffres-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+.chiffres-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  color: white;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.chiffres-sub {
+  color: rgba(255,255,255,0.8);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 36px;
+}
+.chiffres-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.chiffre-item {
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 16px;
+  padding: 22px 16px;
+}
+.chiffre-num {
+  font-family: 'Bangers', cursive;
+  font-size: 2.8rem;
+  color: white;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.chiffre-label {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.75);
+  font-weight: 700;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ===== SECTION : QUI SOMMES-NOUS ===== */
+.about {
+  background: white;
+  border-top: 3px solid var(--navy);
+  border-bottom: 3px solid var(--navy);
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+  margin-top: 36px;
+}
+.about-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.about-block-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--orange);
+}
+.about-block-icon { font-size: 1.8rem; }
+.about-block-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+.about-block p {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.8;
+}
+.about-block strong { color: var(--navy); }
+.cmj-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--teal-light);
+  border: 2px solid var(--teal);
+  color: var(--teal);
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 5px 14px;
+  border-radius: 50px;
+  width: fit-content;
+}
+
+/* ===== CTA FINAL ===== */
+.cta-final {
+  background: var(--bg);
+  padding: 80px 24px;
+  text-align: center;
+}
+.cta-box {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--navy);
+  border: 3px solid var(--navy);
+  border-radius: 24px;
+  padding: 48px 36px;
+  box-shadow: 8px 8px 0 var(--orange);
+  position: relative;
+  overflow: hidden;
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(244,128,26,0.12) 0%, transparent 65%);
+}
+.cta-box-content { position: relative; }
+.cta-box-emoji { font-size: 3rem; margin-bottom: 12px; }
+.cta-box-title {
+  font-family: 'Bangers', cursive;
+  font-size: 2.4rem;
+  color: white;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.cta-box-desc {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 28px;
+  font-weight: 600;
+}
+.cta-box-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--navy);
+  padding: 32px 24px 24px;
+  border-top: 4px solid var(--orange);
+}
+.footer-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.footer-brand {}
+.footer-logo {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.footer-brand p {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  font-weight: 600;
+}
+.footer-col-title {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer-links a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: color 0.15s;
+}
+.footer-links a:hover { color: var(--orange); }
+.footer-bottom {
+  max-width: 960px;
+  margin: 16px auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-copy {
+  color: rgba(255,255,255,0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.footer-copy a { color: rgba(255,255,255,0.5); text-decoration: none; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 720px) {
+  .nav-links a:not(.cta-nav) { display: none; }
+  .projet-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .hl-grid { grid-template-columns: 1fr; }
+  .chiffres-grid { grid-template-columns: 1fr; gap: 12px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 20px; }
+  .hero-stats { flex-wrap: wrap; }
+  .hero-stat { flex: 1; min-width: 80px; padding: 12px 16px; }
+  .cta-box { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <a href="index.html" class="nav-logo">🐾 Oldy & Sébastien</a>
+  <div class="nav-links">
+    <a href="#projet">Le projet</a>
+    <a href="jeux.html">Jeux</a>
+    <a href="ressources.html" class="cta-nav">📚 Toutes les ressources</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-bg">
+    <div class="hero-dots"></div>
+    <div class="hero-blob b1"></div>
+    <div class="hero-blob b2"></div>
+    <div class="hero-blob b3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">🐾 Les aventures d'Oldy et Sébastien</div>
+    <h1 class="hero-title">
+      Rendons <span class="highlight">visible</span><br>l'invisible
+    </h1>
+    <p class="hero-sub">
+      Des jeux, des quiz et des bandes dessinées pour sensibiliser<br>
+      enfants et adultes au <strong style="color:white;">handicap invisible</strong>.
+    </p>
+    <div class="hero-actions">
+      <a href="ressources.html" class="btn-primary">📚 Explorer les ressources →</a>
+      <a href="#projet" class="btn-secondary">Découvrir le projet</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">12M</div>
+        <div class="hero-stat-label">Français concernés</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">100</div>
+        <div class="hero-stat-label">Pathologies couvertes</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">80%</div>
+        <div class="hero-stat-label">Handicaps invisibles</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">Gratuit</div>
+        <div class="hero-stat-label">Tout public</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROJET ===== -->
+<section class="projet" id="projet">
+  <div class="section-inner">
+    <div class="section-label">Le projet</div>
+    <h2 class="section-title">Qui sont Oldy et Sébastien ?</h2>
+    <div class="projet-grid">
+      <div class="projet-text">
+        <p>
+          <strong>Sébastien</strong> vit avec plusieurs handicaps invisibles reconnus par la MDPH. Plutôt que de subir les regards et les jugements, il a décidé d'agir : créer un projet de sensibilisation accessible à tous, drôle, bienveillant et pédagogique.
+        </p>
+        <p>
+          À ses côtés, <strong>Oldy</strong>, son Épagneul Breton plein d'énergie, guide petits et grands dans la compréhension des maladies et situations que l'on ne voit pas.
+        </p>
+        <p>
+          Le projet couvre les interventions en
+          <span class="tag-inline">🏫 Écoles</span>
+          <span class="tag-inline">🤝 Associations</span>
+          <span class="tag-inline">🏢 Entreprises</span>
+          avec des outils concrets, gratuits, et prêts à l'emploi.
+        </p>
+        <p style="margin-top:8px;">
+          <a href="ressources.html" style="color:var(--orange);font-weight:900;text-decoration:none;">Voir tous les outils → </a>
+        </p>
+      </div>
+      <!-- Illustration CSS -->
+      <div class="perso-scene">
+        <div class="perso-duo">
+          <div class="seb">
+            <div class="head">
+              <div class="hair"></div>
+              <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+              <div class="smile"></div>
+            </div>
+            <div class="neck"></div>
+            <div class="body"></div>
+            <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+            <div class="feet"><div class="foot l"></div><div class="foot"></div></div>
+          </div>
+          <div class="oldy">
+            <div class="head">
+              <div class="ear ear-l"></div><div class="ear ear-r"></div>
+              <div class="spot-head"></div>
+              <div class="eye-d l"></div><div class="eye-d r"></div>
+              <div class="nose"></div>
+            </div>
+            <div class="body-d"><div class="spot spot1"></div><div class="spot spot2"></div><div class="tail"></div></div>
+            <div class="legs-d"><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div><div class="leg-d"></div></div>
+          </div>
+        </div>
+        <div class="perso-bubble">
+          Le handicap invisible,<br>ça se <strong>vit</strong>, pas seulement ça se <strong>voit</strong> ! 🐾
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HIGHLIGHTS ===== -->
+<section class="highlights">
+  <div class="section-inner">
+    <div class="section-label" style="color:rgba(244,128,26,0.9);">Nos ressources</div>
+    <h2 class="section-title">Tout pour sensibiliser</h2>
+    <p class="section-desc">Des outils pensés pour les animateurs, enseignants, parents et curieux — libres d'accès et utilisables en intervention.</p>
+    <div class="hl-grid">
+
+      <a class="hl-card" href="jeux.html">
+        <div class="hl-card-accent" style="background: linear-gradient(90deg, var(--orange), #ffb347);"></div>
+        <div class="hl-card-icon">🎮</div>
+        <div class="hl-card-title">Jeux pédagogiques</div>
+        <div class="hl-card-desc">Plateau, cartes, rôle, mémoire, chasse au trésor… apprendre en jouant, ensemble.</div>
+        <div class="hl-card-cta">Jouer maintenant →</div>
+      </a>
+
+      <a class="hl-card" href="quiz_host.html">
+        <div class="hl-card-accent" style="background: linear-gradient(90deg, var(--teal), #48d1cc);"></div>
+        <div class="hl-card-icon">📡</div>
+        <div class="hl-card-title">Quiz multijoueur</div>
+        <div class="hl-card-desc">Les participants jouent en temps réel sur leur téléphone. Parfait pour les animations de groupe.</div>
+        <div class="hl-card-cta">Lancer une session →</div>
+      </a>
+
+      <a class="hl-card" href="bd_jugements_handicap_invisible.html">
+        <div class="hl-card-accent" style="background: linear-gradient(90deg, var(--green), #7bc67e);"></div>
+        <div class="hl-card-icon">📖</div>
+        <div class="hl-card-title">Bandes dessinées</div>
+        <div class="hl-card-desc">Des strips illustrés sur les jugements du quotidien — parking PMR, transports, travail…</div>
+        <div class="hl-card-cta">Lire la BD →</div>
+      </a>
+
+      <a class="hl-card" href="sensibilisation-pathologies.html">
+        <div class="hl-card-accent" style="background: linear-gradient(90deg, var(--purple), #c39bd3);"></div>
+        <div class="hl-card-icon">🤖</div>
+        <div class="hl-card-title">Fiches pathologies IA</div>
+        <div class="hl-card-desc">Génère des fiches de sensibilisation sur les 100 pathologies reconnues par la MDPH.</div>
+        <div class="hl-card-cta">Générer une fiche →</div>
+      </a>
+
+      <a class="hl-card" href="kit_intervention_oldy_sebastien.html">
+        <div class="hl-card-accent" style="background: linear-gradient(90deg, var(--yellow), #ffe066);"></div>
+        <div class="hl-card-icon">📦</div>
+        <div class="hl-card-title">Kit d'intervention</div>
+        <div class="hl-card-desc">81 pathologies, fiches animateur, supports clés en main — pour aller intervenir en école ou association.</div>
+        <div class="hl-card-cta">Accéder au kit →</div>
+      </a>
+
+      <a class="hl-card" href="ressources.html">
+        <div class="hl-card-accent" style="background: linear-gradient(90deg, #e84040, #ff7675);"></div>
+        <div class="hl-card-icon">✦</div>
+        <div class="hl-card-title">Toutes les ressources</div>
+        <div class="hl-card-desc">Quiz, livrets PDF, jeux, outils… retrouve l'intégralité du catalogue en un seul endroit.</div>
+        <div class="hl-card-cta">Voir tout →</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHIFFRES ===== -->
+<section class="chiffres">
+  <div class="chiffres-inner">
+    <h2 class="chiffres-title">Le handicap invisible en France</h2>
+    <p class="chiffres-sub">Des chiffres qui montrent l'ampleur d'une réalité trop souvent ignorée</p>
+    <div class="chiffres-grid">
+      <div class="chiffre-item">
+        <div class="chiffre-num">12 M</div>
+        <div class="chiffre-label">personnes vivent avec un handicap invisible en France</div>
+      </div>
+      <div class="chiffre-item">
+        <div class="chiffre-num">80%</div>
+        <div class="chiffre-label">des handicaps ne sont pas visibles à l'œil nu</div>
+      </div>
+      <div class="chiffre-item">
+        <div class="chiffre-num">1/3</div>
+        <div class="chiffre-label">des personnes handicapées subissent des discriminations au quotidien</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== À PROPOS ===== -->
+<section class="about">
+  <div class="section-inner">
+    <div class="section-label">À propos</div>
+    <h2 class="section-title">Le projet en détail</h2>
+    <div class="about-grid">
+      <div class="about-block">
+        <div class="about-block-header">
+          <div class="about-block-icon">👤</div>
+          <div class="about-block-title">Sébastien TRIBET</div>
+        </div>
+        <p>Créateur du projet, Sébastien est porteur de plusieurs handicaps invisibles. Titulaire d'une <strong>CMI (Carte Mobilité Inclusion)</strong>, il mène des interventions de sensibilisation dans les écoles et associations de l'Indre (36).</p>
+        <p>Sa démarche : transformer l'expérience vécue en outil pédagogique universel, accessible à tous, sans jargon médical.</p>
+        <div class="cmj-badge">♿ Porteur CMI · Indre (36)</div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-header">
+          <div class="about-block-icon">🐾</div>
+          <div class="about-block-title">Oldy, l'Épagneul Breton</div>
+        </div>
+        <p>Oldy n'est pas qu'un chien — c'est le <strong>guide et le porte-parole</strong> du projet. Avec son énergie et sa bienveillance, il incarne le regard sans jugement que l'on souhaite transmettre à tous les publics.</p>
+        <p>Dans les BD, les jeux et les quiz, Oldy explique, questionne et encourage — pour que comprendre devienne un plaisir.</p>
+        <div class="cmj-badge" style="background:var(--orange-light);border-color:var(--orange);color:var(--orange);">🐾 Épagneul Breton · Mascotte officielle</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section class="cta-final">
+  <div class="cta-box">
+    <div class="cta-box-content">
+      <div class="cta-box-emoji">🐾</div>
+      <h2 class="cta-box-title">Prêt·e à sensibiliser ?</h2>
+      <p class="cta-box-desc">Toutes nos ressources sont gratuites, librement utilisables en classe, en association ou en entreprise. Aucune inscription requise.</p>
+      <div class="cta-box-btns">
+        <a href="ressources.html" class="btn-primary" style="width:100%;justify-content:center;">📚 Accéder à toutes les ressources</a>
+        <a href="kit_intervention_oldy_sebastien.html" class="btn-secondary" style="width:100%;justify-content:center;font-size:0.9rem;">🎒 Kit animateur (accès pro)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">🐾 Oldy & Sébastien</div>
+      <p>Projet de sensibilisation au handicap invisible.<br>Créé par Sébastien TRIBET, porteur de handicaps invisibles.<br>Indre (36), France.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Ressources</div>
+      <div class="footer-links">
+        <a href="ressources.html">📚 Toutes les ressources</a>
+        <a href="jeux.html">🎮 Jeux</a>
+        <a href="quiz.html">❓ Quiz enfants</a>
+        <a href="quiz_adultes_complet.html">🎓 Quiz adultes</a>
+        <a href="bd_jugements_handicap_invisible.html">📖 BD jugements</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Outils pro</div>
+      <div class="footer-links">
+        <a href="kit_intervention_oldy_sebastien.html">📦 Kit intervention</a>
+        <a href="quiz_host.html">📡 Quiz multijoueur</a>
+        <a href="sensibilisation-pathologies.html">🤖 Fiches IA</a>
+        <a href="livret_reconnaissance_handicap.pdf" target="_blank">📄 Livret PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2024–2026 Sébastien TRIBET · <a href="mailto:seb.tribet2112@gmail.com">seb.tribet2112@gmail.com</a></span>
+    <span class="footer-copy">oldyetsebastien.fr · Tous droits réservés</span>
+  </div>
+</footer>
+
+</body>
+</html>
