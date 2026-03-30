@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kit d'Intervention – Handicap Invisible | Oldy & Sébastien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #fdf8f2;
+      --warm: #f5ede0;
+      --orange: #e07b39;
+      --orange-light: #f4a96a;
+      --orange-pale: #fce8d5;
+      --teal: #3a8c8c;
+      --teal-light: #5db3b3;
+      --teal-pale: #d4eeee;
+      --violet: #7b5ea7;
+      --violet-pale: #ece6f5;
+      --green: #5a9e6f;
+      --green-pale: #dff0e4;
+      --dark: #2b2320;
+      --mid: #5a4a42;
+      --light-text: #8a7a72;
+      --shadow: 0 4px 24px rgba(43,35,32,0.10);
+      --radius: 18px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #e07b39 0%, #c45f20 40%, #7b3f1a 100%);
+      color: white;
+      padding: 48px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 20%, rgba(255,200,130,0.22) 0%, transparent 60%);
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 30px;
+      padding: 5px 18px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    header h1 em {
+      font-style: italic;
+      color: #ffd699;
+    }
+    header p.subtitle {
+      font-size: 1.05rem;
+      opacity: 0.88;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      line-height: 1.6;
+      position: relative;
+    }
+    .header-paw {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .header-meta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .header-meta span {
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    /* ── NAV TABS ── */
+    .tabs-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cream);
+      border-bottom: 2px solid var(--warm);
+      box-shadow: 0 2px 12px rgba(43,35,32,0.06);
+    }
+    .tabs {
+      display: flex;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 18px 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--light-text);
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tab-btn:hover { color: var(--orange); }
+    .tab-btn.active {
+      color: var(--orange);
+      border-bottom-color: var(--orange);
+    }
+    .tab-btn .tab-icon { font-size: 1.2rem; }
+    .tab-btn .tab-label { display: none; }
+    @media (min-width: 480px) { .tab-btn .tab-label { display: inline; } }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 16px 64px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── INTRO CARD ── */
+    .intro-card {
+      background: var(--warm);
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      margin-bottom: 28px;
+      border-left: 5px solid var(--orange);
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .intro-card .icon { font-size: 2.2rem; flex-shrink: 0; margin-top: 2px; }
+    .intro-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      margin-bottom: 8px;
+      color: var(--dark);
+    }
+    .intro-card p {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--mid);
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 36px 0 18px;
+    }
+    .section-title .num {
+      width: 36px; height: 36px;
+      background: var(--orange);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .section-title h3 {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--dark);
+    }
+    .section-title .num.teal { background: var(--teal); }
+    .section-title .num.violet { background: var(--violet); }
+    .section-title .num.green { background: var(--green); }
+
+    /* ── TIMELINE ── */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 8px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 9px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--orange-light), var(--teal-light));
+      border-radius: 2px;
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 16px;
+      background: white;
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -23px; top: 20px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--orange);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--orange);
+    }
+    .tl-item.teal::before { background: var(--teal); box-shadow: 0 0 0 2px var(--teal); }
+    .tl-item.violet::before { background: var(--violet); box-shadow: 0 0 0 2px var(--violet); }
+    .tl-item.green::before { background: var(--green); box-shadow: 0 0 0 2px var(--green); }
+    .tl-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .tl-duration {
+      background: var(--orange-pale);
+      color: var(--orange);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .tl-item.teal .tl-duration { background: var(--teal-pale); color: var(--teal); }
+    .tl-item.violet .tl-duration { background: var(--violet-pale); color: var(--violet); }
+    .tl-item.green .tl-duration { background: var(--green-pale); color: var(--green); }
+    .tl-title {
+      font-weight: 800;
+      font-size: 0.97rem;
+      color: var(--dark);
+    }
+    .tl-desc {
+      font-size: 0.88rem;
+      color: var(--mid);
+      line-height: 1.55;
+    }
+    .tl-tools {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tool-tag {
+      background: var(--warm);
+      border: 1px solid #e0d0c0;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--mid);
+    }
+
+    /* ── CARDS GRID ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border-top: 4px solid var(--orange);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card.teal { border-top-color: var(--teal); }
+    .card.violet { border-top-color: var(--violet); }
+    .card.green { border-top-color: var(--green); }
+    .card-icon { font-size: 1.7rem; margin-bottom: 8px; }
+    .card h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 6px; color: var(--dark); }
+    .card p { font-size: 0.85rem; color: var(--mid); line-height: 1.55; }
+
+    /* ── QUOTE BOX ── */
+    .quote-box {
+      background: var(--violet-pale);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin: 16px 0;
+      border-left: 4px solid var(--violet);
+    }
+    .quote-box p {
+      font-size: 0.92rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+    .quote-box strong { color: var(--violet); }
+
+    /* ── PHRASE TABLE ── */
+    .phrase-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .phrase-table th {
+      background: var(--orange);
+      color: white;
+      padding: 11px 16px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-align: left;
+    }
+    .phrase-table th:last-child { background: var(--teal); }
+    .phrase-table td {
+      padding: 11px 16px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--warm);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .phrase-table tr:last-child td { border-bottom: none; }
+    .phrase-table tr:nth-child(even) td { background: #fdf8f2; }
+    .phrase-bad { color: #c0392b; font-style: italic; font-weight: 700; }
+    .phrase-good { color: var(--teal); font-weight: 700; }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box {
+      background: var(--teal-pale);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin: 16px 0;
+      border-left: 4px solid var(--teal);
+    }
+    .highlight-box h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--teal);
+      margin-bottom: 8px;
+    }
+    .highlight-box ul {
+      padding-left: 18px;
+    }
+    .highlight-box li {
+      font-size: 0.88rem;
+      color: var(--mid);
+      line-height: 1.65;
+      margin-bottom: 4px;
+    }
+
+    /* ── OLDY BLOCK ── */
+    .oldy-block {
+      background: linear-gradient(135deg, var(--orange-pale), var(--warm));
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 20px 0;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .oldy-emoji { font-size: 3rem; }
+    .oldy-block p {
+      font-size: 0.93rem;
+      color: var(--mid);
+      line-height: 1.65;
+    }
+    .oldy-block p strong { color: var(--orange); font-weight: 800; }
+
+    /* ── CHECKLIST ── */
+    .checklist {
+      list-style: none;
+      margin: 12px 0;
+    }
+    .checklist li {
+      display: flex;
+      gap: 10px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      padding: 8px 14px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      box-shadow: 0 1px 6px rgba(43,35,32,0.06);
+      color: var(--mid);
+    }
+    .checklist li::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 900;
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── WITH SÉBASTIEN SPECIAL ── */
+    .seb-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--violet), #5a3f8a);
+      color: white;
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 20px;
+    }
+    .moment-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--violet);
+      position: relative;
+      overflow: hidden;
+    }
+    .moment-card::after {
+      content: '';
+      position: absolute;
+      right: -20px; top: -20px;
+      width: 80px; height: 80px;
+      background: var(--violet-pale);
+      border-radius: 50%;
+    }
+    .moment-card h4 {
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--violet);
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .moment-card p {
+      font-size: 0.88rem;
+      color: var(--mid);
+      line-height: 1.65;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── CONTACT BLOCK ── */
+    .contact-block {
+      background: linear-gradient(135deg, var(--orange), #c45f20);
+      color: white;
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      margin-top: 32px;
+    }
+    .contact-block h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+    }
+    .contact-block p {
+      font-size: 0.92rem;
+      opacity: 0.9;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+    .contact-block a {
+      display: inline-block;
+      background: white;
+      color: var(--orange);
+      font-weight: 800;
+      padding: 10px 26px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: transform 0.15s;
+    }
+    .contact-block a:hover { transform: scale(1.04); }
+
+    /* ── PRINT BUTTON ── */
+    .print-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 10px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin: 0 0 28px auto;
+      transition: background 0.2s;
+    }
+    .print-btn:hover { background: #2e7070; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .intro-card { flex-direction: column; gap: 10px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .phrase-table { font-size: 0.82rem; }
+      .phrase-table th, .phrase-table td { padding: 9px 10px; }
+    }
+
+    @media print {
+      .tabs-wrap, .print-btn, .contact-block { display: none !important; }
+      .panel { display: block !important; }
+      header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      body { background: white; }
+      .tl-item, .card { box-shadow: none; border: 1px solid #e0d0c0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <span class="header-paw">🐾</span>
+  <div class="header-badge">Kit pédagogique – Enseignants</div>
+  <h1>Sensibiliser au <em>Handicap Invisible</em></h1>
+  <p class="subtitle">Un guide complet pour mener des interventions en collège et lycée, avec ou sans la présence de Sébastien et Oldy.</p>
+  <div class="header-meta">
+    <span>📚 Collège & Lycée</span>
+    <span>⏱ 1h à 1h30</span>
+    <span>👥 Classe entière</span>
+    <span>🎯 Tous niveaux</span>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchTab('sans')" id="tab-sans">
+      <span class="tab-icon">📋</span>
+      <span class="tab-label">Sans Sébastien</span>
+      <span style="display:none" class="tab-label-short">Autonome</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('avec')" id="tab-avec">
+      <span class="tab-icon">🧑</span>
+      <span class="tab-label">Avec Sébastien</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('outils')" id="tab-outils">
+      <span class="tab-icon">🎮</span>
+      <span class="tab-label">Outils & Ressources</span>
+    </button>
+  </nav>
+</div>
+
+<main>
+
+  <!-- ════════════════════ PANEL SANS ════════════════════ -->
+  <div class="panel active" id="panel-sans">
+
+    <button class="print-btn" onclick="window.print()">🖨️ Imprimer ce kit</button>
+
+    <div class="intro-card">
+      <div class="icon">📋</div>
+      <div>
+        <h2>Intervention autonome – Sans Sébastien</h2>
+        <p>Ce guide vous permet de mener une séance complète sur le handicap invisible <strong>sans intervenant extérieur</strong>. Tout le matériel nécessaire est disponible sur <strong>oldyetsebastien.fr</strong>. Aucune expertise préalable sur le handicap n'est requise — votre rôle est de faciliter, pas d'expliquer tout vous-même.</p>
+      </div>
+    </div>
+
+    <!-- Objectifs -->
+    <div class="section-title">
+      <div class="num">1</div>
+      <h3>Objectifs de la séance</h3>
+    </div>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <h4>Comprendre</h4>
+        <p>Découvrir ce qu'est un handicap invisible et les principales pathologies concernées.</p>
+      </div>
+      <div class="card teal">
+        <div class="card-icon">❤️</div>
+        <h4>Ressentir</h4>
+        <p>Vivre une expérience émotionnelle qui dépasse la simple transmission d'informations.</p>
+      </div>
+      <div class="card violet">
+        <div class="card-icon">🗣️</div>
+        <h4>Changer de regard</h4>
+        <p>Identifier ses propres jugements automatiques et apprendre à les remettre en question.</p>
+      </div>
+      <div class="card green">
+        <div class="card-icon">🤝</div>
+        <h4>Agir</h4>
+        <p>Repartir avec des mots et des comportements concrets à adopter au quotidien.</p>
+      </div>
+    </div>
+
+    <!-- Déroulé -->
+    <div class="section-title">
+      <div class="num">2</div>
+      <h3>Déroulé de la séance (1h30)</h3>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-duration">10 min</span>
+          <span class="tl-title">🚀 Accroche – Le mystère du handicap invisible</span>
+        </div>
+        <p class="tl-desc">Posez cette question à la classe : <em>"Selon vous, comment reconnaît-on quelqu'un en situation de handicap ?"</em> Laissez les réponses fuser. Puis montrez des photos de personnes valides en apparence avec leur CMI. Observez la surprise. C'est le point de départ.</p>
+        <div class="tl-tools"><span class="tool-tag">💬 Discussion</span><span class="tool-tag">📷 Projection</span></div>
+      </div>
+
+      <div class="tl-item teal">
+        <div class="tl-header">
+          <span class="tl-duration">15 min</span>
+          <span class="tl-title">🎭 Mise en situation – Ressentir pour comprendre</span>
+        </div>
+        <p class="tl-desc">Choisissez <strong>une</strong> simulation parmi : <br>
+        • <strong>Dys :</strong> faites lire un texte avec des lettres inversées ou retournées (miroir) – 2 minutes<br>
+        • <strong>TDA/H :</strong> donnez une consigne complexe pendant qu'une musique forte joue<br>
+        • <strong>Fatigue chronique :</strong> demandez de résoudre un problème de maths après avoir tenu les bras levés 2 minutes<br>
+        Puis demandez : <em>"Si c'était votre quotidien, comment vous sentiriez-vous quand on dit 'tu n'as pas l'air malade' ?"</em></p>
+        <div class="tl-tools"><span class="tool-tag">🎯 Simulation sensorielle</span><span class="tool-tag">💬 Débriefing</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-duration">20 min</span>
+          <span class="tl-title">🎮 Jeu interactif – Devine mon Invisible ou Quiz</span>
+        </div>
+        <p class="tl-desc">Projetez le site <strong>oldyetsebastien.fr</strong> sur le tableau. Utilisez le jeu <em>"Devine mon Invisible"</em> ou le <em>Quiz enfants/adultes</em> selon le niveau. Pour les lycéens, le quiz adultes complet est idéal. Jouez en équipes — la compétition amicale capte l'attention.</p>
+        <div class="tl-tools"><span class="tool-tag">🌐 oldyetsebastien.fr</span><span class="tool-tag">📱 Téléphone ou ordi</span><span class="tool-tag">🏆 Équipes</span></div>
+      </div>
+
+      <div class="tl-item violet">
+        <div class="tl-header">
+          <span class="tl-duration">20 min</span>
+          <span class="tl-title">📖 Témoignage – Une voix, un vécu</span>
+        </div>
+        <p class="tl-desc">Lisez à voix haute (ou demandez à un(e) élève volontaire de lire) un extrait du livret <em>"Survivant, Miraculé, revenu d'ailleurs"</em> de Sébastien, ou un témoignage de personne concernée. Si vous n'avez pas de livret, utilisez les cartes de sensibilisation disponibles sur le site. Laissez un silence de 30 secondes après. Ne commentez pas immédiatement.</p>
+        <div class="tl-tools"><span class="tool-tag">📚 Livret Sébastien</span><span class="tool-tag">🃏 Cartes pathologies</span></div>
+      </div>
+
+      <div class="tl-item green">
+        <div class="tl-header">
+          <span class="tl-duration">15 min</span>
+          <span class="tl-title">💬 Atelier phrases – Changer les mots</span>
+        </div>
+        <p class="tl-desc">Affichez les "phrases blessantes" du tableau ci-dessous. Par groupes de 3-4, les élèves cherchent comment répondre différemment. Mise en commun. Ce qu'ils trouvent eux-mêmes, ils le retiennent beaucoup mieux qu'une leçon.</p>
+        <div class="tl-tools"><span class="tool-tag">📝 Post-its</span><span class="tool-tag">👥 Groupes</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-duration">10 min</span>
+          <span class="tl-title">📜 Charte de classe – S'engager ensemble</span>
+        </div>
+        <p class="tl-desc">Chaque élève écrit sur un post-it <strong>une chose concrète</strong> qu'il s'engage à faire différemment. Collez-les sur une grande feuille : c'est la charte de la classe. Photographiez-la et affichez-la en classe.</p>
+        <div class="tl-tools"><span class="tool-tag">📌 Post-its</span><span class="tool-tag">📷 Affichage durable</span></div>
+      </div>
+    </div>
+
+    <!-- Phrases blessantes -->
+    <div class="section-title">
+      <div class="num teal">3</div>
+      <h3>Tableau – Les phrases qui blessent et leurs alternatives</h3>
+    </div>
+    <table class="phrase-table">
+      <thead>
+        <tr>
+          <th>❌ Ce qu'on dit (sans penser à mal)</th>
+          <th>✅ Ce qu'on pourrait dire à la place</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="phrase-bad">"T'as pas l'air malade."</span></td>
+          <td><span class="phrase-good">"Je ne vois pas ta douleur, mais je te crois."</span></td>
+        </tr>
+        <tr>
+          <td><span class="phrase-bad">"C'est dans ta tête."</span></td>
+          <td><span class="phrase-good">"Je ne comprends pas forcément, mais c'est réel pour toi."</span></td>
+        </tr>
+        <tr>
+          <td><span class="phrase-bad">"Tout le monde est fatigué."</span></td>
+          <td><span class="phrase-good">"Ta fatigue, c'est différent — de quoi tu as besoin ?"</span></td>
+        </tr>
+        <tr>
+          <td><span class="phrase-bad">"T'exagères / Tu te plains pour rien."</span></td>
+          <td><span class="phrase-good">"Dis-moi ce qui se passe, je t'écoute."</span></td>
+        </tr>
+        <tr>
+          <td><span class="phrase-bad">"Si t'étais vraiment malade, tu ne pourrais pas venir."</span></td>
+          <td><span class="phrase-good">"Venir ici t'a coûté quelque chose — merci d'être là."</span></td>
+        </tr>
+        <tr>
+          <td><span class="phrase-bad">"Tu te caches derrière ton handicap."</span></td>
+          <td><span class="phrase-good">"Comment je peux t'aider pour que ça soit plus facile ?"</span></td>
+        </tr>
+        <tr>
+          <td><span class="phrase-bad">"Tu profites du système."</span></td>
+          <td><span class="phrase-good">"Je ne connais pas ton quotidien. Tu veux m'en parler ?"</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Ancrer dans le temps -->
+    <div class="section-title">
+      <div class="num violet">4</div>
+      <h3>Ancrer dans la durée – Après la séance</h3>
+    </div>
+    <ul class="checklist">
+      <li>Afficher un QR code vers oldyetsebastien.fr dans la classe pour que les élèves puissent explorer à leur rythme</li>
+      <li>Prolonger en cours de Français : écriture d'un texte à la 1ère personne depuis le point de vue d'une personne handicapée invisible</li>
+      <li>En SVT ou Sciences : étudier 2-3 pathologies invisibles (fibromyalgie, épilepsie, diabète) sous l'angle scientifique</li>
+      <li>Proposer un projet de classe : exposition, podcast, journal de bord de sensibilisation</li>
+      <li>Réévaluer 6 semaines après : reposer les mêmes questions qu'en accroche et mesurer l'évolution</li>
+    </ul>
+
+  </div><!-- /panel-sans -->
+
+
+  <!-- ════════════════════ PANEL AVEC ════════════════════ -->
+  <div class="panel" id="panel-avec">
+
+    <button class="print-btn" onclick="window.print()">🖨️ Imprimer ce kit</button>
+
+    <div class="intro-card" style="border-left-color: var(--violet);">
+      <div class="icon">🧑</div>
+      <div>
+        <h2>Intervention avec Sébastien</h2>
+        <p>Quand Sébastien intervient en personne, la séance change de dimension. Son témoignage direct — porteur d'une CMI, créateur du projet — transforme une leçon en expérience humaine profonde. Ce guide précise comment préparer et tirer le meilleur de sa présence.</p>
+      </div>
+    </div>
+
+    <div class="seb-badge">🎯 Ce qui change quand Sébastien est là</div>
+
+    <!-- Les 3 apports -->
+    <div class="cards-grid" style="margin-bottom:24px;">
+      <div class="moment-card">
+        <h4>🗣️ Témoignage personnel avec CMI</h4>
+        <p>Sébastien partage son parcours de vie avec sa carte de mobilité inclusion. La réalité d'un handicap invisible racontée par quelqu'un qui le vit quotidiennement a un impact émotionnel que nul support pédagogique ne peut reproduire. Les élèves n'écoutent plus — ils <em>entendent</em>.</p>
+      </div>
+      <div class="moment-card">
+        <h4>🎮 Démonstration des jeux en live</h4>
+        <p>Sébastien anime lui-même les jeux qu'il a créés — le quiz multijoueur, Devine mon Invisible — en mode animateur. Il explique pourquoi il les a inventés, ce qu'il a voulu y mettre. C'est une autre façon d'apprendre : voir le créateur en action.</p>
+      </div>
+      <div class="moment-card">
+        <h4>💬 Échanges questions/réponses</h4>
+        <p>La session Q&R avec Sébastien est souvent le moment le plus fort. Les élèves osent poser des questions qu'ils n'oseraient jamais chercher seuls. L'authenticité de ses réponses — y compris sur ce qui est difficile — brise les tabous.</p>
+      </div>
+    </div>
+
+    <!-- Déroulé avec Sébastien -->
+    <div class="section-title">
+      <div class="num violet">1</div>
+      <h3>Déroulé recommandé avec Sébastien (1h30)</h3>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item violet">
+        <div class="tl-header">
+          <span class="tl-duration">5 min</span>
+          <span class="tl-title">🧑 Présentation – Qui est Sébastien ?</span>
+        </div>
+        <p class="tl-desc">Sébastien se présente simplement : <em>"Je suis Sébastien, j'ai un handicap invisible, j'ai créé le projet Les Aventures d'Oldy et Sébastien avec mon chien — que vous pouvez d'ailleurs découvrir en photos sur le site — et je suis venu vous parler de ce que ça veut dire, vivre avec un handicap qu'on ne voit pas."</em> Montrez quelques photos d'Oldy depuis le site pour ancrer le personnage.</p>
+      </div>
+
+      <div class="tl-item violet">
+        <div class="tl-header">
+          <span class="tl-duration">20 min</span>
+          <span class="tl-title">🗣️ Témoignage – Mon parcours avec un handicap invisible</span>
+        </div>
+        <p class="tl-desc">Sébastien raconte. Son quotidien. Ce qu'il entend. Ce qui blesse. Ce qui aide. Il montre sa CMI. Il parle d'Oldy et du projet <em>"Les Aventures d'Oldy et Sébastien"</em>. Les élèves écoutent sans interruption. <strong>Le rôle de l'enseignant</strong> : observer les réactions, noter les questions qui naissent dans la classe.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-duration">5 min</span>
+          <span class="tl-title">😶 Silence et ressenti</span>
+        </div>
+        <p class="tl-desc">Après le témoignage, <strong>ne pas enchaîner immédiatement</strong>. Laissez 1 à 2 minutes de silence ou de réflexion individuelle. Demandez : <em>"Qu'est-ce que vous venez de ressentir ? Pas de réponse 'correcte', juste ce qui est là."</em></p>
+      </div>
+
+      <div class="tl-item teal">
+        <div class="tl-header">
+          <span class="tl-duration">25 min</span>
+          <span class="tl-title">🎮 Jeux en live – Sébastien animateur</span>
+        </div>
+        <p class="tl-desc">Sébastien prend la main sur le quiz multijoueur ou Devine mon Invisible. Il explique pourquoi il a créé chaque jeu, ce qu'il a voulu y encoder comme message. Les élèves jouent en équipes sur leurs téléphones. L'enseignant facilite la logistique (connexion Wi-Fi, partage de l'URL).</p>
+        <div class="tl-tools"><span class="tool-tag">📱 Quiz multijoueur</span><span class="tool-tag">🃏 Devine mon Invisible</span><span class="tool-tag">🌐 oldyetsebastien.fr</span></div>
+      </div>
+
+      <div class="tl-item violet">
+        <div class="tl-header">
+          <span class="tl-duration">25 min</span>
+          <span class="tl-title">💬 Questions libres – Sébastien répond</span>
+        </div>
+        <p class="tl-desc">Session de questions/réponses ouverte. Encouragez même les questions qui semblent maladroites — elles révèlent les représentations réelles. Sébastien répond avec authenticité, y compris sur ce qui est difficile à vivre. <strong>Astuce :</strong> distribuez des post-its anonymes avant pour les élèves qui n'oseraient pas parler à voix haute.</p>
+        <div class="tl-tools"><span class="tool-tag">📝 Post-its anonymes</span><span class="tool-tag">🤲 Main levée</span></div>
+      </div>
+
+      <div class="tl-item green">
+        <div class="tl-header">
+          <span class="tl-duration">10 min</span>
+          <span class="tl-title">📜 Engagement collectif – La charte de la classe</span>
+        </div>
+        <p class="tl-desc">Chaque élève écrit un engagement sur un post-it. Sébastien signe symboliquement la charte avec la classe. <strong>Photo souvenir</strong> — un moment que les élèves partagent parfois eux-mêmes sur les réseaux.</p>
+      </div>
+    </div>
+
+    <!-- Préparation -->
+    <div class="section-title">
+      <div class="num teal">2</div>
+      <h3>Préparation – Ce que vous devez faire avant</h3>
+    </div>
+    <ul class="checklist">
+      <li>Contacter Sébastien via le formulaire sur oldyetsebastien.fr au moins 3 semaines à l'avance</li>
+      <li>Prévoir une salle avec vidéoprojecteur et connexion Wi-Fi pour les jeux en ligne</li>
+      <li>Informer les élèves quelques jours avant : <em>"Un intervenant vient parler de quelque chose qui vous touche peut-être sans que vous le sachiez"</em> — éveille la curiosité sans dévoiler</li>
+      <li>Préparer des post-its anonymes (une couleur par question possible)</li>
+    </ul>
+
+    <!-- Contact -->
+    <div class="contact-block">
+      <h3>📬 Inviter Sébastien dans votre classe</h3>
+      <p>Vous souhaitez organiser une intervention ? Sébastien intervient en Indre (36) et dans les départements limitrophes. Gratuit pour les établissements scolaires publics.</p>
+      <a href="mailto:seb.tribet2112@gmail.com">✉️ Contacter Sébastien</a>
+    </div>
+
+  </div><!-- /panel-avec -->
+
+
+  <!-- ════════════════════ PANEL OUTILS ════════════════════ -->
+  <div class="panel" id="panel-outils">
+
+    <div class="intro-card" style="border-left-color: var(--green);">
+      <div class="icon">🎮</div>
+      <div>
+        <h2>Outils & Ressources disponibles</h2>
+        <p>Tous les outils suivants sont disponibles gratuitement sur <strong>oldyetsebastien.fr</strong>. Ils peuvent être utilisés en classe avec ou sans connexion (versions imprimables disponibles).</p>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <div class="num green">1</div>
+      <h3>Jeux interactifs en ligne</h3>
+    </div>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🧩</div>
+        <h4>Quiz Enfants</h4>
+        <p>Questions accessibles sur les pathologies invisibles. Idéal pour les 6e–4e. Interface colorée et intuitive.</p>
+      </div>
+      <div class="card teal">
+        <div class="card-icon">🎓</div>
+        <h4>Quiz Adultes Complet</h4>
+        <p>81 pathologies en 6 catégories. Parfait pour les lycéens et les enseignants eux-mêmes.</p>
+      </div>
+      <div class="card violet">
+        <div class="card-icon">📱</div>
+        <h4>Quiz Multijoueur</h4>
+        <p>Mode temps réel avec animateur. Un animateur présente, les joueurs devinent sur leur téléphone.</p>
+      </div>
+      <div class="card green">
+        <div class="card-icon">🃏</div>
+        <h4>Devine mon Invisible</h4>
+        <p>Jeu de cartes numérique. Un joueur mime ou décrit, les autres devinent la pathologie.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎭</div>
+        <h4>Jeu de Rôle</h4>
+        <p>Incarner une personne avec un handicap invisible dans des situations du quotidien.</p>
+      </div>
+      <div class="card teal">
+        <div class="card-icon">🧠</div>
+        <h4>Memory / Loto</h4>
+        <p>Associer symptômes et pathologies. Excellent pour la mémorisation active.</p>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <div class="num">2</div>
+      <h3>Supports imprimables</h3>
+    </div>
+    <div class="cards-grid">
+      <div class="card violet">
+        <div class="card-icon">📘</div>
+        <h4>BD Oldy & Sébastien</h4>
+        <p>73 pages, pour les 6–10 ans. Disponible en version numérique et imprimable.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <h4>Cahier de Coloriage</h4>
+        <p>104 pages sur les pathologies invisibles. Idéal pour les cycles 2 et 3.</p>
+      </div>
+      <div class="card green">
+        <div class="card-icon">♟️</div>
+        <h4>Jeu de Plateau Invisible Visible</h4>
+        <p>73 cartes, 12 catégories, plateau 60 cases. Version print-and-play disponible.</p>
+      </div>
+      <div class="card teal">
+        <div class="card-icon">📖</div>
+        <h4>Livret "Être reconnu en situation de handicap"</h4>
+        <p>Guide pratique sur les droits et démarches, en langage accessible.</p>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <div class="num teal">3</div>
+      <h3>Conseils d'utilisation pédagogique</h3>
+    </div>
+    <div class="highlight-box">
+      <h4>🏫 Pour les enseignants de collège (6e–3e)</h4>
+      <ul>
+        <li>Commencez par le jeu Memory/Loto pour ancrer le vocabulaire des pathologies</li>
+        <li>Le jeu de rôle est particulièrement efficace avec les 4e–3e (plus matures pour l'empathie)</li>
+        <li>La BD Oldy & Sébastien peut être lue en cours de Français ou en heure de vie de classe</li>
+        <li>Le quiz enfants fonctionne très bien en mode "classe contre classe"</li>
+      </ul>
+    </div>
+    <div class="highlight-box" style="background: var(--violet-pale); border-left-color: var(--violet);">
+      <h4 style="color: var(--violet);">🎓 Pour les enseignants de lycée (2nde–Terminale)</h4>
+      <ul>
+        <li>Le quiz adultes complet (81 pathologies) permet une entrée sérieuse et approfondie</li>
+        <li>Le jeu de plateau Invisible Visible crée d'excellentes discussions en petits groupes</li>
+        <li>En SVT ou Sciences : exploiter les cartes de pathologies pour des exposés scientifiques</li>
+        <li>En Philo ou SES : la notion de "norme" et de "handicap social" s'articule bien avec ce contenu</li>
+      </ul>
+    </div>
+
+    <div class="quote-box">
+      <p><strong>🔗 Accès à toutes les ressources :</strong> Rendez-vous sur <strong>oldyetsebastien.fr</strong> → rubrique "Jeux" pour tous les outils interactifs. Les supports imprimables sont téléchargeables directement depuis le site. Le kit d'intervention complet (protégé par mot de passe pour les professionnels) est disponible sur demande.</p>
+    </div>
+
+    <div class="contact-block">
+      <h3>🌐 Explorer toutes les ressources</h3>
+      <p>Jeux, livrets, cartes de pathologies, BD, quiz — tout est sur le site, libre d'accès pour les enseignants.</p>
+      <a href="https://oldyetsebastien.fr" target="_blank">Visiter oldyetsebastien.fr</a>
+    </div>
+
+  </div><!-- /panel-outils -->
+
+</main>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
