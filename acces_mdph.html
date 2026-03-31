@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accès Sécurisé — Document MDPH · Oldy & Sébastien</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;600;700;800&display=swap');
+
+:root {
+  --noir:    #0a0a0f;
+  --gris1:   #111118;
+  --gris2:   #1c1c26;
+  --gris3:   #2a2a38;
+  --gris4:   #3d3d52;
+  --bordure: #2e2e42;
+  --texte:   #e8e8f0;
+  --doux:    #8888aa;
+  --accent:  #c8a84b;
+  --accent2: #e8c96a;
+  --rouge:   #c84b4b;
+  --vert:    #4bc87a;
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'Syne', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--noir);
+  color: var(--texte);
+  font-family: var(--mono);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+header {
+  border-bottom: 1px solid var(--bordure);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--gris1);
+}
+.logo {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--texte);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo span { color: var(--accent); }
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--doux);
+  letter-spacing: .05em;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--vert);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .3; }
+}
+
+/* ── MAIN ── */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; width: 100%; max-width: 520px; animation: fadeUp .4s ease; }
+.screen.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--gris1);
+  border: 1px solid var(--bordure);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.card-header {
+  background: var(--gris2);
+  border-bottom: 1px solid var(--bordure);
+  padding: 20px 28px;
+}
+.card-tag {
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-tag::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--accent);
+}
+.card-title {
+  font-family: var(--sans);
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--texte);
+  margin-bottom: 6px;
+}
+.card-sub {
+  font-size: 12px;
+  color: var(--doux);
+  line-height: 1.6;
+}
+.card-body { padding: 28px; }
+
+/* ── AVERTISSEMENT ── */
+.avert {
+  background: rgba(200, 168, 75, .06);
+  border: 1px solid rgba(200, 168, 75, .2);
+  border-radius: 3px;
+  padding: 14px 16px;
+  margin-bottom: 28px;
+  font-size: 11px;
+  color: rgba(200, 168, 75, .9);
+  line-height: 1.7;
+}
+.avert strong { display: block; margin-bottom: 4px; letter-spacing: .05em; }
+
+/* ── FORM ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--doux);
+}
+.field input,
+.field select {
+  background: var(--gris2);
+  border: 1px solid var(--gris4);
+  border-radius: 3px;
+  padding: 11px 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--texte);
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.field input:focus,
+.field select:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--gris4); }
+.field select { cursor: pointer; }
+.field select option { background: var(--gris2); }
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--doux);
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.required { color: var(--accent); margin-left: 2px; }
+
+/* ── BTN ── */
+.btn {
+  width: 100%;
+  background: var(--accent);
+  color: var(--noir);
+  border: none;
+  border-radius: 3px;
+  padding: 14px 20px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background .2s, transform .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn:hover  { background: var(--accent2); }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── ERREUR ── */
+.msg-err {
+  background: rgba(200, 75, 75, .08);
+  border: 1px solid rgba(200, 75, 75, .25);
+  border-radius: 3px;
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--rouge);
+  margin-top: 12px;
+  line-height: 1.6;
+  display: none;
+}
+.msg-err.show { display: block; animation: fadeUp .3s; }
+
+/* ── ÉTAPE CODE ── */
+.identite-recap {
+  background: var(--gris2);
+  border: 1px solid var(--bordure);
+  border-radius: 3px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  font-size: 11px;
+  color: var(--doux);
+  line-height: 1.8;
+}
+.identite-recap strong { color: var(--texte); }
+.identite-recap .profession-tag {
+  display: inline-block;
+  background: rgba(200,168,75,.12);
+  border: 1px solid rgba(200,168,75,.2);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  letter-spacing: .05em;
+  margin-left: 4px;
+}
+
+.code-label {
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--doux);
+  margin-bottom: 10px;
+  display: block;
+}
+.code-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.code-input {
+  flex: 1;
+  background: var(--gris2);
+  border: 2px solid var(--gris4);
+  border-radius: 3px;
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: .3em;
+  text-align: center;
+  color: var(--texte);
+  outline: none;
+  transition: border-color .2s;
+}
+.code-input:focus { border-color: var(--accent); }
+.code-input.error { border-color: var(--rouge); animation: shake .3s; }
+.code-input.ok    { border-color: var(--vert); }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
+}
+
+.tentatives {
+  font-size: 10px;
+  color: var(--doux);
+  text-align: right;
+  letter-spacing: .05em;
+}
+.tentatives.warn { color: var(--rouge); }
+
+/* ── VIEWER ── */
+#screen-viewer .card { max-width: 100%; }
+.viewer-header {
+  background: var(--gris2);
+  border-bottom: 1px solid var(--bordure);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.viewer-title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte);
+}
+.viewer-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--doux);
+}
+.timer-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.timer-display.warn { color: var(--rouge); animation: pulse 1s infinite; }
+.badge-acces {
+  background: rgba(75, 200, 122, .1);
+  border: 1px solid rgba(75, 200, 122, .2);
+  color: var(--vert);
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+.pdf-wrap {
+  position: relative;
+  background: #1a1a24;
+  height: 75vh;
+  min-height: 500px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pdf-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: auto;
+}
+/* Overlay invisible pour bloquer le clic droit sur le PDF */
+.pdf-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: transparent;
+}
+
+.viewer-footer {
+  background: var(--gris2);
+  border-top: 1px solid var(--bordure);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--doux);
+  letter-spacing: .05em;
+}
+.viewer-footer .warn-dl {
+  color: rgba(200,168,75,.6);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── BLOQUÉ ── */
+.bloque-box {
+  text-align: center;
+  padding: 40px 20px;
+}
+.bloque-icon { font-size: 48px; margin-bottom: 16px; }
+.bloque-titre {
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--rouge);
+}
+.bloque-txt {
+  font-size: 12px;
+  color: var(--doux);
+  line-height: 1.8;
+  max-width: 360px;
+  margin: 0 auto 24px;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--bordure);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--gris4);
+  letter-spacing: .05em;
+  background: var(--gris1);
+}
+footer a { color: var(--doux); text-decoration: none; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .card-body { padding: 20px; }
+  .card-header { padding: 16px 20px; }
+  header { padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://oldyetsebastien.fr">🐶 Oldy <span>&</span> Sébastien</a>
+  <div class="header-status">
+    <div class="dot"></div>
+    <span>ACCÈS SÉCURISÉ</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── ÉCRAN 1 : IDENTIFICATION ── -->
+  <div class="screen active" id="screen-ident">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-tag">Document restreint</div>
+        <div class="card-title">Identification requise</div>
+        <div class="card-sub">
+          Ce document est réservé aux professionnels, formateurs et chercheurs<br>
+          travaillant dans le champ du handicap ou de l'action sociale.
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="avert">
+          <strong>⚠ ACCÈS CONTRÔLÉ</strong>
+          L'accès à ce document nécessite un code d'autorisation délivré par Sébastien Tribet.
+          Votre identification est enregistrée. Toute utilisation non autorisée est interdite.
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Prénom <span class="required">*</span></label>
+            <input type="text" id="inp-prenom" placeholder="Votre prénom" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label>Nom <span class="required">*</span></label>
+            <input type="text" id="inp-nom" placeholder="Votre nom" autocomplete="family-name">
+          </div>
+          <div class="field form-full">
+            <label>Email <span class="required">*</span></label>
+            <input type="email" id="inp-email" placeholder="votre@email.fr" autocomplete="email">
+          </div>
+          <div class="field form-full">
+            <label>Profession / Fonction <span class="required">*</span></label>
+            <div class="select-wrap">
+              <select id="inp-profession">
+                <option value="">— Sélectionnez votre profession —</option>
+                <optgroup label="Médical / Paramédical">
+                  <option value="Médecin">Médecin</option>
+                  <option value="Médecin spécialiste">Médecin spécialiste</option>
+                  <option value="Infirmier(e)">Infirmier(e)</option>
+                  <option value="Psychologue">Psychologue</option>
+                  <option value="Neuropsychologue">Neuropsychologue</option>
+                  <option value="Ergothérapeute">Ergothérapeute</option>
+                  <option value="Orthophoniste">Orthophoniste</option>
+                  <option value="Psychomotricien(ne)">Psychomotricien(ne)</option>
+                  <option value="Aide-soignant(e)">Aide-soignant(e)</option>
+                </optgroup>
+                <optgroup label="Social / Médico-social">
+                  <option value="Travailleur(se) social(e)">Travailleur(se) social(e)</option>
+                  <option value="Assistant(e) social(e)">Assistant(e) social(e)</option>
+                  <option value="Éducateur(trice) spécialisé(e)">Éducateur(trice) spécialisé(e)</option>
+                  <option value="Moniteur(trice) éducateur(trice)">Moniteur(trice) éducateur(trice)</option>
+                  <option value="CESF">CESF</option>
+                  <option value="AMP / AES">AMP / AES</option>
+                  <option value="Directeur(trice) d'établissement">Directeur(trice) d'établissement</option>
+                </optgroup>
+                <optgroup label="Éducation / Formation">
+                  <option value="Enseignant(e)">Enseignant(e)</option>
+                  <option value="Enseignant(e) spécialisé(e) / AESH">Enseignant(e) spécialisé(e) / AESH</option>
+                  <option value="Formateur(trice)">Formateur(trice)</option>
+                  <option value="Conseiller(ère) d'orientation">Conseiller(ère) d'orientation</option>
+                </optgroup>
+                <optgroup label="Administratif / Institutionnel">
+                  <option value="Agent MDPH">Agent MDPH</option>
+                  <option value="Agent CAF / CPAM">Agent CAF / CPAM</option>
+                  <option value="Agent Pôle Emploi / France Travail">Agent Pôle Emploi / France Travail</option>
+                  <option value="Agent collectivité territoriale">Agent collectivité territoriale</option>
+                  <option value="Cadre administratif">Cadre administratif</option>
+                </optgroup>
+                <optgroup label="Associatif / Bénévolat">
+                  <option value="Bénévole associatif">Bénévole associatif</option>
+                  <option value="Responsable associatif">Responsable associatif</option>
+                  <option value="Aidant(e) familial(e)">Aidant(e) familial(e)</option>
+                </optgroup>
+                <optgroup label="Recherche / Étudiant">
+                  <option value="Chercheur(se)">Chercheur(se)</option>
+                  <option value="Étudiant(e) en travail social">Étudiant(e) en travail social</option>
+                  <option value="Étudiant(e) en médecine / paramédical">Étudiant(e) en médecine / paramédical</option>
+                  <option value="Étudiant(e) autre">Étudiant(e) autre</option>
+                </optgroup>
+                <optgroup label="Autre">
+                  <option value="Journaliste / Média">Journaliste / Média</option>
+                  <option value="Élu(e) / Politique">Élu(e) / Politique</option>
+                  <option value="Autre profession">Autre profession</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+          <div class="field form-full">
+            <label>Organisation / Structure <span style="color:var(--doux);font-size:9px">(facultatif)</span></label>
+            <input type="text" id="inp-orga" placeholder="Nom de votre établissement ou association">
+          </div>
+        </div>
+
+        <button class="btn" id="btn-suivant" onclick="validerIdent()">
+          Continuer vers l'authentification →
+        </button>
+        <div class="msg-err" id="err-ident">
+          Veuillez remplir tous les champs obligatoires.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ÉCRAN 2 : CODE D'ACCÈS ── -->
+  <div class="screen" id="screen-code">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-tag">Authentification</div>
+        <div class="card-title">Code d'accès</div>
+        <div class="card-sub">
+          Entrez le code à 4 chiffres communiqué par Sébastien Tribet.<br>
+          Valable 36 heures après activation.
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="identite-recap" id="recap-ident"></div>
+
+        <span class="code-label">Code d'autorisation</span>
+        <div class="code-wrap">
+          <input
+            class="code-input"
+            id="code-input"
+            type="number"
+            maxlength="4"
+            placeholder="0000"
+            oninput="limiterCode(this)"
+            onkeydown="if(event.key==='Enter') validerCode()"
+            autocomplete="off"
+          >
+        </div>
+        <div class="tentatives" id="tentatives-txt">3 tentatives restantes</div>
+
+        <button class="btn" id="btn-code" onclick="validerCode()">
+          🔓 Accéder au document
+        </button>
+        <div class="msg-err" id="err-code"></div>
+        <button onclick="retourIdent()" style="
+          background:none;border:none;color:var(--doux);font-family:var(--mono);
+          font-size:11px;cursor:pointer;margin-top:14px;padding:0;width:100%;text-align:center;
+        ">← Modifier mon identification</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ÉCRAN 3 : VISIONNEUSE ── -->
+  <div class="screen" id="screen-viewer" style="max-width:900px">
+    <div class="card">
+      <div class="viewer-header">
+        <div class="viewer-title">📄 Dossier MDPH — Le Labyrinthe Administratif</div>
+        <div class="viewer-meta">
+          <div class="badge-acces">✓ ACCÈS AUTORISÉ</div>
+          <div class="timer-display" id="timer-display">
+            ⏱ <span id="timer-txt">36:00:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pdf-wrap">
+        <iframe
+          id="pdf-frame"
+          src=""
+          title="Document MDPH — Labyrinthe Administratif"
+          sandbox="allow-same-origin allow-scripts"
+        ></iframe>
+        <!-- Bouclier anti-téléchargement -->
+        <div class="pdf-shield" id="pdf-shield"
+          oncontextmenu="return false"
+          ondragstart="return false">
+        </div>
+      </div>
+
+      <div class="viewer-footer">
+        <span>Identifié(e) : <strong id="footer-nom"></strong></span>
+        <span class="warn-dl">⚠ Document protégé — reproduction interdite</span>
+        <span>© Oldy & Sébastien · <a href="https://oldyetsebastien.fr">oldyetsebastien.fr</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ÉCRAN BLOQUÉ ── -->
+  <div class="screen" id="screen-bloque">
+    <div class="card">
+      <div class="card-body">
+        <div class="bloque-box">
+          <div class="bloque-icon">🔒</div>
+          <div class="bloque-titre">Accès suspendu</div>
+          <div class="bloque-txt" id="bloque-msg">
+            Trop de tentatives incorrectes.<br>
+            Contactez Sébastien Tribet pour obtenir un nouveau code d'accès.
+          </div>
+          <a href="https://oldyetsebastien.fr" style="
+            display:inline-block;background:var(--gris3);color:var(--doux);
+            border:1px solid var(--bordure);padding:12px 24px;border-radius:3px;
+            font-family:var(--mono);font-size:12px;text-decoration:none;
+          ">← Retour au site</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>Oldy & Sébastien · Sensibilisation handicaps invisibles · Indre (36)</span>
+  <span id="footer-ts"></span>
+</footer>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// Le PDF à afficher — adaptez ce chemin selon votre hébergement
+const PDF_URL = 'DossierMDPH_LABYRINTHE.pdf';
+// Durée de validité en heures
+const DUREE_H = 36;
+// Nombre max de tentatives
+const MAX_TENTATIVES = 3;
+
+// ── ÉTAT ────────────────────────────────────────────────────────────────────
+let identData = {};
+let tentatives = MAX_TENTATIVES;
+let timerInterval = null;
+
+// ── NAVIGATION ──────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const sc = document.getElementById(id);
+  sc.classList.add('active');
+  // Re-trigger animation
+  sc.style.animation = 'none';
+  sc.offsetHeight;
+  sc.style.animation = '';
+}
+
+// ── TIMESTAMP ───────────────────────────────────────────────────────────────
+function updateTimestamp() {
+  const now = new Date();
+  document.getElementById('footer-ts').textContent =
+    now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
+}
+updateTimestamp();
+setInterval(updateTimestamp, 1000);
+
+// ── ÉTAPE 1 : IDENTIFICATION ─────────────────────────────────────────────────
+function validerIdent() {
+  const prenom    = document.getElementById('inp-prenom').value.trim();
+  const nom       = document.getElementById('inp-nom').value.trim();
+  const email     = document.getElementById('inp-email').value.trim();
+  const profession= document.getElementById('inp-profession').value;
+  const orga      = document.getElementById('inp-orga').value.trim();
+  const err       = document.getElementById('err-ident');
+
+  if (!prenom || !nom || !email || !profession) {
+    err.classList.add('show');
+    err.textContent = 'Veuillez remplir tous les champs obligatoires.';
+    return;
+  }
+  if (!email.includes('@') || !email.includes('.')) {
+    err.classList.add('show');
+    err.textContent = 'Adresse email invalide.';
+    return;
+  }
+
+  err.classList.remove('show');
+  identData = { prenom, nom, email, profession, orga };
+
+  // Afficher le récap
+  document.getElementById('recap-ident').innerHTML =
+    `<strong>${prenom} ${nom}</strong><br>
+     ${email}<br>
+     Profession : <span class="profession-tag">${profession}</span>
+     ${orga ? `<br>Structure : ${orga}` : ''}`;
+
+  // Log console (simulé — pas de vraie base de données)
+  console.log('[ACCÈS] Identification :', identData, new Date().toISOString());
+
+  showScreen('screen-code');
+  setTimeout(() => document.getElementById('code-input').focus(), 400);
+}
+
+function retourIdent() {
+  showScreen('screen-ident');
+}
+
+// ── ÉTAPE 2 : CODE ──────────────────────────────────────────────────────────
+function limiterCode(input) {
+  let val = input.value.replace(/\D/g,'').slice(0,4);
+  input.value = val;
+  input.classList.remove('error');
+  document.getElementById('err-code').classList.remove('show');
+  if (val.length === 4) validerCode();
+}
+
+function validerCode() {
+  if (tentatives <= 0) return;
+
+  const input = document.getElementById('code-input');
+  const err   = document.getElementById('err-code');
+  const val   = input.value.trim();
+
+  if (val.length < 4) {
+    err.classList.add('show');
+    err.textContent = 'Le code doit contenir 4 chiffres.';
+    return;
+  }
+
+  // ── Vérification du code ──
+  // Le code valide est généré dynamiquement basé sur la date + un sel
+  // Pour la simplicité GitHub Pages : codes valides définis ici
+  // Sébastien peut modifier cette liste pour ajouter/retirer des codes
+  const CODES_VALIDES = genererCodes();
+
+  if (CODES_VALIDES.includes(val)) {
+    // Accès accordé
+    input.classList.add('ok');
+    const expiry = Date.now() + (DUREE_H * 3600 * 1000);
+    sessionStorage.setItem('mdph_access', JSON.stringify({
+      nom: identData.prenom + ' ' + identData.nom,
+      profession: identData.profession,
+      expiry: expiry
+    }));
+    setTimeout(() => ouvrirViewer(expiry), 500);
+  } else {
+    tentatives--;
+    input.classList.add('error');
+    setTimeout(() => input.classList.remove('error'), 500);
+
+    if (tentatives <= 0) {
+      console.log('[ACCÈS REFUSÉ] Trop de tentatives :', identData, new Date().toISOString());
+      showScreen('screen-bloque');
+    } else {
+      err.classList.add('show');
+      const msgs = [
+        'Code incorrect. Vérifiez le code communiqué par Sébastien Tribet.',
+        'Code invalide. Ce code est peut-être expiré.',
+        'Code non reconnu. Dernière tentative avant suspension.',
+      ];
+      err.textContent = msgs[MAX_TENTATIVES - tentatives - 1] || 'Code incorrect.';
+      document.getElementById('tentatives-txt').textContent = tentatives + ' tentative' + (tentatives > 1 ? 's' : '') + ' restante' + (tentatives > 1 ? 's' : '');
+      document.getElementById('tentatives-txt').className = 'tentatives' + (tentatives === 1 ? ' warn' : '');
+      input.value = '';
+      input.focus();
+    }
+  }
+}
+
+// ── GÉNÉRATION DES CODES VALIDES ─────────────────────────────────────────────
+// Système : codes basés sur la date (JJMM + sel) → nouveau code chaque jour
+// + codes permanents que Sébastien peut distribuer
+function genererCodes() {
+  const now   = new Date();
+  const jj    = String(now.getDate()).padStart(2,'0');
+  const mm    = String(now.getMonth()+1).padStart(2,'0');
+  const aa    = String(now.getFullYear()).slice(-2);
+
+  // Code du jour : JJ + MM (ex: 31/03 → 3103)
+  const codeJour = jj + mm;
+  // Code semaine : MM + AA
+  const codeSem  = mm + aa;
+  // Code fixe hier (pour couvrir les 36h)
+  const hier  = new Date(now - 86400000);
+  const hjj   = String(hier.getDate()).padStart(2,'0');
+  const hmm   = String(hier.getMonth()+1).padStart(2,'0');
+  const codeHier = hjj + hmm;
+
+  // Codes permanents que vous pouvez distribuer manuellement
+  // Modifiez cette liste pour ajouter vos propres codes
+  const codesPermanents = [
+    '2005', // loi handicap
+    '0211', // 02/11 → 11 février à l'envers
+    '3602', // Indre
+    '1102', // date loi
+  ];
+
+  return [codeJour, codeSem, codeHier, ...codesPermanents];
+}
+
+// ── ÉTAPE 3 : VIEWER ────────────────────────────────────────────────────────
+function ouvrirViewer(expiry) {
+  document.getElementById('footer-nom').textContent =
+    identData.prenom + ' ' + identData.nom + ' (' + identData.profession + ')';
+
+  // Charger le PDF
+  const frame = document.getElementById('pdf-frame');
+  // Paramètre #toolbar=0 pour masquer la barre de téléchargement dans certains navigateurs
+  frame.src = PDF_URL + '#toolbar=0&navpanes=0&scrollbar=1&view=FitH';
+
+  showScreen('screen-viewer');
+  demarrerTimer(expiry);
+
+  // Bloquer le clic droit sur toute la page viewer
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  // Bloquer le raccourci Ctrl+S
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'p' || e.key === 'u')) {
+      e.preventDefault();
+    }
+  });
+}
+
+// ── TIMER ───────────────────────────────────────────────────────────────────
+function demarrerTimer(expiry) {
+  const display = document.getElementById('timer-display');
+  const txt     = document.getElementById('timer-txt');
+
+  function tick() {
+    const reste = expiry - Date.now();
+    if (reste <= 0) {
+      clearInterval(timerInterval);
+      // Accès expiré
+      document.getElementById('bloque-msg').innerHTML =
+        'Votre accès de 36 heures a expiré.<br>Contactez Sébastien Tribet pour un nouveau code.';
+      showScreen('screen-bloque');
+      return;
+    }
+    const h  = Math.floor(reste / 3600000);
+    const m  = Math.floor((reste % 3600000) / 60000);
+    const s  = Math.floor((reste % 60000) / 1000);
+    txt.textContent =
+      String(h).padStart(2,'0') + ':' +
+      String(m).padStart(2,'0') + ':' +
+      String(s).padStart(2,'0');
+
+    // Alerte dernière heure
+    if (reste < 3600000) display.classList.add('warn');
+  }
+
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+// ── VÉRIFIER SESSION EXISTANTE ───────────────────────────────────────────────
+(function() {
+  const stored = sessionStorage.getItem('mdph_access');
+  if (stored) {
+    try {
+      const data = JSON.parse(stored);
+      if (data.expiry > Date.now()) {
+        identData = { prenom: data.nom.split(' ')[0], nom: data.nom.split(' ').slice(1).join(' '), profession: data.profession };
+        document.getElementById('footer-nom').textContent = data.nom + ' (' + data.profession + ')';
+        document.getElementById('pdf-frame').src = PDF_URL + '#toolbar=0&navpanes=0&scrollbar=1&view=FitH';
+        showScreen('screen-viewer');
+        demarrerTimer(data.expiry);
+        document.addEventListener('contextmenu', e => e.preventDefault());
+      }
+    } catch(e) {}
+  }
+})();
+</script>
+</body>
+</html>
