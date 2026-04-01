@@ -294,6 +294,6 @@ function updateTimer(){const el=document.getElementById('gameTimer');if(!el) ret
 function renderFinal(){const sorted=Object.values(teams).sort((a,b)=>(b.totalScore||0)-(a.totalScore||0));const medals=['🥇','🥈','🥉'];document.getElementById('finalBoard').innerHTML=sorted.map((t,i)=>`<div class="score-row"><div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${medals[i]||(i+1)}</div><div style="flex:1;font-size:1rem;font-weight:600;">👥 ${t.name}${t.vaultSolved?' 🗄️':''}</div><div style="font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:var(--amber);">${t.totalScore||0}</div></div>`).join('');}
 function newGame(){sessionId=null;currentRoom=1;teams={};hintsShown=[];clearInterval(timerIv);showScreen('scrSetup');setStatus('⏳ Initialisation');}
 buildSeriesGrid();
-</script>
+</script><script src="/footer.js"></script>
 </body>
 </html>
