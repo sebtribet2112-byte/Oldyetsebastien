@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔐 Escape Game v2 — Joueur | Oldy & Sébastien</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0f1a; --panel:#151828; --panel2:#1c2035; --border:#2a2f4a;
+  --amber:#f0a500; --amber-dim:#7a5200; --amber-glow:rgba(240,165,0,.12);
+  --emerald:#22c55e; --rose:#f43f5e; --sky:#38bdf8; --violet:#a78bfa;
+  --text:#e8dcc8; --muted:#7a7fa0; --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 30% 10%,rgba(240,165,0,.05) 0,transparent 50%),
+  radial-gradient(ellipse at 70% 90%,rgba(56,189,248,.03) 0,transparent 50%);}
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;}
+.htitle{font-family:'Cinzel',serif;font-size:.9rem;color:var(--amber);letter-spacing:1px;}
+.hteam{font-size:.82rem;color:var(--muted);background:var(--panel2);border:1px solid var(--border);
+  padding:3px 11px;border-radius:20px;display:none;}
+.wrap{max-width:620px;margin:0 auto;padding:16px 13px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--amber),transparent);opacity:0;transition:opacity .3s;}
+.card:hover::before{opacity:1;}
+.ctitle{font-family:'Cinzel',serif;font-size:.8rem;color:var(--amber);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:8px;}
+input[type=text]{width:100%;padding:11px 14px;background:var(--panel2);border:1.5px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:'Crimson Pro',serif;font-size:1rem;transition:border-color .2s;}
+input[type=text]:focus{outline:none;border-color:var(--amber);}
+.flabel{display:block;font-size:.83rem;color:var(--muted);margin-bottom:6px;}
+.fg{margin-bottom:11px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 19px;
+  border-radius:8px;border:none;cursor:pointer;font-family:'Crimson Pro',serif;font-size:.98rem;
+  font-weight:600;transition:all .2s;}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
+.bfull{width:100%;}
+.bamber{background:var(--amber);color:#0d0f1a;font-weight:700;}
+.bamber:hover{background:#ffc107;box-shadow:0 4px 20px rgba(240,165,0,.4);}
+.bghost{background:var(--panel2);color:var(--text);border:1px solid var(--border);}
+.bghost:hover{border-color:var(--muted);}
+.bviolet{background:#2e1065;color:var(--violet);border:1px solid var(--violet);}
+.bviolet:hover{background:#3b0764;}
+.bemerald{background:#064e3b;color:var(--emerald);border:1px solid var(--emerald);}
+.screen{display:none;} .screen.active{display:block;animation:fi .4s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Code slots */
+.code-slots{display:flex;gap:7px;justify-content:center;}
+.cslot{width:48px;height:48px;border-radius:8px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;
+  font-size:1.3rem;font-weight:700;background:var(--panel2);transition:all .4s;}
+.cslot.revealed{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);
+  box-shadow:0 0 12px rgba(240,165,0,.3);}
+.cslot.locked{color:var(--border);}
+.cslot.vault-ok{border-color:var(--violet);color:var(--violet);background:rgba(167,139,250,.1);}
+
+/* Difficulty badge */
+.diff{display:inline-flex;align-items:center;gap:5px;font-size:.76rem;padding:2px 9px;
+  border-radius:12px;margin-bottom:5px;}
+.diff1{background:#064e3b;color:var(--emerald);}
+.diff2{background:#713f12;color:#fbbf24;}
+.diff3{background:#7c2d12;color:#fb923c;}
+.diff4{background:#4c0519;color:var(--rose);}
+
+/* Room header */
+.room-hdr{text-align:center;padding:18px 14px;background:linear-gradient(135deg,#1a1400,#1c2035);
+  border-radius:var(--r);margin-bottom:13px;border:1px solid var(--amber-dim);}
+.room-emo{font-size:2.8rem;margin-bottom:7px;}
+.room-name{font-family:'Cinzel',serif;font-size:1.05rem;color:var(--amber);}
+.room-sub{font-size:.85rem;color:var(--muted);margin-top:3px;}
+
+/* Progress dots */
+.rdots{display:flex;justify-content:center;gap:8px;margin-bottom:11px;}
+.rdot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .4s;}
+.rdot.done{background:var(--amber);}
+.rdot.active{background:var(--amber);opacity:.6;box-shadow:0 0 8px var(--amber);}
+
+/* Score pill */
+.spill{display:flex;align-items:center;justify-content:space-between;background:var(--panel2);
+  border:1px solid var(--border);border-radius:var(--r);padding:11px 15px;margin-bottom:12px;}
+.spill-lbl{font-size:.83rem;color:var(--muted);}
+.spill-val{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:700;color:var(--amber);}
+
+/* Timer bar */
+.tbar-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:13px;}
+.tbar{height:100%;background:var(--amber);transition:width 1s linear,background .5s;border-radius:2px;}
+
+/* Scenario / enigma blocks */
+.scenario{background:var(--panel2);border-left:3px solid var(--amber-dim);
+  border-radius:0 var(--r) var(--r) 0;padding:15px 17px;font-size:.97rem;
+  line-height:1.75;color:var(--text);margin-bottom:13px;font-style:italic;}
+.enigma{background:var(--amber-glow);border:1.5px solid var(--amber-dim);
+  border-radius:var(--r);padding:15px 17px;font-size:.97rem;line-height:1.75;margin-bottom:15px;}
+
+/* Answer zone */
+.ans-zone{display:flex;gap:8px;}
+.ans-zone input{flex:1;font-family:'Cinzel',serif;font-size:1.4rem;letter-spacing:6px;text-align:center;}
+.feedback{border-radius:8px;padding:11px 15px;font-size:.93rem;font-weight:600;text-align:center;
+  margin-top:9px;display:none;}
+.feedback.err{background:#4c0519;color:var(--rose);border:1px solid var(--rose);display:block;}
+.feedback.ok{background:#064e3b;color:var(--emerald);border:1px solid var(--emerald);display:block;}
+
+/* Hint box */
+.hbox{background:#1a1200;border:1px solid var(--amber-dim);border-radius:var(--r);padding:13px 15px;
+  margin-top:13px;font-size:.93rem;display:none;}
+.hbox.vis{display:block;animation:fi .4s ease;}
+.hbox-lbl{font-family:'Cinzel',serif;font-size:.72rem;color:var(--amber);letter-spacing:1px;margin-bottom:5px;}
+.hbox-txt{color:#f5e6b8;line-height:1.65;}
+
+/* ══════════════════════════════
+   ROOM 1 — TABLEAU
+══════════════════════════════ */
+.patho-table{width:100%;border-collapse:collapse;}
+.patho-table th{font-family:'Cinzel',serif;font-size:.8rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;}
+.patho-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:.97rem;}
+.patho-table tr:last-child td{border-bottom:none;}
+.patho-table tr:hover td{background:rgba(240,165,0,.05);}
+.pnum{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--amber);width:36px;}
+.clue-item{display:flex;gap:9px;align-items:flex-start;margin-bottom:9px;padding:10px 13px;
+  background:var(--panel2);border-radius:8px;border:1px solid var(--border);font-size:.95rem;line-height:1.65;}
+
+/* ══════════════════════════════
+   ROOM 2 — ANAGRAMMES
+══════════════════════════════ */
+.scramble-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;margin-bottom:9px;}
+.scramble-word{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--sky);letter-spacing:3px;margin-bottom:5px;}
+.scramble-note{font-size:.82rem;color:var(--muted);}
+.scramble-reveal{font-size:.85rem;color:var(--emerald);margin-top:6px;display:none;font-style:italic;}
+.scramble-card.solved .scramble-reveal{display:block;}
+.scramble-card.solved{border-color:var(--emerald);}
+
+/* ══════════════════════════════
+   ROOM 3 — TEXTE CONFUS
+══════════════════════════════ */
+.confused-block{background:#0d1205;border:1.5px solid #3a4a1a;border-radius:var(--r);
+  padding:17px;font-family:'Courier New',monospace;font-size:.98rem;line-height:2;
+  color:#c8e8a0;letter-spacing:.5px;position:relative;}
+.decoder-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px;}
+.decode-row{background:var(--panel2);border:1px solid var(--border);border-radius:7px;
+  padding:9px 12px;display:flex;align-items:center;gap:10px;font-size:.95rem;}
+.decode-from{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--rose);font-weight:700;}
+.decode-arrow{color:var(--muted);}
+.decode-to{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--emerald);font-weight:700;}
+.reveal-btn-wrap{text-align:center;margin-top:10px;}
+.confused-decoded{display:none;background:#081205;border:1.5px solid var(--emerald);
+  border-radius:var(--r);padding:17px;font-family:'Courier New',monospace;
+  font-size:.98rem;line-height:2;color:#a0e8a0;letter-spacing:.5px;margin-top:12px;}
+.confused-decoded.vis{display:block;animation:fi .5s ease;}
+.confused-highlight{color:var(--amber);font-weight:bold;}
+
+/* ══════════════════════════════
+   ROOM 4 — SYMBOLES
+══════════════════════════════ */
+.sym-table{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;}
+.sym-row{background:var(--panel2);border:1px solid var(--border);border-radius:7px;
+  padding:9px 12px;display:flex;align-items:center;gap:9px;font-size:.93rem;}
+.sym-emo{font-size:1.5rem;flex-shrink:0;}
+.sym-name{flex:1;font-size:.88rem;color:var(--muted);}
+.sym-val{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--amber);}
+.equation-block{background:linear-gradient(135deg,#1a0d00,#1c2035);
+  border:2px solid var(--amber-dim);border-radius:var(--r);padding:22px 18px;
+  text-align:center;margin-bottom:14px;}
+.equation-text{font-family:'Cinzel',serif;font-size:2.2rem;color:var(--amber);letter-spacing:4px;
+  margin-bottom:10px;}
+.equation-sub{font-size:.88rem;color:var(--muted);}
+.blur-hint-wrap{position:relative;overflow:hidden;border-radius:8px;}
+.blur-hint{background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  padding:13px 15px;font-size:.95rem;filter:blur(6px);transition:filter .8s;user-select:none;text-align:center;}
+.blur-hint.revealed{filter:none;}
+.blur-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--amber);color:#0d0f1a;border:none;border-radius:20px;
+  padding:6px 16px;font-family:'Crimson Pro',serif;font-size:.88rem;font-weight:700;cursor:pointer;
+  white-space:nowrap;transition:opacity .3s;}
+.blur-btn.hidden{opacity:0;pointer-events:none;}
+
+/* ══════════════════════════════
+   VAULT SCREEN
+══════════════════════════════ */
+.vault-wrap{text-align:center;padding:28px 16px;}
+.vault-icon{font-size:4rem;margin-bottom:12px;animation:vbob 2s ease-in-out infinite;}
+@keyframes vbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.vault-code-input{font-family:'Cinzel',serif;font-size:2rem;letter-spacing:10px;text-align:center;
+  max-width:220px;margin:0 auto;}
+.vault-feedback{border-radius:8px;padding:13px 16px;text-align:center;margin-top:12px;display:none;font-weight:600;font-size:1rem;}
+.vault-feedback.err{background:#4c0519;color:var(--rose);border:1px solid var(--rose);display:block;}
+.vault-feedback.ok{background:#064e3b;color:var(--emerald);border:1px solid var(--emerald);display:block;}
+
+/* Waiting */
+.pulse-ring{width:76px;height:76px;border-radius:50%;border:3px solid var(--amber-dim);
+  margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:2rem;
+  animation:rp 2s ease-in-out infinite;}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(240,165,0,.4)}50%{box-shadow:0 0 0 16px rgba(240,165,0,0)}}
+
+/* Final */
+.final-score{font-family:'Cinzel',serif;font-size:4rem;font-weight:900;color:var(--amber);
+  text-shadow:0 0 30px rgba(240,165,0,.6);}
+.rank-row{display:flex;align-items:center;gap:11px;padding:9px 13px;border-radius:8px;
+  margin-bottom:7px;background:var(--panel2);border:1px solid var(--border);}
+.rank-row.me{border-color:var(--amber);background:var(--amber-glow);}
+.rank-medal{font-size:1.3rem;flex-shrink:0;width:28px;text-align:center;}
+.rank-name{flex:1;font-size:.98rem;}
+.rank-pts{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--amber);font-weight:700;}
+
+/* Lock icon */
+.lock-icon{font-size:3.8rem;text-align:center;margin-bottom:12px;animation:lb 3s ease-in-out infinite;}
+@keyframes lb{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+@media(max-width:480px){.ans-zone{flex-direction:column;}.ans-zone .btn{width:100%;}
+  .sym-table{grid-template-columns:1fr;}.decoder-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="htitle">🔐 ESCAPE GAME v2</div>
+  <span class="hteam" id="hTeam"></span>
+</header>
+<div class="wrap">
+
+<!-- ══ REJOINDRE ══ -->
+<div class="screen active" id="scrJoin">
+  <div style="text-align:center;padding:28px 0 18px;">
+    <div class="lock-icon">🔐</div>
+    <div style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--amber);">ESCAPE GAME v2</div>
+    <div style="color:var(--muted);font-size:.9rem;margin-top:4px;">Handicap Invisible — 4 salles progressives</div>
+  </div>
+  <div class="card">
+    <div class="ctitle">🚪 Rejoindre une session</div>
+    <div class="fg">
+      <label class="flabel">Code de session (donné par l'animateur)</label>
+      <input type="text" id="joinCode" placeholder="Ex: A7BX3K" maxlength="6"
+        style="text-transform:uppercase;font-family:'Cinzel',serif;font-size:1.3rem;letter-spacing:6px;text-align:center;">
+    </div>
+    <div class="fg">
+      <label class="flabel">Nom de votre équipe</label>
+      <input type="text" id="joinName" placeholder="Ex: Les Invisibles" maxlength="30">
+    </div>
+    <div id="joinErr" style="color:var(--rose);font-size:.86rem;margin-bottom:9px;display:none;"></div>
+    <button class="btn bamber bfull" onclick="joinSession()">🔑 Rejoindre le jeu</button>
+  </div>
+</div>
+
+<!-- ══ ATTENTE ══ -->
+<div class="screen" id="scrWait">
+  <div class="card" style="text-align:center;padding:38px 18px;">
+    <div class="pulse-ring">⏳</div>
+    <div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--amber);margin-bottom:7px;">Salle d'attente</div>
+    <p style="color:var(--muted);font-size:.93rem;">L'animateur va bientôt lancer le jeu…</p>
+    <p style="color:var(--muted);font-size:.83rem;margin-top:11px;">Session : <span id="waitCode" style="color:var(--amber);font-family:'Cinzel',serif;"></span></p>
+  </div>
+  <div class="card">
+    <div class="ctitle">🗺️ Les 4 salles qui vous attendent</div>
+    <div style="font-size:.93rem;line-height:1.8;color:var(--muted);">
+      <div>📋 <strong style="color:var(--text);">Salle 1</strong> — Tableau de pathologies <span class="diff diff1" style="margin-left:6px;">Facile ★</span></div>
+      <div>🔤 <strong style="color:var(--text);">Salle 2</strong> — Anagrammes mélangés <span class="diff diff2" style="margin-left:6px;">Moyen ★★</span></div>
+      <div>🔀 <strong style="color:var(--text);">Salle 3</strong> — Texte confus (dyslexie) <span class="diff diff3" style="margin-left:6px;">Difficile ★★★</span></div>
+      <div>🔣 <strong style="color:var(--text);">Salle 4</strong> — Équation symbolique <span class="diff diff4" style="margin-left:6px;">Très difficile ★★★★</span></div>
+      <div style="margin-top:12px;padding:10px 12px;background:var(--amber-glow);border-radius:8px;border:1px solid var(--amber-dim);">
+        🔑 Chaque salle donne <strong style="color:var(--amber);">un chiffre</strong> du code final. Notez-les précieusement !
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ JEU ══ -->
+<div class="screen" id="scrGame">
+  <div class="spill">
+    <div><div class="spill-lbl">Mon score</div><div class="spill-val" id="myScore">0</div></div>
+    <div style="text-align:center;">
+      <div class="spill-lbl" id="teamNameDisp">—</div>
+      <div class="code-slots" id="gameCodeSlots" style="margin-top:6px;">
+        <div class="cslot locked" id="gcs1">🔒</div>
+        <div class="cslot locked" id="gcs2">🔒</div>
+        <div class="cslot locked" id="gcs3">🔒</div>
+        <div class="cslot locked" id="gcs4">🔒</div>
+      </div>
+    </div>
+    <div style="text-align:right;"><div class="spill-lbl" id="roomCountDisp">Salle 1/4</div></div>
+  </div>
+  <div class="rdots">
+    <div class="rdot" id="dot1"></div>
+    <div class="rdot" id="dot2"></div>
+    <div class="rdot" id="dot3"></div>
+    <div class="rdot" id="dot4"></div>
+  </div>
+  <div class="tbar-wrap"><div class="tbar" id="timerBar" style="width:100%;"></div></div>
+  <div id="roomContent"></div>
+</div>
+
+<!-- ══ COFFRE FINAL ══ -->
+<div class="screen" id="scrVault">
+  <div class="card vault-wrap">
+    <div class="vault-icon">🗄️</div>
+    <div style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--violet);margin-bottom:6px;">COFFRE FINAL</div>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px;">Entrez le code à 4 chiffres que vous avez collecté</p>
+    <div class="code-slots" id="vaultCodeSlots" style="justify-content:center;margin-bottom:16px;">
+      <div class="cslot" id="vcs1">?</div>
+      <div class="cslot" id="vcs2">?</div>
+      <div class="cslot" id="vcs3">?</div>
+      <div class="cslot" id="vcs4">?</div>
+    </div>
+    <div class="ans-zone" style="max-width:280px;margin:0 auto;">
+      <input type="text" class="vault-code-input" id="vaultInput" placeholder="——" maxlength="4"
+        autocomplete="off" style="width:100%;">
+    </div>
+    <button class="btn bviolet bfull" onclick="submitVault()" style="margin-top:12px;font-family:'Cinzel',serif;font-size:1rem;max-width:280px;">🗄️ Ouvrir le coffre !</button>
+    <div class="vault-feedback" id="vaultFeedback"></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">💡 Récapitulatif de vos chiffres</div>
+    <div id="vaultDigitSummary"></div>
+  </div>
+</div>
+
+<!-- ══ RÉSULTATS ══ -->
+<div class="screen" id="scrResults">
+  <div class="card" style="text-align:center;padding:28px 18px;">
+    <div style="font-size:2.5rem;margin-bottom:8px;">🎉</div>
+    <div style="font-family:'Cinzel',serif;font-size:1.2rem;color:var(--amber);margin-bottom:5px;">Jeu terminé !</div>
+    <p style="color:var(--muted);font-size:.88rem;">Votre score final</p>
+    <div class="final-score" id="finalScore">0</div>
+    <p style="color:var(--muted);font-size:.88rem;margin-top:4px;">points</p>
+  </div>
+  <div class="card">
+    <div class="ctitle">🏆 Classement</div>
+    <div id="rankBoard"></div>
+  </div>
+  <div class="card" style="border-color:var(--amber-dim);">
+    <div class="ctitle">💬 Ce que vous avez découvert</div>
+    <div style="font-size:.93rem;line-height:1.75;color:var(--muted);">
+      <div style="margin-bottom:10px;">📋 <strong style="color:var(--amber);">TDAH :</strong> Trouble neurodéveloppemental souvent mal compris, diagnostiqué tardivement chez l'adulte.</div>
+      <div style="margin-bottom:10px;">🔤 <strong style="color:var(--amber);">Autisme (TSA) :</strong> Spectre large, invisible de l'extérieur, souvent masqué socialement.</div>
+      <div style="margin-bottom:10px;">🔀 <strong style="color:var(--amber);">Dyslexie :</strong> Touche 1 enfant sur 10. Les lettres se confondent — pas à cause d'un manque d'intelligence.</div>
+      <div style="margin-bottom:10px;">🔣 <strong style="color:var(--amber);">Endométriose, SFC, Diabète…</strong> : Invisibles mais réels. La douleur n'est pas toujours visible.</div>
+      <div style="margin-top:12px;font-style:italic;font-size:.88rem;">Projet Oldy &amp; Sébastien — <strong>oldyetsebastien.fr</strong></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  CONFIGURATION FIREBASE — même que escape_host_v2   ║
+// ╚══════════════════════════════════════════════════════╝
+const firebaseConfig = {
+  apiKey:"COLLE_TON_API_KEY_ICI",
+  authDomain:"quiz-oldy-sebastien.firebaseapp.com",
+  databaseURL:"https://quiz-oldy-sebastien-default-rtdb.firebaseio.com",
+  projectId:"quiz-oldy-sebastien",
+  storageBucket:"quiz-oldy-sebastien.appspot.com",
+  messagingSenderId:"COLLE_TON_SENDER_ID_ICI",
+  appId:"COLLE_TON_APP_ID_ICI"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  CONTENU DES 4 SALLES                                ║
+// ╚══════════════════════════════════════════════════════╝
+const ROOMS = [
+// ─────────────────────────────────────────────────────
+// SALLE 1 — TABLEAU DE PATHOLOGIES (Facile ★)
+// Réponse : 3  (TDAH = numéro 3 dans le tableau)
+// ─────────────────────────────────────────────────────
+{
+  id:1, type:'tableau', diff:'Facile ★', diffClass:'diff1', emoji:'📋',
+  title:'La Salle des Pathologies', subtitle:'Tableau de correspondance',
+  answer:'3',
+  scenario:`Vous pénétrez dans un centre de ressources sur le handicap invisible. Sur le mur, un grand tableau classe 10 pathologies numérotées de 0 à 9. Devant vous, une enveloppe froissée contient trois indices décrivant l'une d'elles. Votre mission : trouver son numéro dans le tableau.`,
+  clues:[
+    "🔸 Je touche aussi bien les enfants que les adultes. Chez les adultes, je suis diagnostiquée très tardivement — souvent après des années de souffrance silencieuse.",
+    "🔸 Je suis d'origine neurologique. Mon acronyme se compose de 4 lettres. On confond souvent mes symptômes avec de la paresse, du manque de volonté ou de l'immaturité.",
+    "🔸 En réunion, au bureau ou en classe, je lutte pour rester concentrée. Pas parce que je n'essaie pas — mais parce que mon cerveau fonctionne différemment."
+  ],
+  table:[
+    {num:0,name:'Fibromyalgie'},{num:1,name:'Dépression'},
+    {num:2,name:'Dyslexie'},{num:3,name:'TDAH'},
+    {num:4,name:'Endométriose'},{num:5,name:'Épilepsie'},
+    {num:6,name:'TSA / Autisme'},{num:7,name:'SFC / Fatigue chronique'},
+    {num:8,name:'Diabète de type 1'},{num:9,name:'Dyspraxie'}
+  ]
+},
+// ─────────────────────────────────────────────────────
+// SALLE 2 — ANAGRAMMES (Moyen ★★)
+// Réponse : 7  (AUTISME = 7 lettres)
+// ─────────────────────────────────────────────────────
+{
+  id:2, type:'anagramme', diff:'Moyen ★★', diffClass:'diff2', emoji:'🔤',
+  title:'Le Laboratoire des Mots', subtitle:'Anagrammes de pathologies',
+  answer:'7',
+  scenario:`Dans ce laboratoire crypté, un chercheur malicieux a mélangé les lettres des noms de pathologies pour les masquer. Trois termes médicaux attendent d'être déchiffrés. Mais un seul d'entre eux vous donnera le chiffre recherché.`,
+  words:[
+    {scrambled:'MISTEAU', solved:'AUTISME', note:'Trouble du spectre autistique'},
+    {scrambled:'IXEYLSED', solved:'DYSLEXIE', note:'Trouble de la lecture/écriture'},
+    {scrambled:'MODERNISETOE', solved:'ENDOMETRIOSE', note:'Maladie gynécologique chronique'}
+  ],
+  question:`Une fois les trois mots déchiffrés, trouvez celui qui désigne le "trouble du spectre" neurodéveloppemental. Comptez le nombre de lettres de ce mot. C'est votre chiffre.`
+},
+// ─────────────────────────────────────────────────────
+// SALLE 3 — TEXTE CONFUS / DYSLEXIE (Difficile ★★★)
+// Réponse : 1  ("UM" décodé = "UN" = premier chiffre)
+// ─────────────────────────────────────────────────────
+{
+  id:3, type:'confused', diff:'Difficile ★★★', diffClass:'diff3', emoji:'🔀',
+  title:'Le Cerveau Embrouillé', subtitle:'Simulation dyslexie : b↔d et m↔n',
+  answer:'1',
+  scenario:`Pour comprendre ce que ressent une personne dyslexique chaque jour, on vous soumet un texte. Certaines lettres ont été délibérément confondues — exactement comme le cerveau d'une personne dyslexique peut les percevoir. Décodez ce texte pour trouver le premier nombre écrit en toutes lettres.`,
+  confused_text:`La byslexie est um trouble bes appremtissages. UM emfamt sur bix em souffre. Elle m'est pas liée à l'intelligemce mais à la façom bom le cerveau traite l'écrit. Le premier mombre écrit em lettres bams ce texte est le chiffre que tu cherches.`,
+  decoded_text:`La <span class="confused-highlight">dy</span>slexie est u<span class="confused-highlight">n</span> trouble <span class="confused-highlight">d</span>es appre<span class="confused-highlight">n</span>tissages. <span class="confused-highlight">UN</span> e<span class="confused-highlight">n</span>fa<span class="confused-highlight">n</span>t sur <span class="confused-highlight">d</span>ix e<span class="confused-highlight">n</span> souffre. Elle <span class="confused-highlight">n</span>'est pas liée à l'intellige<span class="confused-highlight">n</span>ce mais à la faço<span class="confused-highlight">n</span> <span class="confused-highlight">d</span>o<span class="confused-highlight">n</span>t le cerveau traite l'écrit. Le premier <span class="confused-highlight">n</span>ombre écrit e<span class="confused-highlight">n</span> lettres <span class="confused-highlight">d</span>a<span class="confused-highlight">n</span>s ce texte est le chiffre que tu cherches.`,
+  decoder:[
+    {wrong:'b',right:'d',note:'b lu comme d'},
+    {wrong:'d',right:'b',note:'d lu comme b'},
+    {wrong:'m',right:'n',note:'m lu comme n'},
+    {wrong:'n',right:'m',note:'n lu comme m'}
+  ],
+  question:`Quel est le premier chiffre écrit en toutes lettres dans le texte une fois décodé ?`
+},
+// ─────────────────────────────────────────────────────
+// SALLE 4 — SYMBOLES + ÉQUATION (Très difficile ★★★★)
+// Réponse : 4  (🌸5 − 🥄3 + 💉2 = 4)
+// ─────────────────────────────────────────────────────
+{
+  id:4, type:'symbols', diff:'Très difficile ★★★★', diffClass:'diff4', emoji:'🔣',
+  title:'La Chambre des Codes', subtitle:'Tableau de symboles + équation + indice flou',
+  answer:'4',
+  scenario:`La salle finale. Les murs sont couverts de symboles représentant chacun une pathologie invisible, associée à une valeur secrète. Une équation est gravée sur le coffre. Résolvez-la pour entrer le dernier chiffre du code.`,
+  sym_table:[
+    {emoji:'🌸',name:'Endométriose',value:5},
+    {emoji:'🥄',name:'Fatigue chronique',value:3},
+    {emoji:'💉',name:'Diabète type 1',value:2},
+    {emoji:'🧠',name:'TDAH',value:6},
+    {emoji:'🦋',name:'Lupus',value:7},
+    {emoji:'💊',name:'Fibromyalgie',value:8},
+    {emoji:'🌊',name:'Dépression',value:1},
+    {emoji:'⚡',name:'Épilepsie',value:9}
+  ],
+  equation:'🌸 − 🥄 + 💉 = ?',
+  blurred_hint:'Le résultat est compris entre 3 et 5. Il est pair. (3 < résultat < 5)',
+  question:`Résolvez l'équation en utilisant les valeurs du tableau. Le résultat est votre chiffre.`
+}
+];
+
+const FINAL_CODE = '3714';
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  ÉTAT DU JEU                                         ║
+// ╚══════════════════════════════════════════════════════╝
+let sessionId=null, teamId=null, teamName=null, myScore=0,
+    currentRoom=1, collectedDigits={}, timerBarIv=null,
+    roomTimeTotal=900, timerBarStart=Date.now(), answeredRooms=new Set();
+
+// ═══ UTILS ═══════════════════════════════════════════
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showErr(msg){const el=document.getElementById('joinErr');el.textContent=msg;el.style.display='block';}
+
+// ═══ JOIN ════════════════════════════════════════════
+async function joinSession(){
+  const code=document.getElementById('joinCode').value.trim().toUpperCase();
+  const name=document.getElementById('joinName').value.trim();
+  if(code.length!==6){showErr('Le code doit faire 6 caractères.');return;}
+  if(!name){showErr('Saisis le nom de ton équipe.');return;}
+  const snap=await db.ref(`escape_sessions/${code}`).once('value');
+  if(!snap.exists()){showErr('Session introuvable. Vérifie le code.');return;}
+  const data=snap.val();
+  if(data.status==='finished'){showErr('Cette session est déjà terminée.');return;}
+  sessionId=code; teamName=name;
+  const ref=db.ref(`escape_sessions/${sessionId}/teams`).push();
+  teamId=ref.key;
+  await ref.set({name,totalScore:0,joinedAt:Date.now()});
+  document.getElementById('waitCode').textContent=sessionId;
+  document.getElementById('hTeam').textContent='👥 '+name;
+  document.getElementById('hTeam').style.display='block';
+  document.getElementById('teamNameDisp').textContent=name;
+  showScreen('scrWait');
+  listenSession();
+}
+
+// ═══ SESSION LISTENER ════════════════════════════════
+function listenSession(){
+  db.ref(`escape_sessions/${sessionId}`).on('value',snap=>{
+    const d=snap.val(); if(!d) return;
+    roomTimeTotal=(d.roomTime||15)*60;
+    currentRoom=d.currentRoom||1;
+    // Hint
+    if(d.hintText && d.hintRoom===currentRoom){
+      const hb=document.getElementById('hintBox');
+      const ht=document.getElementById('hintText');
+      if(hb&&ht){ht.textContent=d.hintText;hb.classList.add('vis');}
+    } else {
+      const hb=document.getElementById('hintBox');
+      if(hb) hb.classList.remove('vis');
+    }
+    // Revealed digits
+    if(d.revealedDigits){
+      collectedDigits=d.revealedDigits||{};
+      updateCodeSlots();
+    }
+    if(d.status==='playing'){
+      loadRoom(currentRoom);
+      showScreen('scrGame');
+    } else if(d.status==='vault'){
+      showScreen('scrVault');
+      renderVaultScreen();
+    } else if(d.status==='finished'){
+      endGame();
+    }
+  });
+}
+
+// ═══ CODE SLOTS ══════════════════════════════════════
+function updateCodeSlots(){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById(`gcs${i}`);
+    if(!el) continue;
+    const d=collectedDigits[`r${i}`];
+    if(d){el.textContent=d;el.className='cslot revealed';}
+    else{el.textContent='🔒';el.className='cslot locked';}
+  }
+}
+
+// ═══ LOAD ROOM ═══════════════════════════════════════
+function loadRoom(n){
+  const room=ROOMS[n-1]; if(!room) return;
+  // Reset hint
+  const hb=document.getElementById('hintBox');
+  if(hb) hb.classList.remove('vis');
+  // Dots
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById(`dot${i}`);
+    dot.className='rdot';
+    if(i<n) dot.classList.add('done');
+    else if(i===n) dot.classList.add('active');
+  }
+  document.getElementById('roomCountDisp').textContent=`Salle ${n}/4`;
+  // Render room-specific content
+  document.getElementById('roomContent').innerHTML=buildRoomHTML(room);
+  // Check if already answered
+  checkAnswered(n);
+  // Timer bar
+  startTimerBar();
+}
+
+// ═══ BUILD ROOM HTML ═════════════════════════════════
+function buildRoomHTML(room){
+  const header=`
+    <div class="room-hdr">
+      <div class="room-emo">${room.emoji}</div>
+      <div class="diff ${room.diffClass}">${room.diff}</div>
+      <div class="room-name">${room.title}</div>
+      <div class="room-sub">${room.subtitle}</div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📖 Mise en situation</div>
+      <div class="scenario">${room.scenario.replace(/\n/g,'<br>')}</div>
+    </div>`;
+
+  let mechanic='';
+
+  if(room.type==='tableau'){
+    // Pathology table + clues
+    mechanic=`
+    <div class="card">
+      <div class="ctitle">🗂️ Tableau des pathologies</div>
+      <table class="patho-table">
+        <tr><th>#</th><th>Pathologie</th></tr>
+        ${room.table.map(r=>`<tr><td class="pnum">${r.num}</td><td>${r.name}</td></tr>`).join('')}
+      </table>
+    </div>
+    <div class="card">
+      <div class="ctitle">🔍 Les 3 indices</div>
+      ${room.clues.map(c=>`<div class="clue-item"><span>${c}</span></div>`).join('')}
+      <div style="margin-top:14px;padding:12px 14px;background:var(--amber-glow);border:1px solid var(--amber-dim);border-radius:8px;font-size:.93rem;">
+        ❓ <strong>Quelle est le numéro de la pathologie décrite ?</strong> Saisissez ce chiffre ci-dessous.
+      </div>
+    </div>`;
+  }
+
+  else if(room.type==='anagramme'){
+    mechanic=`
+    <div class="card">
+      <div class="ctitle">🔤 Les 3 anagrammes</div>
+      ${room.words.map((w,i)=>`
+        <div class="scramble-card" id="sc${i}">
+          <div class="scramble-word">${w.scrambled}</div>
+          <div class="scramble-note">${w.note}</div>
+          <div class="scramble-reveal">✅ ${w.solved}</div>
+          <button class="btn bghost" style="font-size:.8rem;padding:5px 13px;margin-top:7px;" onclick="revealAnagram(${i},'${w.solved}')">👁️ Révéler ce mot</button>
+        </div>`).join('')}
+      <div style="margin-top:13px;padding:12px 14px;background:var(--amber-glow);border:1px solid var(--amber-dim);border-radius:8px;font-size:.93rem;">
+        ❓ <strong>${room.question}</strong>
+      </div>
+    </div>`;
+  }
+
+  else if(room.type==='confused'){
+    mechanic=`
+    <div class="card">
+      <div class="ctitle">🔀 Texte à déchiffrer</div>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:11px;">Certaines lettres ont été échangées. Utilisez la grille de décodage pour les corriger.</p>
+      <div class="confused-block" id="confusedBlock">${room.confused_text}</div>
+      <div style="margin-top:12px;">
+        <div class="ctitle" style="margin-bottom:9px;">🔑 Grille de décodage</div>
+        <div class="decoder-grid">
+          ${room.decoder.map(d=>`
+            <div class="decode-row">
+              <span class="decode-from">${d.wrong.toUpperCase()}</span>
+              <span class="decode-arrow">→</span>
+              <span class="decode-to">${d.right.toUpperCase()}</span>
+              <span style="font-size:.8rem;color:var(--muted);">${d.note}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="reveal-btn-wrap">
+        <button class="btn bemerald" onclick="revealDecoded()" style="margin-top:12px;font-size:.88rem;padding:8px 18px;">🔎 Afficher le texte décodé</button>
+      </div>
+      <div class="confused-decoded" id="confusedDecoded">${room.decoded_text}</div>
+      <div style="margin-top:13px;padding:12px 14px;background:var(--amber-glow);border:1px solid var(--amber-dim);border-radius:8px;font-size:.93rem;">
+        ❓ <strong>${room.question}</strong>
+      </div>
+    </div>`;
+  }
+
+  else if(room.type==='symbols'){
+    mechanic=`
+    <div class="card">
+      <div class="ctitle">🔣 Tableau des symboles</div>
+      <div class="sym-table">
+        ${room.sym_table.map(s=>`
+          <div class="sym-row">
+            <span class="sym-emo">${s.emoji}</span>
+            <span class="sym-name">${s.name}</span>
+            <span class="sym-val">${s.value}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">⚗️ L'équation</div>
+      <div class="equation-block">
+        <div class="equation-text">${room.equation}</div>
+        <div class="equation-sub">Utilisez les valeurs du tableau ci-dessus</div>
+      </div>
+      <div style="margin-bottom:11px;">
+        <div style="font-size:.85rem;color:var(--muted);margin-bottom:7px;">🌫️ Indice flou — touchez pour révéler</div>
+        <div class="blur-hint-wrap">
+          <div class="blur-hint" id="blurHint">${room.blurred_hint}</div>
+          <button class="blur-btn" id="blurBtn" onclick="revealBlur()">👆 Révéler l'indice</button>
+        </div>
+      </div>
+      <div style="margin-top:13px;padding:12px 14px;background:var(--amber-glow);border:1px solid var(--amber-dim);border-radius:8px;font-size:.93rem;">
+        ❓ <strong>${room.question}</strong>
+      </div>
+    </div>`;
+  }
+
+  const answerZone=`
+    <div class="card">
+      <div class="ctitle">🔢 Votre réponse</div>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:11px;">Entrez le chiffre (0 à 9) que cette salle vous révèle :</p>
+      <div class="ans-zone">
+        <input type="text" id="answerInput" placeholder="?" maxlength="1"
+          autocomplete="off" inputmode="numeric"
+          style="font-family:'Cinzel',serif;font-size:2rem;letter-spacing:8px;text-align:center;"
+          onkeydown="if(event.key==='Enter') submitAnswer()">
+        <button class="btn bamber" onclick="submitAnswer()" id="submitBtn" style="font-family:'Cinzel',serif;">🔓 Valider</button>
+      </div>
+      <div class="feedback" id="feedbackBox"></div>
+      <div class="hbox" id="hintBox">
+        <div class="hbox-lbl">💡 INDICE DE L'ANIMATEUR</div>
+        <div class="hbox-txt" id="hintText">—</div>
+      </div>
+    </div>`;
+
+  return header + mechanic + answerZone;
+}
+
+// ═══ ROOM-SPECIFIC INTERACTIONS ══════════════════════
+function revealAnagram(idx, solved){
+  const el=document.getElementById(`sc${idx}`);
+  if(el) el.classList.add('solved');
+}
+function revealDecoded(){
+  const el=document.getElementById('confusedDecoded');
+  if(el) el.classList.add('vis');
+}
+function revealBlur(){
+  const el=document.getElementById('blurHint');
+  const btn=document.getElementById('blurBtn');
+  if(el) el.classList.add('revealed');
+  if(btn) btn.classList.add('hidden');
+}
+
+// ═══ CHECK ALREADY ANSWERED ══════════════════════════
+async function checkAnswered(n){
+  const snap=await db.ref(`escape_sessions/${sessionId}/teams/${teamId}/answers/room${n}`).once('value');
+  const d=snap.val();
+  if(d?.correct){
+    answeredRooms.add(n);
+    const ai=document.getElementById('answerInput');
+    const fb=document.getElementById('feedbackBox');
+    const sb=document.getElementById('submitBtn');
+    if(ai){ai.value=d.digit;ai.disabled=true;}
+    if(fb){fb.textContent=`✅ Vous avez déjà trouvé ce chiffre ! (+${d.points||0} pts)`;fb.className='feedback ok';}
+    if(sb) sb.disabled=true;
+  }
+}
+
+// ═══ SUBMIT ANSWER ═══════════════════════════════════
+async function submitAnswer(){
+  const room=ROOMS[currentRoom-1];
+  const input=document.getElementById('answerInput');
+  const fb=document.getElementById('feedbackBox');
+  if(!input||!room) return;
+  const val=input.value.trim();
+  if(!val||!/^[0-9]$/.test(val)){
+    fb.textContent='⚠️ Entrez un seul chiffre de 0 à 9.';fb.className='feedback err';return;
+  }
+  if(answeredRooms.has(currentRoom)) return;
+
+  const correct=(val===room.answer);
+
+  if(correct){
+    // Points: 100 base, -20 per hint already shown
+    const snap=await db.ref(`escape_sessions/${sessionId}/hintsShown`).once('value');
+    const hints=snap.val()||[];
+    const hCount=Array.isArray(hints)?hints.length:Object.keys(hints).length;
+    const pts=Math.max(40, 100-(hCount*20));
+    myScore+=pts;
+    answeredRooms.add(currentRoom);
+    await db.ref(`escape_sessions/${sessionId}/teams/${teamId}/answers/room${currentRoom}`).set(
+      {digit:val,correct:true,points:pts,solvedAt:Date.now()});
+    await db.ref(`escape_sessions/${sessionId}/teams/${teamId}`).update({totalScore:myScore});
+    document.getElementById('myScore').textContent=myScore;
+    input.disabled=true;
+    document.getElementById('submitBtn').disabled=true;
+    fb.textContent=`✅ Excellent ! Chiffre "${val}" correct — +${pts} points ! Notez-le bien.`;
+    fb.className='feedback ok';
+    // Update local collected digits display
+    collectedDigits[`r${currentRoom}`]=val;
+    updateCodeSlots();
+  } else {
+    await db.ref(`escape_sessions/${sessionId}/teams/${teamId}/answers/room${currentRoom}`).update(
+      {lastAttempt:val,correct:false});
+    fb.textContent=`❌ "${val}" n'est pas le bon chiffre. Cherche encore !`;
+    fb.className='feedback err';
+    input.value='';
+  }
+}
+
+// ═══ TIMER BAR ═══════════════════════════════════════
+function startTimerBar(){
+  clearInterval(timerBarIv); timerBarStart=Date.now();
+  const bar=document.getElementById('timerBar'); if(!bar) return;
+  timerBarIv=setInterval(()=>{
+    const elapsed=(Date.now()-timerBarStart)/1000;
+    const pct=Math.max(0,100-(elapsed/roomTimeTotal*100));
+    bar.style.width=pct+'%';
+    bar.style.background=pct>40?'var(--amber)':pct>20?'#fb923c':'var(--rose)';
+    if(pct<=0) clearInterval(timerBarIv);
+  },500);
+}
+
+// ═══ VAULT ═══════════════════════════════════════════
+function renderVaultScreen(){
+  // Show collected digits
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById(`vcs${i}`);
+    if(!el) continue;
+    const d=collectedDigits[`r${i}`];
+    if(d){el.textContent=d;el.className='cslot revealed';}
+    else{el.textContent='?';el.className='cslot locked';}
+  }
+  // Summary
+  const sumEl=document.getElementById('vaultDigitSummary');
+  const rooms=[
+    {n:1,emoji:'📋',title:'Tableau de pathologies'},
+    {n:2,emoji:'🔤',title:'Anagrammes'},
+    {n:3,emoji:'🔀',title:'Texte confus'},
+    {n:4,emoji:'🔣',title:'Équation symbolique'}
+  ];
+  sumEl.innerHTML=rooms.map(r=>{
+    const d=collectedDigits[`r${r.n}`];
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--panel2);border:1px solid ${d?'var(--amber-dim)':'var(--border)'};border-radius:8px;margin-bottom:7px;">
+      <span style="font-size:1.2rem;">${r.emoji}</span>
+      <span style="flex:1;font-size:.9rem;color:var(--muted);">Salle ${r.n} — ${r.title}</span>
+      <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:${d?'var(--amber)':'var(--muted)'};">${d||'?'}</span>
+    </div>`;
+  }).join('');
+}
+
+async function submitVault(){
+  const val=document.getElementById('vaultInput').value.trim();
+  const fb=document.getElementById('vaultFeedback');
+  if(val.length!==4||!/^\d{4}$/.test(val)){
+    fb.textContent='⚠️ Entrez exactement 4 chiffres.';fb.className='vault-feedback err';return;
+  }
+  if(val===FINAL_CODE){
+    // Bonus points
+    const snap=await db.ref(`escape_sessions/${sessionId}/teams`).once('value');
+    const allTeams=snap.val()||{};
+    const crackedCount=Object.values(allTeams).filter(t=>t.vaultSolved).length;
+    const bonus=crackedCount===0?200:crackedCount===1?100:50;
+    myScore+=bonus;
+    await db.ref(`escape_sessions/${sessionId}/teams/${teamId}`).update({totalScore:myScore,vaultSolved:true,vaultAt:Date.now()});
+    document.getElementById('myScore').textContent=myScore;
+    // Update vault slots style
+    for(let i=1;i<=4;i++){const el=document.getElementById(`vcs${i}`);if(el) el.className='cslot vault-ok';}
+    fb.textContent=`🎉 COFFRE OUVERT ! Code correct — +${bonus} points bonus ! 🗄️`;
+    fb.className='vault-feedback ok';
+    document.getElementById('vaultInput').disabled=true;
+  } else {
+    fb.textContent=`❌ Code "${val}" incorrect. Vérifiez vos chiffres !`;
+    fb.className='vault-feedback err';
+  }
+}
+
+// ═══ END GAME ════════════════════════════════════════
+async function endGame(){
+  clearInterval(timerBarIv);
+  document.getElementById('finalScore').textContent=myScore;
+  const snap=await db.ref(`escape_sessions/${sessionId}/teams`).once('value');
+  const all=snap.val()||{};
+  const sorted=Object.entries(all).sort((a,b)=>(b[1].totalScore||0)-(a[1].totalScore||0));
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('rankBoard').innerHTML=sorted.map(([id,t],i)=>`
+    <div class="rank-row ${id===teamId?'me':''}">
+      <div class="rank-medal">${medals[i]||(i+1)}</div>
+      <div class="rank-name">👥 ${t.name}${t.vaultSolved?' 🗄️':''}${id===teamId?' <span style="color:var(--amber);font-size:.78rem;">(vous)</span>':''}</div>
+      <div class="rank-pts">${t.totalScore||0}</div>
+    </div>`).join('');
+  showScreen('scrResults');
+}
+
+// ═══ KEYBOARD ════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('scrVault').classList.contains('active')) submitVault();
+});
+</script>
+</body>
+</html>
