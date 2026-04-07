@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape — Console Animateur</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f1117;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* ── LOGIN OVERLAY ── */
+        #loginOverlay {
+            position: fixed; inset: 0;
+            background: #0a0a0a;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 999;
+        }
+        .login-box {
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 28px 24px;
+            width: 90%;
+            max-width: 340px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #00ff41;
+            box-shadow: 0 0 24px rgba(0,255,65,0.3);
+        }
+        .login-box h2 { letter-spacing: 4px; margin-bottom: 16px; font-size: 1em; }
+        .login-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #00ff41;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            text-align: center;
+            outline: none;
+            padding: 8px 0;
+            letter-spacing: 4px;
+            margin: 14px 0;
+        }
+        .login-box .btn-login {
+            width: 100%;
+            background: #00ff41;
+            color: #000;
+            border: none;
+            padding: 11px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.92em;
+        }
+        .login-err { color: #ff4444; font-size: 0.82em; margin-top: 8px; min-height: 18px; }
+
+        /* ── DASHBOARD ── */
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            font-size: 1.2em;
+            letter-spacing: 3px;
+            margin-bottom: 6px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .stats { font-size: 0.82em; color: #888; }
+        .stats span { color: #e0e0e0; font-weight: bold; }
+        .live-dot {
+            width: 8px; height: 8px;
+            background: #00ff41;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .btn-red   { background: #c62828; color: #fff; }
+        .btn-red:hover   { background: #b71c1c; }
+        .btn-gray  { background: transparent; color: #888; border: 1px solid #444; }
+        .btn-gray:hover  { color: #ff4444; border-color: #ff4444; }
+        .btn-green { background: #1b5e20; color: #00ff41; border: 1px solid #00ff41; }
+        .btn-green:hover { background: #2e7d32; }
+
+        /* ── PLAYER CARDS ── */
+        .player-grid { display: flex; flex-direction: column; gap: 10px; max-width: 700px; margin: auto; }
+
+        .p-card {
+            background: #1a1a2e;
+            border: 1px solid #2d2d4e;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .p-card.is-done    { border-color: #00ff41; background: #0d1a0d; }
+        .p-card.not-started { opacity: 0.5; }
+
+        .p-row1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .code-tag {
+            font-family: 'Courier New', monospace;
+            font-size: 0.76em;
+            background: #0a0a1e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #8888ff;
+            white-space: nowrap;
+        }
+        .p-name { font-weight: bold; font-size: 0.9em; flex: 1; min-width: 80px; }
+        .room-chip {
+            background: #2d2d4e;
+            color: #ccc;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78em;
+            white-space: nowrap;
+        }
+        .room-chip.done { background: #1b5e20; color: #00ff41; }
+        .room-chip.waiting { background: #1a1a1a; color: #555; }
+        .score-tag { color: #ffd700; font-weight: bold; font-size: 0.88em; white-space: nowrap; }
+
+        .r7-vis  { background: #1a3560; color: #7bb8ff; font-size: 0.75em; padding: 3px 8px; border-radius: 10px; }
+        .r7-inv  { background: #1a2a1a; color: #00ff41; font-size: 0.75em; padding: 3px 8px; border-radius: 10px; }
+        .hint-tag { color: #ffa500; font-size: 0.75em; white-space: nowrap; }
+
+        .p-progress { margin-top: 10px; }
+        .bar-bg { width: 100%; background: #2d2d4e; border-radius: 4px; height: 4px; }
+        .bar-fill { height: 4px; border-radius: 4px; background: #00ff41; transition: width 0.6s ease; }
+        .bar-label { font-size: 0.7em; color: #555; margin-top: 3px; text-align: right; }
+
+        .p-actions { margin-top: 10px; text-align: right; }
+
+        /* ── ROOMS LEGEND ── */
+        .legend {
+            max-width: 700px;
+            margin: 20px auto 0;
+            background: #1a1a2e;
+            border: 1px solid #2d2d4e;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .legend h3 { font-size: 0.82em; letter-spacing: 2px; color: #00aa2a; margin-bottom: 10px; }
+        .legend table { width: 100%; font-size: 0.8em; border-collapse: collapse; }
+        .legend td { padding: 4px 8px; border-bottom: 1px solid #2d2d4e; }
+        .legend tr:last-child td { border-bottom: none; }
+        .legend td:first-child { color: #8888ff; font-family: 'Courier New', monospace; width: 52px; }
+        .legend td:last-child  { color: #00ff41; font-family: 'Courier New', monospace; width: 40px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<!-- ─── LOGIN OVERLAY ─── -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <h2>🎮 CONSOLE ANIMATEUR</h2>
+        <input type="password" id="hostPass" placeholder="MOT DE PASSE"
+               onkeydown="if(event.key==='Enter') hostLogin()">
+        <button class="btn-login" onclick="hostLogin()">▶ ACCÈS</button>
+        <p class="login-err" id="hostLoginErr"></p>
+    </div>
+</div>
+
+<!-- ─── DASHBOARD ─── -->
+<h1>🎮 CONSOLE ANIMATEUR</h1>
+<div style="text-align:center; margin-bottom:12px; font-size:0.8em; color:#00aa2a">
+    <span class="live-dot"></span>TEMPS RÉEL
+</div>
+
+<div class="topbar" style="max-width:700px; margin:auto">
+    <div class="stats">
+        <span id="statActive">0</span> en cours &nbsp;·&nbsp;
+        <span id="statDone">0</span> terminé(s) &nbsp;·&nbsp;
+        <span id="statWaiting">0</span> en attente
+    </div>
+    <button class="btn btn-red" onclick="resetAll()">🗑 RESET TOUT</button>
+</div>
+
+<div class="player-grid" id="playerGrid">
+    <p style="text-align:center; color:#555; margin-top:20px">Chargement…</p>
+</div>
+
+<!-- Légende des codes -->
+<div class="legend">
+    <h3>📋 CODES DES SALLES (réservé animateur)</h3>
+    <table>
+        <tr><td>SALLE 1</td><td>Pathologie n°74, additionnez les chiffres du numéro de page</td><td>11</td></tr>
+        <tr><td>SALLE 2</td><td>Ondes sur le cœur (image 'handicap invisible existe')</td><td>3</td></tr>
+        <tr><td>SALLE 3</td><td>Lettres du dernier mot de la pathologie n°33</td><td>17</td></tr>
+        <tr><td>SALLE 4</td><td>Numéro pathologie — affiche 'La Traversée', homme assis</td><td>87</td></tr>
+        <tr><td>SALLE 5</td><td>Jour × Mois de la date (image 'Va y avoir du sport')</td><td>9</td></tr>
+        <tr><td>SALLE 6</td><td>Pathologie n°66 − Pathologie n°53</td><td>13</td></tr>
+        <tr><td>SALLE 7</td><td>Dilemme : VISIBLE (−50 pts) ou INVISIBLE (±0 pts)</td><td>—</td></tr>
+    </table>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+
+// ════════════════════════════════════════════════════
+//  ⚠ FIREBASE CONFIG — même config que le fichier joueur
+// ════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
+  authDomain:        "quiz-oldy-sebastien.firebaseapp.com",
+  databaseURL:       "https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "quiz-oldy-sebastien",
+  storageBucket:     "quiz-oldy-sebastien.firebasestorage.app",
+  messagingSenderId: "315241947179",
+  appId:             "1:315241947179:web:48c53a445565654e338a6e"
+};
+
+// ════════════════════════════════════════════════════
+//  ⚠ MOT DE PASSE ANIMATEUR — à modifier
+// ════════════════════════════════════════════════════
+const HOST_PASSWORD = "ANIMATEUR";
+
+// ════════════════════════════════════════════════════
+//  JOUEURS (ordre d'affichage)
+// ════════════════════════════════════════════════════
+const ALL_PLAYERS = [
+  { code: "OLDY01",   name: "Sébastien"    },
+  { code: "DEBOUT02", name: "Aventurier 2" },
+  { code: "VIVANT03", name: "Aventurier 3" },
+  { code: "FORCE04",  name: "Aventurier 4" },
+  { code: "AMOUR05",  name: "Aventurier 5" },
+  { code: "PAIX06",   name: "Aventurier 6" }
+];
+
+// ════════════════════════════════════════════════════
+//  LOGIN
+// ════════════════════════════════════════════════════
+function hostLogin() {
+  const val = document.getElementById('hostPass').value || '';
+  if (val === HOST_PASSWORD) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    initDashboard();
+  } else {
+    document.getElementById('hostLoginErr').textContent = '❌ Mot de passe incorrect.';
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  INIT FIREBASE + ÉCOUTE
+// ════════════════════════════════════════════════════
+firebase.initializeApp(firebaseConfig);
+const hostDb = firebase.database();
+
+function initDashboard() {
+  hostDb.ref('escape_v3/players').on('value', snap => {
+    const data = snap.val() || {};
+    renderGrid(data);
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  RENDU DES CARTES JOUEURS
+// ════════════════════════════════════════════════════
+function renderGrid(data) {
+  const grid = document.getElementById('playerGrid');
+  let cntActive = 0, cntDone = 0, cntWaiting = 0;
+
+  const cards = ALL_PLAYERS.map(p => {
+    const pd = data[p.code];
+    const started  = !!pd;
+    const isDone   = started && pd.done;
+    const inGame   = started && !isDone;
+
+    if (!started) cntWaiting++;
+    else if (isDone) cntDone++;
+    else cntActive++;
+
+    const room     = pd ? pd.room : null;
+    const score    = pd ? pd.score : null;
+    const hints    = pd ? (pd.hintsTotal || 0) : 0;
+    const r7       = pd ? (pd.r7choice || '') : '';
+
+    // Chip salle
+    let chipLabel, chipClass;
+    if (!started) { chipLabel = 'En attente'; chipClass = 'room-chip waiting'; }
+    else if (isDone) { chipLabel = '✅ TERMINÉ'; chipClass = 'room-chip done'; }
+    else { chipLabel = 'SALLE ' + room; chipClass = 'room-chip'; }
+
+    // Barre de progression
+    const pct = isDone ? 100 : (started ? Math.round(((room - 1) / 7) * 100) : 0);
+
+    // Badges salle 7
+    let r7html = '';
+    if (r7 === 'VISIBLE')   r7html = '<span class="r7-vis">🟦 VISIBLE</span>';
+    if (r7 === 'INVISIBLE') r7html = '<span class="r7-inv">⬜ INVISIBLE</span>';
+
+    // Badge indices
+    const hintHtml = hints > 0 ? `<span class="hint-tag">💡 ×${hints}</span>` : '';
+
+    // Classe carte
+    let cardClass = 'p-card';
+    if (isDone)    cardClass += ' is-done';
+    if (!started)  cardClass += ' not-started';
+
+    // Score affiché
+    const scoreStr = score !== null ? score + ' pts' : '—';
+
+    // Heure de connexion
+    let timeStr = '';
+    if (pd && pd.connectedAt) {
+      const d = new Date(pd.connectedAt);
+      timeStr = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+    }
+    const timeHtml = timeStr ? `<span style="font-size:0.72em;color:#555">${timeStr}</span>` : '';
+
+    return `
+      <div class="${cardClass}" id="card_${p.code}">
+        <div class="p-row1">
+          <span class="code-tag">${p.code}</span>
+          <span class="p-name">${p.name}</span>
+          <span class="${chipClass}">${chipLabel}</span>
+          <span class="score-tag">${scoreStr}</span>
+          ${r7html}
+          ${hintHtml}
+          ${timeHtml}
+        </div>
+        ${started ? `
+        <div class="p-progress">
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <div class="bar-label">${pct}%</div>
+        </div>
+        <div class="p-actions">
+          <button class="btn btn-gray" onclick="resetPlayer('${p.code}')">↺ Réinitialiser</button>
+        </div>` : ''}
+      </div>`;
+  });
+
+  grid.innerHTML = cards.join('');
+  document.getElementById('statActive').textContent  = cntActive;
+  document.getElementById('statDone').textContent    = cntDone;
+  document.getElementById('statWaiting').textContent = cntWaiting;
+}
+
+// ════════════════════════════════════════════════════
+//  RESET UN JOUEUR
+// ════════════════════════════════════════════════════
+function resetPlayer(code) {
+  if (!confirm('Réinitialiser ' + code + ' ? Sa progression sera perdue.')) return;
+  hostDb.ref('escape_v3/players/' + code).remove();
+}
+
+// ════════════════════════════════════════════════════
+//  RESET TOUT
+// ════════════════════════════════════════════════════
+function resetAll() {
+  if (!confirm('⚠ Réinitialiser TOUS les joueurs ? Toute la progression sera perdue.')) return;
+  hostDb.ref('escape_v3/players').remove();
+}
+</script>
+</body>
+</html>
