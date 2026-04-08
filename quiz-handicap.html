@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Handicap – Oldy & Sébastien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      background: radial-gradient(ellipse at 30% 10%, #1a0e3a 0%, #0d0920 45%, #050614 100%);
+      font-family: 'Source Serif 4', Georgia, serif;
+      color: #e8e0ff; user-select: none;
+    }
+    /* ── Animations ── */
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes float   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+    @keyframes spin    { to{transform:rotate(360deg)} }
+    @keyframes pulse   { 0%,100%{box-shadow:0 0 16px rgba(245,183,90,.35)} 50%{box-shadow:0 0 44px rgba(245,183,90,.95)} }
+    @keyframes green   { 0%,100%{box-shadow:0 0 12px rgba(52,211,153,.3)}  50%{box-shadow:0 0 48px rgba(52,211,153,.95)} }
+    @keyframes shake   { 0%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} 100%{transform:translateX(0)} }
+    @keyframes glow    { 0%,100%{opacity:.65} 50%{opacity:1} }
+    @keyframes popIn   { from{opacity:0;transform:scale(.85) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes slide   { from{transform:translateX(110%)} to{transform:translateX(0)} }
+
+    /* ── Layout de base ── */
+    .page {
+      display: none; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 28px 16px 44px;
+    }
+    .page.active { display: flex; animation: fadeUp .4s ease; }
+
+    /* ── Éléments communs ── */
+    .logo { font-size: 54px; animation: float 3s ease-in-out infinite; margin-bottom: 6px; }
+    h1 {
+      font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 900;
+      margin: 0 0 4px; text-align: center; letter-spacing: 2px;
+      background: linear-gradient(to right,#c084fc,#60a5fa,#34d399); background-size:200%;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      animation: shimmer 4s linear infinite;
+    }
+    .subtitle { font-size:11px; color:#7c6fc0; letter-spacing:1.5px; font-style:italic; margin-bottom:22px; }
+    .card {
+      width:100%; max-width:460px; background:rgba(12,8,30,0.92);
+      border:1px solid #2a1f5a; border-radius:20px; padding:24px 20px;
+    }
+    .big-btn {
+      width:100%; padding:14px; background:linear-gradient(135deg,#110a2e,#27176a);
+      border:2px solid #a78bfa; border-radius:14px; color:#e4d8ff;
+      font-family:'Playfair Display',serif; font-size:14px; font-weight:700; letter-spacing:.5px;
+      cursor:pointer; transition:all .2s; box-shadow:0 0 22px rgba(167,139,250,.2); margin-top:6px;
+    }
+    .big-btn:hover { filter:brightness(1.15); transform:translateY(-1px); }
+    .big-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .back-link { margin-top:18px; font-size:12px; color:#3a2e60; text-align:center; }
+    .back-link a { color:#6b5fa0; text-decoration:none; }
+    .back-link a:hover { color:#c084fc; }
+    .info-box {
+      background:rgba(96,165,250,0.07); border:1px solid rgba(96,165,250,0.18);
+      border-radius:12px; padding:13px 15px; font-size:12px; color:#88b4e8;
+      line-height:1.75; margin-bottom:20px;
+    }
+    .info-box strong { color:#c084fc; }
+    .field { margin-bottom:16px; }
+    label.lbl {
+      display:block; font-family:'Playfair Display',serif; font-size:10px;
+      font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#7c6fc0; margin-bottom:7px;
+    }
+    input.inp {
+      width:100%; padding:12px 14px; background:rgba(8,5,22,0.8);
+      border:2px solid #2a1f5a; border-radius:12px; color:#e8e0ff;
+      font-family:'Source Serif 4',Georgia,serif; font-size:15px;
+      outline:none; transition:border-color .2s; -webkit-appearance:none; text-align:center; letter-spacing:3px;
+    }
+    input.inp:focus { border-color:#7c5fcf; }
+    input.inp::placeholder { color:#2e2550; letter-spacing:1px; font-size:13px; }
+    .err-msg { font-size:12px; color:#f87171; text-align:center; margin-top:10px; display:none; }
+
+    /* ── PAGE CODE ── */
+    #p-code .card { text-align:center; }
+    .code-icon { font-size:44px; margin-bottom:12px; }
+    .code-title {
+      font-family:'Playfair Display',serif; font-size:17px; font-weight:900;
+      color:#c084fc; margin-bottom:8px; letter-spacing:1px;
+    }
+    .code-sub { font-size:12px; color:#6b5fa0; line-height:1.7; margin-bottom:20px; font-family:'Source Serif 4',serif; }
+
+    /* ── PAGE FERMÉ / ATTENTE ── */
+    .closed-icon { font-size:52px; text-align:center; margin-bottom:12px; }
+    .closed-title {
+      font-family:'Playfair Display',serif; font-size:18px; font-weight:900;
+      text-align:center; margin-bottom:12px;
+    }
+    .closed-msg { font-size:13px; color:#9887d8; line-height:1.8; text-align:center; margin:0 0 16px; }
+    .dates-list { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+    .date-chip {
+      padding:9px 14px; border-radius:11px; text-align:center;
+      background:rgba(96,165,250,0.08); border:1px solid rgba(96,165,250,0.25);
+      font-size:13px; color:#c0d8ff; font-family:'Source Serif 4',serif;
+    }
+
+    /* ── QUIZ – barre du haut ── */
+    #p-quiz { padding-top:12px; }
+    .quiz-wrap { width:100%; max-width:520px; }
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+    }
+    .q-num {
+      font-family:'Playfair Display',serif; font-size:18px; font-weight:900; color:#a78bfa;
+    }
+    .q-num span { font-size:11px; color:#3a2e60; }
+    .prize-now {
+      font-family:'Playfair Display',serif; font-size:15px; font-weight:900;
+      background:linear-gradient(to right,#f5b75a,#f59e0b);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .ladder-open-btn {
+      background:none; border:1px solid #2a1f5a; border-radius:9px;
+      color:#6b5fa0; padding:5px 11px; cursor:pointer;
+      font-size:12px; font-family:'Playfair Display',serif; transition:all .2s;
+    }
+    .ladder-open-btn:hover { color:#c084fc; border-color:#7c5fcf; }
+
+    /* ── Cat badge ── */
+    .cat-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+    .cat-badge { padding:3px 12px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:.5px; }
+    .elite-tag { font-size:10px; color:#f5b75a; letter-spacing:1.5px; }
+    .double-tag { font-size:10px; color:#f5b75a; animation:glow 1s infinite; }
+
+    /* ── Question ── */
+    .q-card {
+      background:linear-gradient(135deg,#0d0824,#160e3a);
+      border:2px solid rgba(167,139,250,.25); border-radius:18px;
+      padding:18px 16px; margin-bottom:11px; text-align:center;
+    }
+    .q-text { font-size:14px; line-height:1.65; color:#eae4ff; font-weight:600; }
+
+    /* ── Helpers (ami / public) ── */
+    .helper-box {
+      background:rgba(10,7,26,.95); border:1px solid #2a1f5a;
+      border-radius:13px; padding:12px 15px; margin-bottom:10px; text-align:center;
+    }
+    .helper-head { font-size:9px; color:#6b5fa0; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:7px; }
+    .helper-body { font-size:13px; color:#c8bfee; font-style:italic; line-height:1.5; }
+    .aud-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+    .aud-lbl { width:13px; font-size:11px; color:#8b7fcb; flex-shrink:0; }
+    .aud-bg  { flex:1; height:12px; background:#07041a; border-radius:6px; overflow:hidden; }
+    .aud-fill{ height:100%; border-radius:6px; transition:width 1.1s ease; }
+    .aud-pct { width:30px; font-size:11px; color:#ccc0f0; text-align:right; }
+
+    /* ── Réponses ── */
+    .answers { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:11px; }
+    .ans-btn {
+      display:flex; align-items:center; gap:9px;
+      padding:10px 12px; border-radius:13px; border:2px solid #2a1f5a;
+      background:linear-gradient(135deg,#110c2a,#1d1545);
+      color:#c4b8f0; font-family:'Source Serif 4',Georgia,serif;
+      font-size:12px; font-weight:600; min-height:50px;
+      cursor:pointer; outline:none; transition:all .25s; text-align:left; line-height:1.3;
+    }
+    .ans-btn:hover:not(:disabled):not(.elim) { filter:brightness(1.15); transform:translateY(-1px) scale(1.005); }
+    .ans-btn.elim     { border-color:#0d0a1a !important; background:#080614 !important; color:#1a1430 !important; opacity:.3 !important; cursor:default !important; }
+    .ans-btn.checking { border-color:#f5b75a; background:linear-gradient(135deg,#220f02,#3d2000); color:#ffe8b0; animation:pulse .7s infinite; }
+    .ans-btn.correct  { border-color:#34d399; background:linear-gradient(135deg,#021912,#033d28); color:#a7f3d0; animation:green .8s infinite; }
+    .ans-btn.wrong    { border-color:#f87171; background:linear-gradient(135deg,#1f0404,#440808); color:#fca5a5; animation:shake .45s ease; }
+    .ans-lbl {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:20px; height:20px; border-radius:50%; flex-shrink:0;
+      font-size:10px; font-weight:900; font-family:'Playfair Display',serif;
+      background:rgba(255,255,255,.08);
+    }
+
+    /* ── Fiche pédagogique ── */
+    .fact-panel {
+      background:rgba(12,8,30,.92); border:1px solid #2a1f5a;
+      border-radius:14px; padding:14px 15px; margin-bottom:10px;
+    }
+    .fact-head { font-size:9px; color:#3a2e60; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:8px; }
+    .fact-body { font-size:12px; color:#b0a0e8; line-height:1.7; font-style:italic; margin-bottom:12px; }
+    .next-btn {
+      width:100%; padding:12px; background:linear-gradient(135deg,#021912,#053d28);
+      border:1px solid #34d399; border-radius:12px; color:#a7f3d0;
+      font-family:'Playfair Display',serif; font-size:13px; font-weight:700;
+      cursor:pointer; transition:all .2s;
+    }
+    .next-btn:hover { filter:brightness(1.15); }
+
+    /* ── Jokers ── */
+    .joker-bar { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; margin-bottom:8px; }
+    .jbtn {
+      display:flex; flex-direction:column; align-items:center; gap:2px;
+      padding:7px 9px; border-radius:11px; border:2px solid;
+      font-family:'Playfair Display',serif; font-size:9px; font-weight:700; letter-spacing:.3px;
+      cursor:pointer; transition:all .2s;
+    }
+    .jbtn-icon { font-size:17px; }
+    .jbtn.on   { border-color:#2a1f5a; background:rgba(42,31,90,.5); color:#a89fd8; }
+    .jbtn.off  { border-color:#120e24; background:rgba(8,6,20,.5); color:#1e1738; opacity:.4; cursor:not-allowed; }
+    .jbtn.armed{ border-color:#f5b75a; background:rgba(245,183,90,.15); color:#f5b75a; }
+    .jbtn:hover.on { filter:brightness(1.25); transform:translateY(-1px); }
+    .stop-jbtn {
+      display:flex; flex-direction:column; align-items:center; gap:2px;
+      padding:7px 9px; border-radius:11px; border:2px solid #2a1430;
+      background:rgba(40,10,50,.4); color:#c084fc; cursor:pointer;
+      font-size:9px; font-weight:700; font-family:'Playfair Display',serif; transition:all .2s;
+    }
+    .stop-jbtn:hover { background:rgba(60,20,70,.5); }
+    .footer-g { font-size:10px; color:#2e2550; text-align:center; padding-top:4px; }
+
+    /* ── Modal élite ── */
+    .overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(6px);
+      display:none; align-items:center; justify-content:center; z-index:100; padding:18px;
+    }
+    .overlay.open { display:flex; }
+    .modal {
+      background:linear-gradient(135deg,#0a071e,#140e35); border:2px solid #7c5fcf;
+      border-radius:22px; padding:26px 20px; max-width:370px; width:100%; text-align:center;
+      box-shadow:0 0 60px rgba(124,95,207,.3); animation:popIn .32s ease;
+    }
+    .modal-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:900; color:#f87171; margin-bottom:8px; }
+    .modal-sub { font-size:12px; color:#8b7fcb; margin-bottom:14px; line-height:1.65; }
+    .modal-fact {
+      background:rgba(8,5,20,.8); border:1px solid #1e1640;
+      border-radius:11px; padding:11px 13px; margin-bottom:16px; text-align:left;
+    }
+    .mfact-h  { font-size:9px; color:#3a2e60; letter-spacing:2px; margin-bottom:6px; text-transform:uppercase; }
+    .mfact-ans{ color:#34d399; font-size:13px; font-weight:700; }
+    .mfact-txt{ margin:8px 0 0; font-size:11px; color:#8070b8; line-height:1.6; font-style:italic; }
+    .modal-btn {
+      width:100%; padding:13px 16px; border-radius:14px; border:2px solid;
+      cursor:pointer; font-size:13px; font-weight:700; margin-bottom:9px;
+      transition:all .2s; font-family:'Playfair Display',serif; letter-spacing:.5px;
+    }
+    .modal-btn:hover { filter:brightness(1.12); transform:translateY(-1px); }
+    .m-shield  { border-color:#f5b75a; background:linear-gradient(135deg,#200e00,#3d2200); color:#ffe4a0; }
+    .m-retreat { border-color:#60a5fa; background:linear-gradient(135deg,#060f22,#102040); color:#c0d8ff; }
+    .modal-note{ font-size:10px; color:#3a2e60; }
+
+    /* ── Ladder sidebar ── */
+    .ladder-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:200; display:none; justify-content:flex-end;
+    }
+    .ladder-overlay.open { display:flex; }
+    .ladder-panel {
+      width:225px; height:100vh; overflow-y:auto;
+      background:linear-gradient(180deg,#08051a,#040310);
+      border-left:1px solid #1e1640; padding:50px 0 20px; position:relative;
+      animation:slide .25s ease;
+    }
+    .ladder-close {
+      position:absolute; top:14px; right:13px; background:none; border:none;
+      color:#6b5fa0; font-size:16px; cursor:pointer; font-family:'Playfair Display',serif;
+    }
+    .ladder-head { padding:0 18px 12px; color:#a78bfa; font-size:10px; letter-spacing:2.5px; border-bottom:1px solid #16103a; margin-bottom:4px; text-transform:uppercase; font-family:'Playfair Display',serif; }
+    .ladder-row { display:flex; justify-content:space-between; align-items:center; padding:6px 18px; }
+    .lrow-l { font-size:9px; }
+    .lrow-r { text-align:right; }
+    .lrow-pts{ font-size:10px; font-weight:700; }
+    .lrow-lvl{ font-size:8px; }
+
+    /* ── Page résultat ── */
+    #p-result .card { text-align:center; }
+    .res-icon  { font-size:54px; margin-bottom:12px; }
+    .res-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:900; margin-bottom:10px; }
+    .res-msg   { font-size:13px; color:#9887d8; line-height:1.8; margin-bottom:20px; }
+    .score-big {
+      font-family:'Playfair Display',serif; font-size:30px; font-weight:900;
+      background:linear-gradient(to right,#c084fc,#60a5fa);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:4px;
+    }
+    .score-level { font-size:12px; color:#6b5fa0; margin-bottom:20px; }
+
+    /* ── Bouton rejouer ── */
+    .restart-btn {
+      width:100%; padding:13px; background:linear-gradient(135deg,#060f22,#102040);
+      border:2px solid #60a5fa; border-radius:14px; color:#c0d8ff;
+      font-family:'Playfair Display',serif; font-size:14px; font-weight:700; letter-spacing:.5px;
+      cursor:pointer; transition:all .2s;
+    }
+    .restart-btn:hover { filter:brightness(1.15); transform:translateY(-1px); }
+
+    /* ── Shield toast ── */
+    .shield-toast {
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:rgba(245,183,90,.92); color:#1a0800; padding:10px 22px; border-radius:24px;
+      font-family:'Playfair Display',serif; font-size:13px; font-weight:700;
+      transition:transform .3s; z-index:300; white-space:nowrap; pointer-events:none;
+    }
+    .shield-toast.show { transform:translateX(-50%) translateY(0); }
+
+    /* ── Intro : jokers & paliers ── */
+    .joker-list { background:rgba(8,5,20,.8); border:1px solid #1e1640; border-radius:14px; padding:14px 16px; margin-bottom:16px; }
+    .joker-item { display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px solid #120d26; }
+    .joker-item:last-child { border-bottom:none; }
+    .ji-icon { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+    .ji-name { font-family:'Playfair Display',serif; font-size:12px; font-weight:700; color:#cdc0f0; }
+    .ji-desc { font-size:11px; color:#3a2e60; }
+    .paliers-row { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+    .palier-chip {
+      text-align:center; padding:8px 12px; border-radius:10px;
+      background:rgba(167,139,250,0.1); border:1px solid #7c5fcf; font-size:10px;
+    }
+    .palier-q { color:#a78bfa; margin-bottom:2px; }
+    .palier-pts { color:#e0d8ff; font-weight:700; font-size:11px; }
+    .palier-lvl { color:#3a2e60; font-size:9px; margin-top:2px; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     ⚙️  CONFIGURATION — LES SEULS ENDROITS À MODIFIER
+     ════════════════════════════════════════════════════════ -->
+<script>
+const CONFIG = {
+
+  // ── 1. DATES OÙ LE QUIZ EST JOUABLE ──────────────────────
+  //    Format : "AAAA-MM-JJ"   Ajoute ou supprime des dates.
+  //    Exemple : ["2025-04-15", "2025-04-22", "2025-05-03"]
+  dates: [
+    "2025-04-15",
+    "2025-04-22"
+  ],
+
+  // ── 2. CODES D'ACCÈS VALIDES ──────────────────────────────
+  //    Un code par personne validée (ou un code partagé).
+  //    Tu donnes le code par email à chaque personne validée.
+  //    Exemple : ["DUPONT2025", "MARTIN", "ECOLE-CROZON"]
+  codes: [
+    "DEMO",
+    "OLDY2025"
+  ],
+
+  // ── 3. MESSAGE AFFICHÉ QUAND LE QUIZ EST FERMÉ ───────────
+  message_ferme: "Le quiz n'est pas ouvert aujourd'hui. Consultez les prochaines dates ci-dessous.",
+
+};
+</script>
+<!-- ════════════════════════════════════════════════════════
+     FIN DE LA CONFIGURATION
+     ════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════ PAGE : ACCUEIL / INTRO ══════ -->
+<div class="page active" id="p-intro">
+  <div class="logo">🎗️</div>
+  <h1>QUIZ HANDICAP</h1>
+  <p class="subtitle">Oldy & Sébastien · Sensibilisation</p>
+
+  <div class="quiz-wrap">
+    <div style="background:rgba(12,8,30,.9);border:1px solid #2a1f5a;border-radius:20px;padding:22px 18px;margin-bottom:16px;text-align:center;">
+      <p style="font-size:13px;color:#9887d8;line-height:1.75;margin:0 0 16px;">
+        20 questions sur le handicap invisible et visible :<br>
+        pathologies, préjugés, législation, neurodiversité,<br>
+        <span style="color:#c084fc;">106 réalités à découvrir et comprendre.</span>
+      </p>
+      <div class="joker-list">
+        <div style="font-size:9px;color:#3a2e60;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:10px;font-family:'Playfair Display',serif;">Vos 4 Jokers</div>
+        <div class="joker-item"><div class="ji-icon">50/50</div><div><div class="ji-name">50-50</div><div class="ji-desc">Élimine 2 mauvaises réponses</div></div></div>
+        <div class="joker-item"><div class="ji-icon">📞</div><div><div class="ji-name">Appel ami</div><div class="ji-desc">Un ami vous donne un indice</div></div></div>
+        <div class="joker-item"><div class="ji-icon">👥</div><div><div class="ji-name">Vote public</div><div class="ji-desc">Le public vote pour vous</div></div></div>
+        <div class="joker-item"><div class="ji-icon">✌️</div><div><div class="ji-name">Double chance</div><div class="ji-desc">Droit à une 2ᵉ tentative</div></div></div>
+      </div>
+      <div class="paliers-row">
+        <div class="palier-chip"><div class="palier-q">🛡️ Q5</div><div class="palier-pts">1 000 pts</div><div class="palier-lvl">Sensibilisé</div></div>
+        <div class="palier-chip"><div class="palier-q">🛡️ Q10</div><div class="palier-pts">8 000 pts</div><div class="palier-lvl">Militant·e</div></div>
+        <div class="palier-chip"><div class="palier-q">🛡️ Q15</div><div class="palier-pts">50 000 pts</div><div class="palier-lvl">Visionnaire</div></div>
+      </div>
+      <button class="big-btn" onclick="allerCodeAcces()">🎗️ Accéder au quiz</button>
+    </div>
+    <div class="back-link"><a href="inscription-quiz.html">Pas encore inscrit·e ? → S'inscrire</a></div>
+  </div>
+</div>
+
+<!-- ══════ PAGE : SAISIE DU CODE ══════ -->
+<div class="page" id="p-code">
+  <div class="logo" style="font-size:44px;">🔑</div>
+  <h1>CODE D'ACCÈS</h1>
+  <p class="subtitle">Saisi par Sébastien après validation</p>
+  <div class="card">
+    <div class="code-icon">🔐</div>
+    <div class="code-title">Entrez votre code personnel</div>
+    <div class="code-sub">Sébastien vous a envoyé un code par email<br>après avoir validé votre inscription.</div>
+    <div class="field">
+      <input class="inp" type="text" id="codeInput"
+        placeholder="ex : OLDY2025"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+        onkeydown="if(event.key==='Enter') validerCode()">
+    </div>
+    <button class="big-btn" onclick="validerCode()">Valider</button>
+    <div class="err-msg" id="code-err">Code incorrect. Vérifiez votre email de confirmation.</div>
+  </div>
+  <div class="back-link"><a href="#" onclick="goPage('p-intro')">← Retour</a></div>
+</div>
+
+<!-- ══════ PAGE : QUIZ FERMÉ ══════ -->
+<div class="page" id="p-ferme">
+  <div class="quiz-wrap">
+    <div class="card">
+      <div class="closed-icon">🔒</div>
+      <div class="closed-title" style="color:#60a5fa;">Quiz fermé aujourd'hui</div>
+      <p class="closed-msg" id="ferme-msg"></p>
+      <div class="dates-list" id="ferme-dates"></div>
+    </div>
+    <div class="back-link" style="margin-top:16px;"><a href="#" onclick="goPage('p-intro')">← Retour à l'accueil</a></div>
+  </div>
+</div>
+
+<!-- ══════ PAGE : QUIZ EN COURS ══════ -->
+<div class="page" id="p-quiz" style="padding-top:12px;">
+  <div class="quiz-wrap">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <div style="font-size:9px;color:#2e2550;letter-spacing:2px;text-transform:uppercase;">Question</div>
+        <div class="q-num" id="q-num">1 <span>/ 20</span></div>
+      </div>
+      <div class="prize-now" id="q-prize">100 pts</div>
+      <button class="ladder-open-btn" onclick="ouvrirLadder()">📊 Paliers</button>
+    </div>
+    <!-- Cat + tags -->
+    <div class="cat-row">
+      <span class="cat-badge" id="cat-badge"></span>
+      <span class="elite-tag" id="elite-tag" style="display:none;">⚡ Zone Élite</span>
+      <span class="double-tag" id="double-tag" style="display:none;">✌️ Double chance active</span>
+    </div>
+    <!-- Question -->
+    <div class="q-card"><div class="q-text" id="q-text"></div></div>
+    <!-- Ami -->
+    <div class="helper-box" id="ami-box" style="display:none;">
+      <div class="helper-head">📞 Votre ami·e répond</div>
+      <div class="helper-body" id="ami-msg"></div>
+    </div>
+    <!-- Audience -->
+    <div class="helper-box" id="pub-box" style="display:none;">
+      <div class="helper-head">👥 Vote du public</div>
+      <div id="pub-bars"></div>
+    </div>
+    <!-- Réponses -->
+    <div class="answers" id="answers"></div>
+    <!-- Fiche pédagogique -->
+    <div class="fact-panel" id="fact-panel" style="display:none;">
+      <div class="fact-head" id="fact-head"></div>
+      <div class="fact-body" id="fact-body"></div>
+      <button class="next-btn" id="next-btn" onclick="questionSuivante()"></button>
+    </div>
+    <!-- Jokers -->
+    <div class="joker-bar">
+      <button class="jbtn on" id="j-fifty"    onclick="jokerFifty()">   <span class="jbtn-icon">50/50</span><span>50-50</span></button>
+      <button class="jbtn on" id="j-friend"   onclick="jokerAmi()">     <span class="jbtn-icon">📞</span><span>Ami</span></button>
+      <button class="jbtn on" id="j-audience" onclick="jokerPublic()">  <span class="jbtn-icon">👥</span><span>Public</span></button>
+      <button class="jbtn on" id="j-double"   onclick="jokerDouble()">  <span class="jbtn-icon">✌️</span><span>Double</span></button>
+      <button class="stop-jbtn" onclick="arreter()"><span style="font-size:17px;">🚪</span><span>Arrêter</span></button>
+    </div>
+    <div class="footer-g" id="footer-g"></div>
+  </div>
+</div>
+
+<!-- ══════ PAGE : RÉSULTAT FINAL ══════ -->
+<div class="page" id="p-result">
+  <div class="quiz-wrap">
+    <div class="card">
+      <div class="res-icon" id="res-icon"></div>
+      <div class="res-title" id="res-title"></div>
+      <p class="res-msg" id="res-msg"></p>
+      <div class="score-big" id="res-score"></div>
+      <div class="score-level" id="res-level"></div>
+      <button class="restart-btn" onclick="recommencer()">🔄 Rejouer</button>
+    </div>
+    <div class="back-link" style="margin-top:16px;"><a href="index.html">← Retour à l'accueil</a></div>
+  </div>
+</div>
+
+<!-- ══════ MODAL ZONE ÉLITE ══════ -->
+<div class="overlay" id="elite-overlay">
+  <div class="modal">
+    <div style="font-size:38px;margin-bottom:8px;">⚡</div>
+    <div class="modal-title">ZONE ÉLITE — ERREUR</div>
+    <div class="modal-sub">Vous êtes dans la zone experte.<br>Choisissez votre option :</div>
+    <div class="modal-fact">
+      <div class="mfact-h">💡 Réponse correcte</div>
+      <div class="mfact-ans" id="m-correct"></div>
+      <p class="mfact-txt" id="m-fact"></p>
+    </div>
+    <button class="modal-btn m-shield" onclick="utiliserBouclier()">
+      🛡️ BOUCLIER ULTIME
+      <div style="font-size:10px;opacity:.75;margin-top:3px;font-family:'Source Serif 4',serif;font-weight:400;">
+        Valide la bonne réponse · Supprime tous les jokers restants
+      </div>
+    </button>
+    <button class="modal-btn m-retreat" onclick="reculer()">
+      ⬇️ RECULER DE 3 NIVEAUX
+      <div style="font-size:10px;opacity:.75;margin-top:3px;font-family:'Source Serif 4',serif;font-weight:400;" id="m-retreat-lbl">
+        Retour question — · Jokers conservés
+      </div>
+    </button>
+    <div class="modal-note" id="m-garanti"></div>
+  </div>
+</div>
+
+<!-- ══════ LADDER SIDEBAR ══════ -->
+<div class="ladder-overlay" id="ladder-overlay" onclick="fermerLadder()">
+  <div class="ladder-panel" onclick="event.stopPropagation()">
+    <button class="ladder-close" onclick="fermerLadder()">✕</button>
+    <div class="ladder-head">Paliers de points</div>
+    <div id="ladder-rows"></div>
+  </div>
+</div>
+
+<!-- ══════ SHIELD TOAST ══════ -->
+<div class="shield-toast" id="shield-toast">🛡️ Bouclier utilisé · Jokers supprimés · Passage à la suite…</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  LOGIQUE DU JEU                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+// ── Données ──────────────────────────────────────────────────────
+const L = ['A','B','C','D'];
+const SCORES_TXT = ['100 pts','250 pts','500 pts','750 pts','1 000 pts','1 500 pts','2 500 pts','4 000 pts','6 000 pts','8 000 pts','10 000 pts','15 000 pts','20 000 pts','30 000 pts','50 000 pts','75 000 pts','100 000 pts','150 000 pts','250 000 pts','500 000 pts'];
+const SCORES_VAL = [100,250,500,750,1000,1500,2500,4000,6000,8000,10000,15000,20000,30000,50000,75000,100000,150000,250000,500000];
+const NIVEAUX    = ['Découvreur','Curieux','Attentif','Conscient','Sensibilisé','Engagé','Ambassadeur','Défenseur','Expert·e','Militant·e','Champion·ne','Allié·e','Éclaireur·se','Porte-parole','Visionnaire','Référent·e','Guide','Architecte du Changement','Gardien·ne de l\'Inclusion','Héros de la Diversité'];
+const GARANTIS   = [4, 9, 14];
+const CAT_COL = {'Définition':'#a78bfa','Chiffres clés':'#60a5fa','Préjugés':'#f87171','Pathologie':'#34d399','Neurodiversité':'#f59e0b','Législation':'#818cf8','Droits':'#c084fc','Handicap visible':'#22d3ee','Sensibilisation':'#fb923c','Expert·e':'#e879f9'};
+
+const QUESTIONS = [
+  {cat:'Définition',icon:'🔍',
+   q:"Qu'appelle-t-on un « handicap invisible » ?",
+   a:["Un handicap non reconnu par la médecine","Un handicap dont les effets ne sont pas visibles de l'extérieur","Un handicap uniquement psychologique","Un handicap qui n'empêche pas de travailler"],c:1,
+   fact:"80 % des handicaps sont dits invisibles : douleurs chroniques, maladies rares, troubles cognitifs ou psychiatriques… Rien ne « se voit » mais tout s'éprouve au quotidien."},
+  {cat:'Chiffres clés',icon:'📊',
+   q:"Environ quel pourcentage des handicaps en France sont invisibles ?",
+   a:["20 %","40 %","80 %","60 %"],c:2,
+   fact:"En France, 12 millions de personnes vivent avec un handicap, et la grande majorité ne porte aucun signe extérieur visible. C'est pourquoi le regard des autres reste l'un des premiers obstacles."},
+  {cat:'Préjugés',icon:'💬',
+   q:"Lequel de ces commentaires est un préjugé fréquemment subi par les porteurs de handicap invisible ?",
+   a:["« Je peux vous aider si vous en avez besoin »","« Vous avez droit à des aménagements »","« Vous n'avez pas l'air malade »","« Votre témoignage est précieux »"],c:2,
+   fact:"« Tu n'as pas l'air malade » est l'une des phrases les plus blessantes. Elle invalide la souffrance réelle et renforce l'isolement de la personne concernée."},
+  {cat:'Pathologie',icon:'🧬',
+   q:"La fibromyalgie se caractérise principalement par :",
+   a:["Des troubles de la vision et de l'équilibre","Des douleurs chroniques diffuses et une fatigue persistante","Des crises d'épilepsie répétées","Des difficultés d'apprentissage de la lecture"],c:1,
+   fact:"La fibromyalgie touche 2 à 5 % de la population, majoritairement des femmes. Reconnue par l'OMS depuis 1992, elle reste encore trop souvent niée ou minimisée."},
+  {cat:'Neurodiversité',icon:'🧠',
+   q:"Le sigle TDA/H signifie :",
+   a:["Trouble Douloureux Articulaire et Hyperactivité","Trouble Déficitaire de l'Attention avec ou sans Hyperactivité","Trouble Développemental de l'Affect et de l'Humeur","Trouble Disruptif de l'Apprentissage et de l'Hygiène"],c:1,
+   fact:"Le TDA/H touche 5 à 8 % des enfants et persiste à l'âge adulte dans 50 % des cas. Ce n'est pas un manque de volonté mais une différence neurologique réelle."},
+  {cat:'Législation',icon:'⚖️',
+   q:"Quelle loi française a posé le cadre légal de la non-discrimination des personnes handicapées ?",
+   a:["Loi du 30 juin 1975","Loi du 11 février 2005 pour l'égalité des droits et des chances","Loi du 23 mars 2019 sur l'inclusion scolaire","Loi du 15 septembre 1995 sur l'accessibilité"],c:1,
+   fact:"La loi du 11 février 2005 a créé les MDPH, reconnu le droit à la compensation du handicap et élargi la définition bien au-delà du seul handicap physique visible."},
+  {cat:'Pathologie',icon:'🧬',
+   q:"L'endométriose, maladie gynécologique invalidante, touche en France environ :",
+   a:["1 femme sur 100","1 femme sur 10","1 femme sur 3","1 femme sur 50"],c:1,
+   fact:"L'endométriose touche ~2 millions de femmes en France. Le délai moyen entre les premiers symptômes et le diagnostic dépasse encore 7 ans, faute de sensibilisation."},
+  {cat:'Neurodiversité',icon:'🧠',
+   q:"La dyspraxie (trouble de la coordination) est aussi appelée :",
+   a:["Syndrome de Tourette","Trouble Déficitaire de l'Attention","Trouble du Spectre Autistique","Trouble Développemental de la Coordination (TDC)"],c:3,
+   fact:"La dyspraxie affecte la planification et l'exécution des gestes. Un enfant dyspraxique peut écrire ou s'habiller avec une difficulté interprétée à tort comme de la négligence."},
+  {cat:'Droits',icon:'📋',
+   q:"La RQTH (Reconnaissance de la Qualité de Travailleur Handicapé) est délivrée par :",
+   a:["La CPAM","Le médecin du travail","La MDPH","France Travail"],c:2,
+   fact:"La MDPH (Maison Départementale des Personnes Handicapées) est le guichet unique pour l'AAH, la PCH, la RQTH et la carte CMI. Elle joue un rôle central dans la vie des personnes handicapées."},
+  {cat:'Pathologie',icon:'🧬',
+   q:"La sclérose en plaques (SEP) affecte principalement :",
+   a:["Les articulations et le cartilage","Le système nerveux central (cerveau et moelle épinière)","Le système cardiovasculaire","Le système endocrinien"],c:1,
+   fact:"La SEP touche 110 000 personnes en France, surtout des femmes de 20 à 40 ans. Ses symptômes très variables en font un handicap souvent mal compris de l'entourage."},
+  {cat:'Chiffres clés',icon:'📊',
+   q:"Combien de pathologies sont répertoriées comme pouvant constituer un handicap invisible ?",
+   a:["Environ 30","Environ 50","Environ 106","Environ 200"],c:2,
+   fact:"Les 106 pathologies du handicap invisible couvrent maladies chroniques, rares, psychiatriques, cognitives et sensorielles. C'est le cœur du projet de sensibilisation Oldy & Sébastien."},
+  {cat:'Définition',icon:'🔍',
+   q:"Qu'est-ce que le validisme (ou capacitisme) ?",
+   a:["La valorisation des personnes valides au travail","Un système qui discrimine les personnes handicapées en considérant la validité comme norme supérieure","Une méthode de rééducation fonctionnelle reconnue","Un label accordé aux établissements accessibles"],c:1,
+   fact:"Le validisme est une discrimination souvent inconsciente, qui se manifeste par des micro-agressions du quotidien : pitié, infantilisation, incrédulité face à la douleur invisible."},
+  {cat:'Pathologie',icon:'🧬',
+   q:"Le syndrome d'Ehlers-Danlos (SED) affecte principalement :",
+   a:["Le système nerveux central","Le système immunitaire","Le tissu conjonctif (peau, articulations, vaisseaux)","Le système digestif uniquement"],c:2,
+   fact:"Le SED est une maladie rare du tissu conjonctif souvent diagnostiquée tardivement. Les hypermobilités et douleurs chroniques sont fréquemment confondues avec de la simulation."},
+  {cat:'Neurodiversité',icon:'🧠',
+   q:"Le terme « neurotypique » désigne :",
+   a:["Une personne atteinte d'un trouble neurologique","Un spécialiste du cerveau","Une personne dont le fonctionnement cognitif correspond à la norme statistique","Un trouble du neurodéveloppement léger"],c:2,
+   fact:"Neurodivergent regroupe TDA/H, autisme, dyslexie, dyspraxie, dyscalculie… Ces cerveaux fonctionnent différemment, pas de façon inférieure. La neurodiversité est une richesse."},
+  {cat:'Droits',icon:'📋',
+   q:"Un enfant porteur d'un handicap invisible scolarisé en classe ordinaire bénéficie souvent d'un :",
+   a:["BEP (Brevet d'Enseignement Professionnel)","PAP ou PPS (Plan d'Accompagnement / Projet Personnalisé de Scolarisation)","CEP (Contrat d'Établissement Personnalisé)","DMP scolaire"],c:1,
+   fact:"Le PAP et le PPS permettent des aménagements concrets : tiers-temps, supports adaptés, AESH… Ils visent à compenser sans stigmatiser, en respectant le parcours inclusif de l'élève."},
+  {cat:'Pathologie',icon:'🧬',
+   q:"Le syndrome de fatigue chronique (SFC) est aussi reconnu sous le nom de :",
+   a:["Syndrome de Sjögren","Lupus érythémateux systémique","Encéphalomyélite Myalgique (EM)","Syndrome de Raynaud"],c:2,
+   fact:"L'EM/SFC a longtemps été niée comme « maladie imaginaire ». La pandémie de COVID-19 l'a remise en lumière via le « Covid long », enfin reconnu officiellement."},
+  {cat:'Handicap visible',icon:'♿',
+   q:"Parmi ces affirmations sur le handicap visible, laquelle est VRAIE ?",
+   a:["Une personne en fauteuil roulant ne peut pas avoir de douleurs invisibles associées","Tous les handicaps visibles sont présents de naissance","Un handicap visible peut s'accompagner d'un ou plusieurs handicaps invisibles","Le handicap visible donne automatiquement droit à l'AAH"],c:2,
+   fact:"La réalité du handicap est souvent multiple. Une personne amputée peut souffrir de douleurs fantômes, de dépression ou de TDA/H… Le visible ne résume jamais la totalité de la personne."},
+  {cat:'Pathologie',icon:'🧬',
+   q:"La maladie de Crohn est classée parmi :",
+   a:["Les maladies cutanées inflammatoires","Les Maladies Inflammatoires Chroniques de l'Intestin (MICI)","Les maladies auto-immunes osseuses","Les maladies cardiovasculaires chroniques"],c:1,
+   fact:"La maladie de Crohn touche 100 000 personnes en France. Totalement invisible, elle peut empêcher de travailler, de sortir, de manger normalement, au rythme imprévisible de ses crises."},
+  {cat:'Sensibilisation',icon:'🌱',
+   q:"Lors d'une intervention de sensibilisation, quel message est le plus important ?",
+   a:["Que toute personne handicapée a besoin d'aide permanente","Que les personnes handicapées sont moins capables","Qu'il ne faut pas juger ce qu'on ne voit pas et écouter sans minimiser","Que le handicap invisible n'est pas un vrai handicap"],c:2,
+   fact:"« Ne juge pas ce que tu ne vois pas » est le fondement de la sensibilisation portée par Oldy & Sébastien. Écouter, croire, ne pas minimiser : trois gestes qui changent des vies."},
+  {cat:'Expert·e',icon:'🎓',
+   q:"La synesthésie est un phénomène neurologique dans lequel :",
+   a:["Une phobie intense provoque des troubles moteurs","Un sens en déclenche automatiquement un autre (ex : voir les sons, entendre les couleurs)","La mémoire épisodique est totalement absente","La personne ne peut pas reconnaître les visages"],c:1,
+   fact:"La synesthésie est vécue par ~4 % de la population. Certains « voient » les chiffres en couleurs, « goûtent » les sons. Elle illustre la fascinante diversité des fonctionnements cognitifs humains."},
+];
+
+// ── État du jeu ───────────────────────────────────────────────────
+let qi=0, phase='idle', sel=null, jokers={}, elim=[], dArmed=false, totalPts=0;
+
+function initJokers(){ jokers={fifty:true,friend:true,audience:true,double:true}; }
+function getGaranti(i){ for(let g=GARANTIS.length-1;g>=0;g--) if(i>GARANTIS[g]) return SCORES_TXT[GARANTIS[g]]; return '0 pt'; }
+
+// ── Navigation pages ──────────────────────────────────────────────
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function allerCodeAcces(){ goPage('p-code'); setTimeout(()=>document.getElementById('codeInput').focus(),200); }
+
+// ── Validation du code ────────────────────────────────────────────
+function validerCode(){
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  const valides = CONFIG.codes.map(c=>c.toUpperCase());
+  if(!valides.includes(code)){
+    document.getElementById('code-err').style.display='block';
+    document.getElementById('codeInput').select();
+    return;
+  }
+  document.getElementById('code-err').style.display='none';
+  // Vérifier la date
+  const today = new Date().toISOString().slice(0,10);
+  if(!CONFIG.dates.includes(today)){
+    afficherFerme();
+    return;
+  }
+  demarrerQuiz();
+}
+
+// ── Page fermée ───────────────────────────────────────────────────
+function afficherFerme(){
+  document.getElementById('ferme-msg').textContent = CONFIG.message_ferme;
+  const jours=['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+  const today=new Date().toISOString().slice(0,10);
+  const futures=CONFIG.dates.filter(d=>d>=today).sort();
+  let html='';
+  if(futures.length>0){
+    html='<div style="font-size:11px;color:#6b5fa0;margin-bottom:10px;letter-spacing:1px;text-align:center;">Prochaines dates de jeu :</div>';
+    html+=futures.slice(0,5).map(d=>{
+      const dt=new Date(d+'T12:00:00');
+      const label=dt.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+      return `<div class="date-chip">${label}</div>`;
+    }).join('');
+  } else {
+    html='<div style="font-size:12px;color:#3a2e60;text-align:center;font-style:italic;">Aucune date à venir annoncée pour le moment.</div>';
+  }
+  document.getElementById('ferme-dates').innerHTML=html;
+  goPage('p-ferme');
+}
+
+// ── Démarrage du quiz ─────────────────────────────────────────────
+function demarrerQuiz(){
+  qi=0; totalPts=0; phase='playing'; sel=null; elim=[]; dArmed=false;
+  initJokers();
+  goPage('p-quiz');
+  afficherQuestion();
+}
+
+function afficherQuestion(){
+  const q=QUESTIONS[qi];
+  sel=null; elim=[]; phase='playing';
+  // Topbar
+  document.getElementById('q-num').innerHTML=`${qi+1} <span>/ 20</span>`;
+  document.getElementById('q-prize').textContent=SCORES_TXT[qi];
+  // Catégorie
+  const col=CAT_COL[q.cat]||'#a78bfa';
+  const bd=document.getElementById('cat-badge');
+  bd.textContent=q.icon+' '+q.cat;
+  bd.style.cssText=`background:${col}18;border:1px solid ${col}55;color:${col}`;
+  // Tags
+  document.getElementById('elite-tag').style.display=qi>=14?'inline':'none';
+  document.getElementById('double-tag').style.display='none';
+  // Question
+  document.getElementById('q-text').textContent=q.q;
+  // Helpers
+  document.getElementById('ami-box').style.display='none';
+  document.getElementById('pub-box').style.display='none';
+  // Fiche
+  document.getElementById('fact-panel').style.display='none';
+  // Réponses
+  afficherReponses();
+  // Footer
+  const g=getGaranti(qi);
+  const fg=document.getElementById('footer-g');
+  if(GARANTIS.includes(qi))fg.textContent='🛡️ Palier garanti atteint !';
+  else if(g!=='0 pt')fg.textContent='Palier garanti : '+g;
+  else fg.textContent='Aucun palier garanti encore';
+  // Jokers
+  majJokers();
+}
+
+function afficherReponses(){
+  const q=QUESTIONS[qi];
+  const c=document.getElementById('answers');
+  c.innerHTML='';
+  q.a.forEach((ans,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='ans-btn'; btn.id='ans-'+idx;
+    const lbl=document.createElement('span'); lbl.className='ans-lbl'; lbl.textContent=L[idx];
+    const txt=document.createElement('span'); txt.textContent=ans;
+    btn.appendChild(lbl); btn.appendChild(txt);
+    btn.onclick=()=>choisirReponse(idx);
+    c.appendChild(btn);
+  });
+}
+
+// ── Réponse ───────────────────────────────────────────────────────
+function choisirReponse(idx){
+  if(phase!=='playing'||elim.includes(idx))return;
+  sel=idx; phase='checking';
+  setClass(idx,'checking');
+  bloquerReponses();
+  setTimeout(()=>{
+    const bon=QUESTIONS[qi].c;
+    if(idx===bon){
+      setClass(idx,'correct');
+      totalPts+=SCORES_VAL[qi];
+      phase='correct';
+      montrerFiche(true);
+    } else {
+      if(dArmed){
+        setClass(idx,'wrong');
+        setTimeout(()=>{
+          resetClass(idx); sel=null; dArmed=false;
+          document.getElementById('double-tag').style.display='none';
+          phase='playing'; debloquerReponses();
+        },1400);
+      } else {
+        setClass(idx,'wrong'); setClass(bon,'correct');
+        phase='wrong';
+        setTimeout(()=>{
+          if(qi>=14) ouvrirElite();
+          else afficherResultat('perdu');
+        }, qi>=14?600:2400);
+      }
+    }
+  },1800);
+}
+
+function setClass(idx,cls){ const b=document.getElementById('ans-'+idx); if(b)b.className='ans-btn '+cls; }
+function resetClass(idx){ const b=document.getElementById('ans-'+idx); if(b)b.className='ans-btn'; }
+function bloquerReponses(){ document.querySelectorAll('.ans-btn').forEach(b=>b.disabled=true); }
+function debloquerReponses(){ document.querySelectorAll('.ans-btn').forEach(b=>{ if(!b.classList.contains('elim'))b.disabled=false; }); }
+
+function montrerFiche(ok){
+  const q=QUESTIONS[qi];
+  document.getElementById('fact-head').textContent=ok?'✅ Bonne réponse · 💡 Le saviez-vous ?':'❌ Rappel · 💡 Le saviez-vous ?';
+  document.getElementById('fact-body').textContent=q.fact;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===19?'🏆 Terminer':'➡️ Question suivante';
+  document.getElementById('fact-panel').style.display='block';
+}
+
+function questionSuivante(){
+  if(qi===19){ afficherResultat('gagne'); return; }
+  qi++; afficherQuestion();
+}
+
+// ── Jokers ────────────────────────────────────────────────────────
+function majJokers(){
+  ['fifty','friend','audience','double'].forEach(k=>{
+    const b=document.getElementById('j-'+k);
+    b.disabled=!jokers[k];
+    b.className='jbtn '+(!jokers[k]?'off':(k==='double'&&dArmed)?'armed':'on');
+  });
+}
+
+function jokerFifty(){
+  if(!jokers.fifty||phase!=='playing')return;
+  const bon=QUESTIONS[qi].c;
+  const pool=[0,1,2,3].filter(i=>i!==bon).sort(()=>Math.random()-.5).slice(0,2);
+  elim=pool; jokers.fifty=false;
+  pool.forEach(i=>{ const b=document.getElementById('ans-'+i); if(b){b.className='ans-btn elim';b.disabled=true;} });
+  majJokers();
+}
+
+function jokerPublic(){
+  if(!jokers.audience||phase!=='playing')return;
+  const bon=QUESTIONS[qi].c;
+  const cp=44+Math.floor(Math.random()*32);
+  let rem=100-cp;
+  const v=[Math.floor(rem*.5),Math.floor(rem*.3),0]; v[2]=rem-v[0]-v[1]; v.sort(()=>Math.random()-.5);
+  const d=[0,0,0,0]; let vi=0;
+  for(let i=0;i<4;i++) d[i]=i===bon?cp:v[vi++];
+  document.getElementById('pub-bars').innerHTML=L.map((l,i)=>`
+    <div class="aud-row">
+      <div class="aud-lbl">${l}</div>
+      <div class="aud-bg"><div class="aud-fill" id="af-${i}" style="width:0%;background:${i===bon?'linear-gradient(to right,#059669,#34d399)':'linear-gradient(to right,#2a1f5a,#5b48a0)'}"></div></div>
+      <div class="aud-pct">${d[i]}%</div>
+    </div>`).join('');
+  document.getElementById('pub-box').style.display='block';
+  setTimeout(()=>{ L.forEach((_,i)=>{ const f=document.getElementById('af-'+i); if(f)f.style.width=d[i]+'%'; }); },50);
+  jokers.audience=false; majJokers();
+}
+
+function jokerAmi(){
+  if(!jokers.friend||phase!=='playing')return;
+  const bon=QUESTIONS[qi].c; const q=QUESTIONS[qi];
+  const p=["Je pense sincèrement que c'est","Je suis quasi sûr·e, c'est","Sans hésiter, je dirais"][Math.floor(Math.random()*3)];
+  document.getElementById('ami-msg').textContent=`« ${p} ${L[bon]}. ${q.a[bon]} »`;
+  document.getElementById('ami-box').style.display='block';
+  jokers.friend=false; majJokers();
+}
+
+function jokerDouble(){
+  if(!jokers.double||phase!=='playing')return;
+  dArmed=true; jokers.double=false;
+  document.getElementById('double-tag').style.display='inline';
+  majJokers();
+}
+
+// ── Zone Élite ────────────────────────────────────────────────────
+function ouvrirElite(){
+  const q=QUESTIONS[qi]; const bon=q.c;
+  document.getElementById('m-correct').textContent=L[bon]+'. '+q.a[bon];
+  document.getElementById('m-fact').textContent=q.fact;
+  document.getElementById('m-retreat-lbl').textContent=`Retour à la question ${Math.max(1,qi-2)} · Jokers conservés`;
+  document.getElementById('m-garanti').textContent='Garanti : '+getGaranti(qi);
+  document.getElementById('elite-overlay').classList.add('open');
+}
+
+function utiliserBouclier(){
+  document.getElementById('elite-overlay').classList.remove('open');
+  jokers={fifty:false,friend:false,audience:false,double:false}; majJokers();
+  const t=document.getElementById('shield-toast'); t.classList.add('show');
+  setTimeout(()=>{ t.classList.remove('show'); questionSuivante(); },2800);
+}
+
+function reculer(){
+  document.getElementById('elite-overlay').classList.remove('open');
+  qi=Math.max(0,qi-3); afficherQuestion();
+}
+
+// ── Stop & Résultats ──────────────────────────────────────────────
+function arreter(){ afficherResultat('stop'); }
+
+function afficherResultat(type){
+  const icons ={gagne:'🏆',perdu:'💜',stop:'🌱'};
+  const titres={gagne:'FÉLICITATIONS !',perdu:'MAUVAISE RÉPONSE',stop:'VOUS VOUS ARRÊTEZ'};
+  const couleurs={gagne:'#f5b75a',perdu:'#f87171',stop:'#c084fc'};
+  let msg='';
+  if(type==='gagne') msg="Vous avez répondu aux 20 questions !<br><em style='color:#f5b75a;'>Vous êtes un·e véritable Héros de la Diversité.</em>";
+  if(type==='perdu') msg=`La bonne réponse était :<br><strong style='color:#34d399;font-size:15px;'>${L[QUESTIONS[qi].c]}. ${QUESTIONS[qi].a[QUESTIONS[qi].c]}</strong><br><br>Garanti : ${getGaranti(qi)}`;
+  if(type==='stop')  msg=`Vous repartez avec votre score accumulé.<br>Garanti : ${getGaranti(qi)}`;
+  document.getElementById('res-icon').textContent=icons[type];
+  document.getElementById('res-title').textContent=titres[type];
+  document.getElementById('res-title').style.color=couleurs[type];
+  document.getElementById('res-msg').innerHTML=msg;
+  document.getElementById('res-score').textContent=totalPts.toLocaleString('fr-FR')+' pts';
+  document.getElementById('res-level').textContent='Niveau atteint : '+NIVEAUX[Math.min(qi,19)];
+  goPage('p-result');
+}
+
+function recommencer(){ goPage('p-code'); document.getElementById('codeInput').focus(); }
+
+// ── Ladder ────────────────────────────────────────────────────────
+function ouvrirLadder(){
+  const rows=[...SCORES_TXT].reverse().map((sc,ri)=>{
+    const real=19-ri;
+    const isCur=real===qi, isWon=real<qi, isG=GARANTIS.includes(real);
+    const c=isCur?'#f5b75a':isG?'#9f7aea':isWon?'#34d399':'#2a2050';
+    return `<div class="ladder-row" style="background:${isCur?'rgba(167,139,250,.15)':'transparent'};border-left:3px solid ${isCur?'#a78bfa':isG?'#7c5fcf':'transparent'}">
+      <div class="lrow-l" style="color:${c};">${isCur?'▶ ':''}${real+1}${isG&&!isCur?' 🛡️':''}</div>
+      <div class="lrow-r"><div class="lrow-pts" style="color:${c};">${sc}</div><div class="lrow-lvl" style="color:${isCur?'#6b5fa0':'#1a1430'};">${NIVEAUX[real]}</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('ladder-rows').innerHTML=rows;
+  document.getElementById('ladder-overlay').classList.add('open');
+}
+function fermerLadder(){ document.getElementById('ladder-overlay').classList.remove('open'); }
+</script>
+
+</body>
+</html>
