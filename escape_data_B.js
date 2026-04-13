@@ -1,6 +1,6 @@
 // ESCAPE GAME — DONNÉES BLOC B (Séries 11-20) — VERSION CORRIGÉE
 const SERIES_B=[
-{id:11,name:"Série 11",code:"2847",rooms:[
+{id:11,name:"Série 11",code:"2984",rooms:[
   {type:"T",e:"📋",diff:"Facile ★",dc:"diff1",title:"La Salle des Pathologies",sub:"Tableau de correspondance",ans:"2",
    tbl:[{n:0,p:"Fibromyalgie"},{n:1,p:"Dépression"},{n:2,p:"Narcolepsie"},{n:3,p:"TDAH"},{n:4,p:"Maladie de Crohn"},{n:5,p:"Hypersomnie"},{n:6,p:"Sclérose en plaques"},{n:7,p:"TSPT"},{n:8,p:"Trouble bipolaire"},{n:9,p:"Migraine chronique"}],
    clues:["Je suis un trouble neurologique du sommeil. Mon porteur peut s'endormir soudainement, en plein milieu d'une activité.","Mes attaques de sommeil sont incontrôlables et peuvent durer quelques secondes ou plusieurs minutes.","Je touche 1 personne sur 2000. Je suis souvent accompagnée de cataplexie."],
@@ -19,7 +19,7 @@ const SERIES_B=[
    q:"Résolvez : trouvez combien font 16 divisé par 4.",
    hints:["16 ÷ 4 = ?","16 divisé par 4 égale 4.","Le chiffre est 4."]}
 ]},
-{id:12,name:"Série 12",code:"5391",rooms:[
+{id:12,name:"Série 12",code:"5931",rooms:[
   {type:"T",e:"📋",diff:"Facile ★",dc:"diff1",title:"La Salle des Pathologies",sub:"Tableau de correspondance",ans:"5",
    tbl:[{n:0,p:"Dyscalculie"},{n:1,p:"Dysgraphie"},{n:2,p:"TOC"},{n:3,p:"Borderline"},{n:4,p:"TSPT"},{n:5,p:"Syndrome de Gilles de la Tourette"},{n:6,p:"Hyperlexie"},{n:7,p:"Prosopagnosie"},{n:8,p:"Misophonie"},{n:9,p:"Hyperacousie"}],
    clues:["Je suis un trouble neurologique avec des tics moteurs et vocaux involontaires et répétitifs.","Certains de mes porteurs émettent des sons ou des mots qu'ils ne peuvent pas contrôler.","Je touche environ 1% de la population mondiale, surtout les garçons."],
@@ -38,7 +38,7 @@ const SERIES_B=[
    q:"Trouvez le chiffre manquant : _ × 9 = 9.",
    hints:["_ × 9 = 9. Quel chiffre multiplié par 9 donne 9 ?","9 ÷ 9 = 1.","Le chiffre manquant est 1."]}
 ]},
-{id:13,name:"Série 13",code:"7253",rooms:[
+{id:13,name:"Série 13",code:"7525",rooms:[
   {type:"T",e:"📋",diff:"Facile ★",dc:"diff1",title:"La Salle des Pathologies",sub:"Tableau de correspondance",ans:"7",
    tbl:[{n:0,p:"Fibromyalgie"},{n:1,p:"Dépression"},{n:2,p:"TDAH"},{n:3,p:"Endométriose"},{n:4,p:"Lupus"},{n:5,p:"Épilepsie"},{n:6,p:"Dyslexie"},{n:7,p:"SFC / Fatigue chronique"},{n:8,p:"Diabète type 1"},{n:9,p:"Maladie de Crohn"}],
    clues:["Mon porteur se réveille aussi fatigué qu'avant de dormir. La fatigue ne part jamais.","Je suis souvent déclenchée par une infection virale. Les examens classiques ne trouvent rien.","Mon acronyme signifie Syndrome de Fatigue Chronique. Je touche 2% de la population mondiale."],
@@ -76,7 +76,7 @@ const SERIES_B=[
    q:"Trouvez le chiffre manquant : 4 × _ = 32.",
    hints:["4 × _ = 32. Divisez 32 par 4.","32 ÷ 4 = 8.","Le chiffre manquant est 8."]}
 ]},
-{id:15,name:"Série 15",code:"9174",rooms:[
+{id:15,name:"Série 15",code:"9714",rooms:[
   {type:"T",e:"📋",diff:"Facile ★",dc:"diff1",title:"La Salle des Pathologies",sub:"Tableau de correspondance",ans:"9",
    tbl:[{n:0,p:"Hémophilie"},{n:1,p:"VIH/SIDA"},{n:2,p:"Drépanocytose"},{n:3,p:"Mucoviscidose"},{n:4,p:"Sclérose en plaques"},{n:5,p:"Polyarthrite rhumatoïde"},{n:6,p:"Spondylarthrite"},{n:7,p:"Maladie de Lyme chronique"},{n:8,p:"Vitiligo"},{n:9,p:"SOPK"}],
    clues:["Je suis un syndrome gynécologique chronique. Je touche 1 femme sur 10 en âge de procréer.","Mes symptômes incluent des cycles irréguliers et des kystes sur les ovaires.","Mon acronyme en français est SOPK. Je suis fortement sous-diagnostiquée."],
@@ -114,7 +114,7 @@ const SERIES_B=[
    q:"Trouvez le chiffre manquant : _ × 3 = 27.",
    hints:["_ × 3 = 27. Divisez 27 par 3.","27 ÷ 3 = 9.","Le chiffre manquant est 9."]}
 ]},
-{id:17,name:"Série 17",code:"6482",rooms:[
+{id:17,name:"Série 17",code:"6458",rooms:[
   {type:"T",e:"📋",diff:"Facile ★",dc:"diff1",title:"La Salle des Pathologies",sub:"Tableau de correspondance",ans:"6",
    tbl:[{n:0,p:"Vitiligo"},{n:1,p:"Eczéma chronique"},{n:2,p:"Psoriasis"},{n:3,p:"Rosacea"},{n:4,p:"Ichtyose"},{n:5,p:"Maladie de Raynaud"},{n:6,p:"Syndrome des jambes sans repos"},{n:7,p:"Hypersomnie idiopathique"},{n:8,p:"Apnée du sommeil"},{n:9,p:"Insomnie chronique"}],
    clues:["Dès que je m'allonge, une sensation irrésistible de bouger les jambes apparaît. Fourmillements, picotements.","Mon porteur ne peut pas s'empêcher de bouger, surtout le soir. Le sommeil devient impossible.","Je touche 5 à 10% des adultes. Je suis une pathologie neurologique reconnue."],
@@ -152,7 +152,7 @@ const SERIES_B=[
    q:"Trouvez le chiffre manquant : _ × 7 = 21.",
    hints:["_ × 7 = 21. Divisez 21 par 7.","21 ÷ 7 = 3.","Le chiffre manquant est 3."]}
 ]},
-{id:19,name:"Série 19",code:"8346",rooms:[
+{id:19,name:"Série 19",code:"8636",rooms:[
   {type:"T",e:"📋",diff:"Facile ★",dc:"diff1",title:"La Salle des Pathologies",sub:"Tableau de correspondance",ans:"8",
    tbl:[{n:0,p:"Fibromyalgie"},{n:1,p:"Endométriose"},{n:2,p:"TDAH"},{n:3,p:"Narcolepsie"},{n:4,p:"Dyspraxie"},{n:5,p:"Dyscalculie"},{n:6,p:"Dyslexie"},{n:7,p:"Dysgraphie"},{n:8,p:"Dysorthographie"},{n:9,p:"Hyperlexie"}],
    clues:["Je touche l'écrit. Mon porteur peut lire correctement mais produit des fautes persistantes.","Je ne suis pas liée au niveau intellectuel. Je reflète une difficulté à encoder les règles orthographiques.","Je suis distincte de la dyslexie. Mon nom commence par DYS-."],
