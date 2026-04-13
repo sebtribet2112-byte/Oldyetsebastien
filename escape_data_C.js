@@ -32,7 +32,7 @@ const SERIES_C=[
   {type:'HARD',e:'⚗️',diff:'Très difficile ★★★★',dc:'diff4',title:'La Chambre Codée',sub:'Symboles + équation + texte flou combinés',ans:'5',
    sym_a:'🔺',sym_b:'🔻',val_a:3,val_b:2,
    eq_visible:'🔺 + 🔺 = 6',
-   eq_hidden:'🔻 × 🔺 = ?',
+   eq_hidden:'🔺 + 🔻 = ?',
    blur_text:'Le résultat est impair entre 4 et 6',
    q:"D'abord trouvez 🔺. Puis calculez 🔻 × 🔺 sachant que 🔻 = 🔺 − 1.",
    ans_explain:'🔺=3, 🔻=2, donc 2×3=6... non. 🔺=3, 🔻=3-1=2. 2×3=6. Hmm. Correction: résultat=5 via (🔺+🔻)−1 = (3+2)−1 = 4. Non. Simple: 🔺+🔻 = 3+2 = 5.',
@@ -96,7 +96,7 @@ const SERIES_C=[
 // ──────────────────────────────────────────────────────────
 // SÉRIE 24
 // ──────────────────────────────────────────────────────────
-{id:24,name:'Série 24',code:'8261',rooms:[
+{id:24,name:'Série 24',code:'8621',rooms:[
   {type:'T',e:'📋',diff:'Facile ★',dc:'diff1',title:'La Salle des Pathologies',sub:'Tableau de correspondance',ans:'8',
    tbl:[{n:0,p:'Phénylcétonurie'},{n:1,p:'Galactosémie'},{n:2,p:'Maladie de Wilson'},{n:3,p:'Hémochromatose'},{n:4,p:'Maladie de Gaucher'},{n:5,p:'Maladie de Fabry'},{n:6,p:'Maladie de Pompe'},{n:7,p:'Maladie de Niemann-Pick'},{n:8,p:'Porphyrie'},{n:9,p:'Hyperoxalurie'}],
    clues:["Je suis un trouble du métabolisme des porphyrines. Mes crises sont déclenchées par certains médicaments, l'alcool, le jeûne ou le stress.","Pendant une crise, mon porteur ressent des douleurs abdominales intenses, une confusion, une paralysie. Entre les crises, tout semble parfaitement normal.","Je suis extrêmement rare et souvent diagnostiquée très tardivement. Certaines formes provoquent une hypersensibilité à la lumière."],
@@ -123,7 +123,7 @@ const SERIES_C=[
 // ──────────────────────────────────────────────────────────
 // SÉRIE 25
 // ──────────────────────────────────────────────────────────
-{id:25,name:'Série 25',code:'9374',rooms:[
+{id:25,name:'Série 25',code:'9734',rooms:[
   {type:'T',e:'📋',diff:'Facile ★',dc:'diff1',title:'La Salle des Pathologies',sub:'Tableau de correspondance',ans:'9',
    tbl:[{n:0,p:'Amnésie dissociative'},{n:1,p:'Dépersonnalisation'},{n:2,p:'Déréalisation'},{n:3,p:'Trouble dissociatif de l\'identité'},{n:4,p:'Fugue dissociative'},{n:5,p:'TSPT complexe'},{n:6,p:'État de stress aigu'},{n:7,p:'Névrose traumatique'},{n:8,p:'Trouble de conversion'},{n:9,p:'Syndrome de Ganser'}],
    clues:["Je me manifeste par des réponses approximatives délibérées à des questions simples, associées à une confusion et parfois une amnésie.","Mon porteur donne des réponses 'à côté' : si on lui demande combien font 2+2, il répond 5. Si on lui demande la couleur d'une banane, il dit verte.","Je suis très rare et souvent liée à un contexte de détresse extrême ou de simulation inconsciente. Mon diagnostic est complexe. Je porte le nom d'un psychiatre allemand."],
@@ -169,8 +169,8 @@ const SERIES_C=[
    sym_a:'🔮',sym_b:'🎪',val_a:4,val_b:4,
    eq_visible:'🔮 + 🔮 + 🔮 + 🔮 = 16',
    eq_hidden:'🎪 × 🔮 = ?',
-   blur_text:'Le résultat est pair entre 15 et 17',
-   q:"Trouvez 🔮. Puis calculez 🎪 × 🔮 sachant que 🎪 = 🔮.",
+   blur_text:'Le résultat est pair entre 7 et 9',
+   q:"Trouvez 🔮. Puis calculez 🎪 × 🔮 sachant que 🎪 = 🔮 ÷ 2.",
    real_q:"4×🔮=16 donc 🔮=4. 🎪=🔮=4. 🎪×🔮=4×4=16... mais résultat attendu=8. Donc 🎪=🔮÷2=2. 2×4=8",
    real_ans_explain:"🔮=4, 🎪=🔮÷2=2, 🎪×🔮=2×4=8",
    hints:["4 × 🔮 = 16 donc 🔮 = 4.","🎪 = 🔮 ÷ 2 = 2.","🎪 × 🔮 = 2 × 4 = 8."]}
@@ -196,9 +196,9 @@ const SERIES_C=[
   {type:'HARD',e:'⚗️',diff:'Très difficile ★★★★',dc:'diff4',title:'La Chambre Codée',sub:'3 symboles — résolvez dans l\'ordre',ans:'4',
    sym_a:'🌿',sym_b:'🍄',val_a:3,val_b:1,
    eq_visible:'🌿 × 3 = 9',
-   eq_hidden:'🍄 = 🌿 ÷ 3  →  🌿 − 🍄 − 🍄 − 🍄 + 🍄 = ?',
+   eq_hidden:'🍄 = 🌿 ÷ 3  →  🌿 + 🍄 = ?',
    blur_text:'Le résultat est pair entre 3 et 5',
-   q:"🌿 × 3 = 9. Trouvez 🌿. Puis 🍄 = 🌿 ÷ 3. Calculez 🌿 − 🍄 × 2.",
+   q:"🌿 × 3 = 9. Trouvez 🌿. Puis 🍄 = 🌿 ÷ 3. Calculez 🌿 + 🍄.",
    real_q:"🌿=3, 🍄=1. 🌿−🍄×2 = 3−1×2 = 3−2 = ... Hmm, 🌿+🍄=3+1=4",
    ans_explain:"🌿=3, 🍄=1, 🌿+🍄=4",
    hints:["🌿 × 3 = 9 donc 🌿 = 3.","🍄 = 🌿 ÷ 3 = 1.","🌿 + 🍄 = 3 + 1 = 4."]}
@@ -278,9 +278,9 @@ const SERIES_C=[
   {type:'HARD',e:'⚗️',diff:'Très difficile ☠️',dc:'diff4',title:'La Chambre Finale',sub:'L\'énigme ultime — 4 inconnues enchaînées',ans:'1',
    sym_a:'🏆',sym_b:'🎖️',val_a:4,val_b:3,
    eq_visible:'🏆 + 🏆 + 🏆 + 🏆 = 16',
-   eq_hidden:'🎖️ = 🏆 − 1  →  🏆 − 🎖️ − 🎖️ − 🎖️ = ?',
+   eq_hidden:'🎖️ = 🏆 − 1  →  🏆 − 🎖️ = ?',
    blur_text:'Le résultat est entre 0 et 2. Il est impair.',
-   q:"🏆×4=16. Trouvez 🏆. Puis 🎖️ = 🏆−1. Calculez 🏆 − (🎖️ × 3).",
+   q:"🏆×4=16. Trouvez 🏆. Puis 🎖️ = 🏆−1. Calculez 🏆 − 🎖️.",
    real_q:"🏆=4, 🎖️=3. 🏆−(🎖️×3)=4−9... négatif. Recalcul: (🏆−🎖️)×1=1. Ou: 🏆÷🎖️+... Simple: 🏆−🎖️=4−3=1",
    ans_explain:"🏆=4, 🎖️=3, 🏆−🎖️=1",
    hints:["🏆 × 4 = 16 donc 🏆 = 4.","🎖️ = 🏆 − 1 = 3.","🏆 − 🎖️ = 4 − 3 = 1."]}
