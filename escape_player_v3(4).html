@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape — Agent</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .terminal {
+            width: 100%;
+            max-width: 440px;
+            border: 2px solid #00ff41;
+            padding: 24px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,255,65,0.25);
+            margin-top: 20px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.1em;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 8px #00ff41;
+        }
+        hr { border: none; border-top: 1px solid #00ff41; margin: 14px 0; opacity: 0.4; }
+        .label { font-size: 0.72em; letter-spacing: 3px; color: #00aa2a; margin-bottom: 4px; }
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0d1a0d;
+            border: 1px solid #00ff41;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 14px;
+            font-size: 0.88em;
+        }
+        .score-val { color: #fff; font-weight: bold; font-size: 1.05em; }
+        .room-badge {
+            text-align: center;
+            font-size: 2.8em;
+            font-weight: bold;
+            text-shadow: 0 0 20px #00ff41;
+            margin: 6px 0;
+        }
+        .room-title {
+            text-align: center;
+            font-size: 0.78em;
+            letter-spacing: 2px;
+            color: #00aa2a;
+            margin-bottom: 12px;
+        }
+        .mission-box {
+            background: #0d1a0d;
+            border-left: 3px solid #00ff41;
+            padding: 14px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.92em;
+            line-height: 1.65;
+            margin-bottom: 14px;
+            white-space: pre-line;
+        }
+        .hint-box {
+            background: #1a1400;
+            border: 1px solid #ffa500;
+            color: #ffa500;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.88em;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            display: none;
+        }
+        input[type="text"], input[type="password"] {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #00ff41;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.4em;
+            text-align: center;
+            outline: none;
+            padding: 8px 0;
+            letter-spacing: 6px;
+            margin: 8px 0 14px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            background: #00ff41;
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+        .btn:active { opacity: 0.8; transform: scale(0.99); }
+        .btn-ghost {
+            background: transparent;
+            color: #ffa500;
+            border: 1px solid #ffa500;
+            font-size: 0.82em;
+        }
+        .btn-danger {
+            background: transparent;
+            color: #ff4444;
+            border: 1px solid #ff4444;
+            font-size: 0.82em;
+            margin-top: 16px;
+        }
+        .btn-blue { background: #1a73e8; color: #fff; }
+        .btn-outline { background: transparent; color: #00ff41; border: 2px solid #00ff41; }
+        .choice-row { display: flex; gap: 10px; margin-top: 10px; }
+        .choice-row .btn { flex: 1; margin-top: 0; }
+        .dilemme-info { text-align: center; color: #ffa500; font-size: 0.82em; margin: 8px 0 4px; }
+        .err { color: #ff4444; font-size: 0.82em; text-align: center; margin-top: 8px; min-height: 18px; }
+        .big-score { font-size: 2.5em; text-align: center; text-shadow: 0 0 15px #00ff41; margin: 18px 0 6px; }
+        .center { text-align: center; }
+        .muted { color: #00661a; font-size: 0.82em; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .cursor::after { content: '█'; animation: blink 1s infinite; font-size: 0.7em; vertical-align: middle; }
+        .progress-wrap { width: 100%; background: #0d1a0d; border-radius: 4px; height: 4px; margin-bottom: 14px; }
+        .progress-fill { height: 4px; border-radius: 4px; background: #00ff41; transition: width 0.6s ease; }
+        .room-img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #00ff41;
+            margin-bottom: 12px;
+            display: block;
+            max-height: 260px;
+            object-fit: contain;
+            background: #050f05;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .modal-overlay.open { display: block; }
+        .modal-box {
+            max-width: 440px;
+            margin: auto;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 18px 16px;
+            background: #0a0a0a;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .modal-header h3 { color: #00ff41; font-size: 0.88em; letter-spacing: 2px; }
+        .btn-close {
+            background: transparent;
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.82em;
+            font-family: 'Courier New', monospace;
+        }
+        .modal-search {
+            width: 100%;
+            background: #0d1a0d;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 0.88em;
+            padding: 8px 10px;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+        .patho-list {
+            list-style: none;
+            font-size: 0.82em;
+            line-height: 1.7;
+            color: #ccc;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+        .patho-list li { padding: 2px 4px; border-radius: 3px; }
+        .patho-list li.highlight { background: #1a3a1a; color: #00ff41; }
+        .patho-num { color: #00661a; margin-right: 4px; font-family: 'Courier New', monospace; }
+        .btn-list {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 9px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82em;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .btn-list:active { opacity: 0.7; }
+        .hint-used-badge {
+            font-size: 0.72em;
+            color: #ffa500;
+            text-align: center;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ─── ÉCRAN LOGIN ─── -->
+<div id="screenLogin" class="terminal">
+    <h2 class="cursor">SYSTÈME ACCESS</h2>
+    <hr>
+    <p class="label">IDENTIFIANT AGENT</p>
+    <input type="text" id="inputCode" placeholder="XXXX00" autocomplete="off" maxlength="10"
+           onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="btn" onclick="doLogin()">▶ CONNEXION</button>
+    <p class="err" id="loginErr"></p>
+</div>
+
+<!-- ─── ÉCRAN JEU ─── -->
+<div id="screenPlay" class="terminal" style="display:none">
+    <div class="score-bar">
+        <span id="playName">AGENT</span>
+        <span>SCORE&nbsp;<span class="score-val" id="playScore">0</span>&nbsp;pts</span>
+    </div>
+    <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="room-badge" id="playRoomBadge">S1</div>
+    <div class="room-title" id="playRoomTitle">SALLE 1</div>
+
+    <!-- Image injectée ici dynamiquement -->
+
+    <div class="mission-box" id="playMission">...</div>
+    <div class="hint-box" id="hintBox"></div>
+
+    <button class="btn-list" onclick="openModal()">📋 Consulter la liste des 106 pathologies</button>
+
+    <!-- Salles 1-6 : saisie du code -->
+    <div id="sectionCode">
+        <p class="label" style="margin-top:14px">CODE DE DÉVERROUILLAGE</p>
+        <input type="text" id="inputAnswer" placeholder="?" autocomplete="off" maxlength="12"
+               onkeydown="if(event.key==='Enter') checkAnswer()">
+        <button class="btn" onclick="checkAnswer()">▶ VALIDER</button>
+        <button class="btn btn-ghost" id="btnHintCode" onclick="useHint()">💡 INDICE (−20 pts)</button>
+        <p class="err" id="answerErr"></p>
+    </div>
+
+    <!-- Salle 7 : dilemme -->
+    <div id="sectionDilemme" style="display:none">
+        <p class="dilemme-info">⚠ Deux portes. Un seul choix. Aucun retour possible.</p>
+        <div class="choice-row">
+            <button class="btn btn-blue" id="btnVisible" onclick="chooseRoom7('VISIBLE')">🟦 VISIBLE<br><small>−50 pts</small></button>
+            <button class="btn btn-outline" id="btnInvisible" onclick="chooseRoom7('INVISIBLE')">⬜ INVISIBLE<br><small>±0 pts</small></button>
+        </div>
+        <button class="btn btn-ghost" id="btnHintDilemme" onclick="useHint()" style="margin-top:10px">💡 INDICE (−20 pts)</button>
+        <p class="err" id="dilemmeErr"></p>
+    </div>
+</div>
+
+<!-- ─── ÉCRAN TERMINÉ ─── -->
+<div id="screenDone" class="terminal" style="display:none">
+    <h2>✅ MISSION ACCOMPLIE</h2>
+    <hr>
+    <p class="label center" id="doneAgent">AGENT</p>
+    <div class="big-score" id="doneScore">0 pts</div>
+    <p class="center muted" style="margin-bottom:16px">Attendez le débrief de l'animateur.</p>
+    <hr>
+    <p id="doneR7" class="center" style="font-size:0.85em; margin-top:10px; color:#00aa2a"></p>
+    <button class="btn btn-danger" onclick="doLogout()">⏻ DÉCONNEXION</button>
+</div>
+
+<!-- ─── MODAL 106 PATHOLOGIES ─── -->
+<div class="modal-overlay" id="modalPathologies">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>📋 106 PATHOLOGIES</h3>
+            <button class="btn-close" onclick="closeModal()">✕ FERMER</button>
+        </div>
+        <input class="modal-search" type="text" placeholder="Rechercher…" oninput="filterPatho(this.value)" autocomplete="off">
+        <ul class="patho-list" id="pathoList"></ul>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+
+const PATHOLOGIES = [
+  "Épilepsie","Sclérose en plaques","Migraine chronique","Séquelles d'AVC",
+  "Maladie de Parkinson (formes débutantes)","Narcolepsie","Trouble du sommeil sévère",
+  "Fibromyalgie","Syndrome de fatigue chronique","Douleurs neuropathiques",
+  "Hernie discale chronique","Lombalgie chronique","Polyarthrite rhumatoïde",
+  "Lupus érythémateux disséminé","Spondylarthrite ankylosante","Maladie de Crohn",
+  "Rectocolite hémorragique","Syndrome de l'intestin irritable sévère",
+  "Diabète de type 1","Diabète de type 2 compliqué","Hypothyroïdie sévère",
+  "Hyperthyroïdie","Endométriose","SOPK (syndrome des ovaires polykystiques)",
+  "Asthme sévère","BPCO","Apnée du sommeil","Insuffisance cardiaque",
+  "Trouble du rythme cardiaque","Stimulateur cardiaque implanté",
+  "Cardiopathie congénitale","Hypertension artérielle sévère",
+  "Double rupture d'anévrisme carotido-ophtalmique avec hémorragie méningée sous-arachnoïdienne",
+  "Séquelles neurologiques post-anévrisme","Trouble anxieux généralisé",
+  "Trouble panique","Dépression majeure","Trouble bipolaire","Trouble borderline",
+  "Trouble obsessionnel compulsif","Stress post-traumatique","Phobie sociale",
+  "TDAH","Trouble du spectre autistique léger","Dyslexie","Dyspraxie",
+  "Dyscalculie","Dysphasie","Trouble de la mémoire","Trouble cognitif léger",
+  "Maladie d'Alzheimer débutante","Maladie rare génétique","Syndrome d'Ehlers-Danlos",
+  "Syndrome de Marfan","Maladie de Lyme chronique","VIH asymptomatique stabilisé",
+  "Cancer en rémission avec séquelles","Effets secondaires lourds de chimiothérapie",
+  "Insuffisance rénale chronique","Insuffisance hépatique","Troubles digestifs chroniques",
+  "Reflux gastro-œsophagien sévère","Troubles de la déglutition","Trouble vestibulaire",
+  "Vertiges chroniques","Acouphènes invalidants","Surdité partielle",
+  "Baisse visuelle non corrigée","Glaucome","Rétinopathie","Trouble de la coordination",
+  "Tremblements essentiels","Syndrome des jambes sans repos",
+  "Crises convulsives non épileptiques","Trouble somatoforme",
+  "Douleurs chroniques idiopathiques","Syndrome de Raynaud","Allergies sévères",
+  "Intolérances alimentaires sévères","Maladies inflammatoires chroniques",
+  "Fatigue post-virale","COVID long","Syndrome métabolique","Obésité morbide",
+  "Trouble alimentaire (anorexie, boulimie)","Trouble du contrôle des impulsions",
+  "Addictions (alcool, drogues)","Dépendance médicamenteuse","Trouble du comportement",
+  "Trouble du langage","Trouble de l'attention","Trouble exécutif",
+  "Trouble de la planification","Trouble émotionnel","Trouble de l'adaptation",
+  "Trouble dissociatif","Trouble psychosomatique","Syndrome douloureux régional complexe",
+  "Neuropathie périphérique","Paralysie partielle invisible","Spasticité légère",
+  "Trouble moteur discret","Fatigue chronique neurologique","Trouble endocrinien rare",
+  "Pathologie auto-immune rare","Syndrome invalidant non diagnostiqué"
+];
+
+function buildPathoList(filter) {
+  const ul = document.getElementById('pathoList');
+  const q  = (filter||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  ul.innerHTML = PATHOLOGIES.map((p,i)=>{
+    const norm = p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(q && !norm.includes(q)) return '';
+    return `<li class="${q?'highlight':''}"><span class="patho-num">${i+1}.</span>${p}</li>`;
+  }).join('');
+}
+function openModal(){ buildPathoList(''); document.getElementById('modalPathologies').classList.add('open'); document.querySelector('.modal-search').value=''; }
+function closeModal(){ document.getElementById('modalPathologies').classList.remove('open'); }
+function filterPatho(val){ buildPathoList(val); }
+
+// ── Firebase ──
+const firebaseConfig = {
+  apiKey:"AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
+  authDomain:"quiz-oldy-sebastien.firebaseapp.com",
+  databaseURL:"https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"quiz-oldy-sebastien",
+  storageBucket:"quiz-oldy-sebastien.firebasestorage.app",
+  messagingSenderId:"315241947179",
+  appId:"1:315241947179:web:48c53a445565654e338a6e"
+};
+
+const PLAYERS_MAP = {
+  "OLDY01":"Sébastien","DEBOUT02":"Aventurier 2","VIVANT03":"Aventurier 3",
+  "FORCE04":"Aventurier 4","AMOUR05":"Aventurier 5","PAIX06":"Aventurier 6"
+};
+
+// ── SALLES — indices sans réponses intégrées ──
+const ROOMS_DATA = [
+  {
+    id:1, title:"SALLE 1 — Pathologie Mystère",
+    mission:"Observez l'affiche ci-dessous.\nConsultez ensuite la liste des 106 pathologies et trouvez la pathologie n°74.\nSon numéro dans la liste est un nombre à deux chiffres.\nAdditionnez ces deux chiffres pour obtenir votre code.",
+    code:"11",
+    hint:"La pathologie n°74 a un numéro dans la liste. Ce numéro s'écrit avec deux chiffres. Réfléchissez à comment additionner les chiffres qui composent ce numéro.",
+    img:"escape_img_jardins.png"
+  },
+  {
+    id:2, title:"SALLE 2 — Signal Invisible",
+    mission:"Observez attentivement l'affiche ci-dessous.\nSur cette image, certains mots apparaissent dans une couleur particulière.\nComptez uniquement les mots écrits en ROUGE, visibles sur la droite de l'image.\nCe nombre est votre code.",
+    code:"3",
+    hint:"Ignorez tout ce qui n'est pas rouge. Comptez mot par mot, de haut en bas.",
+    img:"escape_img_handicap.png"
+  },
+  {
+    id:3, title:"SALLE 3 — Nom de Code",
+    mission:"Consultez la liste des 106 pathologies.\nRepérez la pathologie dont le numéro est 33.\nSon nom comporte plusieurs mots.\nComptez le nombre exact de lettres contenues dans son DERNIER mot.\nAttention : ne comptez pas les traits d'union comme des lettres.",
+    code:"17",
+    hint:"Le dernier mot de cette pathologie est long et technique. Écrivez-le sur papier et comptez chaque lettre une par une.",
+    img:"escape_img_histoire.png"
+  },
+  {
+    id:4, title:"SALLE 4 — La Traversée",
+    mission:"Observez la couverture ci-dessous.\nElle représente un homme dans un état émotionnel très particulier.\nDans la liste des 106 pathologies, cherchez celle qui correspond le mieux à ce que cet homme semble vivre.\nVotre code est le numéro de cette pathologie dans la liste.",
+    code:"87",
+    hint:"L'image montre un effondrement intérieur, un état de détresse profonde. Cherchez une pathologie liée aux émotions, à la douleur psychique, à l'isolement.",
+    img:"escape_img_traversee.png"
+  },
+  {
+    id:5, title:"SALLE 5 — Sport & Date",
+    mission:"Observez l'image ci-dessous.\nRepérez la date inscrite sur le trophée.\nVotre code est le résultat d'une multiplication entre deux éléments de cette date.\nRéfléchissez bien à quels éléments multiplier.",
+    code:"9",
+    hint:"Une date comporte plusieurs éléments numériques. Tous ne sont pas utiles. Cherchez ceux qui, multipliés, donnent un résultat à un seul chiffre.",
+    img:"escape_img_sport.png"
+  },
+  {
+    id:6, title:"SALLE 6 — Calcul Invisible",
+    mission:"Observez l'image ci-dessous.\nPuis ouvrez la liste des 106 pathologies.\nRepérez le numéro de deux pathologies spécifiques : la n°66 et la n°53.\nEt non, leur numéro dans la liste, pas leur contenu.\nEffectuez une opération entre ces deux numéros pour obtenir votre code.",
+    code:"13",
+    hint:"Vous avez deux numéros. Pensez aux opérations mathématiques de base. L'une d'elles donne un résultat à deux chiffres, c'est le bon.",
+    img:"escape_img_trophee.png"
+  },
+  {
+    id:7, title:"SALLE 7 — LE DILEMME",
+    mission:"Deux portes s'offrent à vous.\nVous ne pouvez en franchir qu'une seule.\nIl n'y a pas de retour possible.\n\n🟦 VISIBLE\nChoisir la visibilité. Être vu, reconnu, montré.\n\n⬜ INVISIBLE\nRester dans l'ombre. Ne pas être vu. Continuer malgré tout.\n\nQuelle porte correspond à votre vécu du handicap invisible ?",
+    code:null,
+    hint:"Cette salle n'a pas de bonne réponse. Elle vous demande de choisir ce qui résonne avec votre propre rapport à l'invisibilité.",
+    img:"escape_img_sebastien.png"
+  }
+];
+
+// ── État local persistant entre les re-renders ──
+let playerCode   = null;
+let playerData   = null;
+let playerRef    = null;
+let _currentRoom = 0;        // numéro de salle affiché actuellement
+const hintShownPerRoom = {}; // { roomId: texte } — persiste entre les re-renders
+
+firebase.initializeApp(firebaseConfig);
+const escapeDb = firebase.database();
+
+function showScreen(id){
+  ['screenLogin','screenPlay','screenDone'].forEach(s=>{
+    document.getElementById(s).style.display=(s===id)?'block':'none';
+  });
+}
+
+// ── LOGIN ──
+function doLogin(){
+  const code=(document.getElementById('inputCode').value||'').trim().toUpperCase();
+  const errEl=document.getElementById('loginErr');
+  if(!PLAYERS_MAP[code]){errEl.textContent='❌ ACCÈS REFUSÉ — Identifiant inconnu.';return;}
+  errEl.textContent='';
+  playerCode=code;
+  playerRef=escapeDb.ref('escape_v3/players/'+code);
+  playerRef.once('value').then(snap=>{
+    if(!snap.exists()){
+      return playerRef.set({name:PLAYERS_MAP[code],room:1,score:0,done:false,r7choice:'',hintsTotal:0,connectedAt:Date.now()});
+    }
+  }).then(()=>{
+    playerRef.on('value',snap=>{
+      if(!snap.exists()) return;
+      playerData=snap.val();
+      onPlayerDataUpdate();
+    });
+  }).catch(err=>{errEl.textContent='⚠ Erreur Firebase : '+err.message;});
+}
+
+function onPlayerDataUpdate(){
+  if(!playerData) return;
+  if(playerData.done){renderDone();return;}
+  renderPlay();
+}
+
+// ── RENDER PLAY — ne recrée pas l'image si même salle ──
+function renderPlay(){
+  showScreen('screenPlay');
+  const roomIdx  = playerData.room-1;
+  const roomInfo = ROOMS_DATA[roomIdx];
+  const roomId   = roomInfo.id;
+
+  document.getElementById('playName').textContent      = playerData.name;
+  document.getElementById('playScore').textContent     = playerData.score;
+  document.getElementById('playRoomBadge').textContent = 'S'+playerData.room;
+  document.getElementById('playRoomTitle').textContent = roomInfo.title;
+
+  // Image — crée une seule fois, met à jour si nouvelle salle
+  let imgEl=document.getElementById('roomImg');
+  if(!imgEl){
+    imgEl=document.createElement('img');
+    imgEl.id='roomImg'; imgEl.className='room-img';
+    document.getElementById('playRoomBadge').before(imgEl);
+  }
+  if(roomInfo.img){ imgEl.src=roomInfo.img; imgEl.alt=roomInfo.title; imgEl.style.display='block'; }
+  else { imgEl.style.display='none'; }
+
+  // Mission — ne réécrit que si la salle change
+  const salle_changee = (_currentRoom !== roomId);
+  if(salle_changee){
+    _currentRoom = roomId;
+    document.getElementById('playMission').textContent = roomInfo.mission;
+    document.getElementById('answerErr').textContent   = '';
+    document.getElementById('dilemmeErr').textContent  = '';
+    const inp=document.getElementById('inputAnswer');
+    inp.value=''; inp.focus();
+  }
+
+  // Barre de progression
+  const pct=Math.round(((playerData.room-1)/7)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+
+  // Indice — restaure si déjà utilisé pour cette salle
+  const hintEl=document.getElementById('hintBox');
+  if(hintShownPerRoom[roomId]){
+    hintEl.textContent=hintShownPerRoom[roomId];
+    hintEl.style.display='block';
+    document.getElementById('btnHintCode').textContent='💡 Indice utilisé';
+    document.getElementById('btnHintDilemme').textContent='💡 Indice utilisé';
+  } else {
+    hintEl.style.display='none';
+    document.getElementById('btnHintCode').textContent='💡 INDICE (−20 pts)';
+    document.getElementById('btnHintDilemme').textContent='💡 INDICE (−20 pts)';
+  }
+
+  // Sections salle 7 vs autres
+  if(playerData.room===7){
+    document.getElementById('sectionCode').style.display='none';
+    document.getElementById('sectionDilemme').style.display='block';
+    // Désactiver les boutons si choix déjà fait en local
+    if(playerData.r7choice){
+      document.getElementById('btnVisible').disabled=true;
+      document.getElementById('btnInvisible').disabled=true;
+    }
+  } else {
+    document.getElementById('sectionCode').style.display='block';
+    document.getElementById('sectionDilemme').style.display='none';
+  }
+}
+
+// ── VÉRIFIER RÉPONSE ──
+function checkAnswer(){
+  const val=(document.getElementById('inputAnswer').value||'').trim();
+  const room=ROOMS_DATA[playerData.room-1];
+  const errEl=document.getElementById('answerErr');
+  if(!val) return;
+  if(val===room.code){
+    errEl.textContent=''; doAdvance();
+  } else {
+    errEl.textContent='❌ Code incorrect. Réessayez.';
+    document.getElementById('inputAnswer').select();
+  }
+}
+
+// ── AVANCER ──
+function doAdvance(){
+  const nextRoom=playerData.room+1;
+  const newScore=playerData.score+100;
+  _currentRoom=0; // force re-render salle suivante
+  if(nextRoom>7){
+    playerRef.update({room:nextRoom,score:newScore,done:true,completedAt:Date.now()});
+  } else {
+    playerRef.update({room:nextRoom,score:newScore});
+  }
+}
+
+// ── SALLE 7 DILEMME ──
+function chooseRoom7(choice){
+  const errEl=document.getElementById('dilemmeErr');
+  if(playerData.r7choice){ errEl.textContent='⚠ Vous avez déjà fait votre choix.'; return; }
+  const penalty=(choice==='VISIBLE')?-50:0;
+  document.getElementById('btnVisible').disabled=true;
+  document.getElementById('btnInvisible').disabled=true;
+  playerRef.update({
+    r7choice:choice,
+    score:playerData.score+penalty,
+    done:true,
+    completedAt:Date.now()
+  });
+}
+
+// ── INDICE — stocké localement, ne se réinitialise pas au re-render ──
+function useHint(){
+  const room=ROOMS_DATA[playerData.room-1];
+  const roomId=room.id;
+  if(!room.hint) return;
+  const hintEl=document.getElementById('hintBox');
+
+  // Afficher l'indice dans tous les cas
+  const txt='💡 '+room.hint;
+  hintEl.textContent=txt;
+  hintEl.style.display='block';
+  hintShownPerRoom[roomId]=txt;
+  document.getElementById('btnHintCode').textContent='💡 Indice utilisé';
+  document.getElementById('btnHintDilemme').textContent='💡 Indice utilisé';
+
+  // Déduire −20 pts une seule fois par salle (vérifier dans playerData)
+  const hintsKey='hintUsed_r'+roomId;
+  if(!playerData[hintsKey]){
+    const update={score:Math.max(0,playerData.score-20), hintsTotal:(playerData.hintsTotal||0)+1};
+    update[hintsKey]=true;
+    playerRef.update(update);
+  }
+}
+
+// ── ÉCRAN TERMINÉ ──
+function renderDone(){
+  showScreen('screenDone');
+  document.getElementById('doneAgent').textContent='AGENT : '+(playerData.name||'');
+  document.getElementById('doneScore').textContent=(playerData.score||0)+' pts';
+  const r7=playerData.r7choice;
+  const r7El=document.getElementById('doneR7');
+  if(r7==='VISIBLE')        r7El.textContent='Salle 7 : vous avez choisi 🟦 VISIBLE (−50 pts)';
+  else if(r7==='INVISIBLE') r7El.textContent='Salle 7 : vous avez choisi ⬜ INVISIBLE (±0 pts)';
+  else r7El.textContent='';
+}
+
+// ── DÉCONNEXION ──
+function doLogout(){
+  if(playerRef) playerRef.off();
+  playerCode=null; playerData=null; playerRef=null; _currentRoom=0;
+  Object.keys(hintShownPerRoom).forEach(k=>delete hintShownPerRoom[k]);
+  document.getElementById('inputCode').value='';
+  document.getElementById('loginErr').textContent='';
+  showScreen('screenLogin');
+}
+</script>
+</body>
+</html>
