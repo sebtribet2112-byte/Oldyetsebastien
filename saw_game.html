@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'INVISIBLE — Escape SAW</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --bg: #050508;
+  --panel: #0b0b12;
+  --border: #1a1a2e;
+  --red: #c0392b;
+  --red-glow: rgba(192,57,43,0.3);
+  --green: #00b894;
+  --green-glow: rgba(0,184,148,0.2);
+  --amber: #e17055;
+  --text: #d0cfc8;
+  --muted: #5a5a6a;
+  --white: #f0ede8;
+  --saw: #ff2d00;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(192,57,43,0.04) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 50%, rgba(0,184,148,0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── SCANLINES ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.screen {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+  display: none;
+}
+.screen.active { display: block; }
+
+/* ── LOGIN ── */
+.login-wrap {
+  border: 1px solid var(--red);
+  border-radius: 4px;
+  padding: 36px 28px;
+  background: var(--panel);
+  box-shadow: 0 0 40px rgba(192,57,43,0.15), inset 0 0 40px rgba(0,0,0,0.5);
+}
+
+.saw-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.2rem;
+  letter-spacing: 8px;
+  color: var(--saw);
+  text-align: center;
+  text-shadow: 0 0 30px var(--red), 0 0 60px rgba(255,45,0,0.3);
+  margin-bottom: 4px;
+}
+.saw-sub {
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 6px;
+  color: var(--muted);
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.field-label {
+  font-size: 0.65rem;
+  letter-spacing: 4px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.field-input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: none;
+  border-bottom: 1px solid var(--red);
+  color: var(--white);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.3rem;
+  text-align: center;
+  letter-spacing: 6px;
+  padding: 10px 0;
+  outline: none;
+  margin-bottom: 24px;
+  transition: border-color .3s;
+}
+.field-input:focus { border-bottom-color: var(--amber); }
+
+.btn-main {
+  width: 100%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 4px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all .2s;
+  box-shadow: 0 4px 20px rgba(192,57,43,0.4);
+}
+.btn-main:hover { background: #e74c3c; box-shadow: 0 4px 30px rgba(192,57,43,0.6); }
+.btn-main:active { transform: scale(0.98); }
+
+.err-msg {
+  color: var(--red);
+  font-size: 0.72rem;
+  text-align: center;
+  margin-top: 10px;
+  min-height: 18px;
+  letter-spacing: 2px;
+}
+
+/* ── GAME ── */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.level-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  color: var(--saw);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px var(--red-glow);
+  line-height: 1;
+}
+.level-name {
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.score-display {
+  text-align: right;
+}
+.score-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: var(--green);
+  letter-spacing: 2px;
+}
+.score-label {
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 3px;
+}
+.player-name {
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-track {
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: visible;
+}
+.progress-fill {
+  height: 2px;
+  background: var(--saw);
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+.progress-dots {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.prog-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all .4s;
+}
+.prog-dot.done { background: var(--saw); box-shadow: 0 0 6px var(--red-glow); }
+.prog-dot.current { background: var(--amber); box-shadow: 0 0 8px rgba(225,112,85,0.5); }
+
+/* ── SCENARIO ── */
+.room-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 4px;
+  color: var(--red);
+  margin-bottom: 14px;
+  text-shadow: 0 0 15px var(--red-glow);
+}
+.hard-badge {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-left: 8px;
+  vertical-align: middle;
+  animation: pulse-red 2s infinite;
+}
+@keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+.scenario-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  padding: 18px 16px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--white);
+  white-space: pre-line;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.scenario-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--red), transparent);
+}
+
+/* ── HINTS ── */
+.hints-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.hint-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 12px 10px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted);
+  font-style: italic;
+  position: relative;
+}
+.hint-card::before {
+  content: '◆';
+  display: block;
+  color: var(--red);
+  font-size: 0.55rem;
+  margin-bottom: 6px;
+  font-style: normal;
+}
+
+/* ── CHOICE BUTTONS ── */
+.choice-label {
+  font-size: 0.6rem;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.choice-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.btn-choice {
+  padding: 18px 10px;
+  border: 2px solid;
+  background: transparent;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all .25s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-choice::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.btn-visible {
+  border-color: #4a90d9;
+  color: #4a90d9;
+}
+.btn-visible::after { background: rgba(74,144,217,0.08); }
+.btn-visible:hover { border-color: #5ba3ec; color: #5ba3ec; box-shadow: 0 0 20px rgba(74,144,217,0.2); }
+.btn-visible:hover::after { opacity: 1; }
+
+.btn-invisible {
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn-invisible::after { background: var(--green-glow); }
+.btn-invisible:hover { box-shadow: 0 0 20px var(--green-glow); }
+.btn-invisible:hover::after { opacity: 1; }
+
+.btn-choice:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── FEEDBACK ── */
+.feedback-box {
+  min-height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 4px;
+  transition: all .4s;
+  border-radius: 3px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.feedback-ok {
+  background: rgba(0,184,148,0.1);
+  border: 1px solid var(--green);
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green-glow);
+  animation: flash-ok .4s ease;
+}
+.feedback-fail {
+  background: rgba(192,57,43,0.12);
+  border: 1px solid var(--red);
+  color: var(--red);
+  text-shadow: 0 0 10px var(--red-glow);
+  animation: flash-fail .6s ease;
+}
+@keyframes flash-ok { 0%{opacity:0;transform:scale(.95)} 100%{opacity:1;transform:scale(1)} }
+@keyframes flash-fail { 0%,100%{opacity:1} 20%,60%{opacity:0.3} 40%,80%{opacity:0.8} }
+
+/* ── RETRY COUNTER ── */
+.retry-warn {
+  display: none;
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: var(--amber);
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px dashed rgba(225,112,85,0.3);
+  border-radius: 3px;
+}
+.retry-warn.show { display: block; }
+
+/* ── DONE SCREEN ── */
+.done-wrap {
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  padding: 36px 28px;
+  background: var(--panel);
+  text-align: center;
+  box-shadow: 0 0 40px var(--green-glow);
+}
+.done-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 6px;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green-glow);
+  margin-bottom: 8px;
+}
+.done-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  color: var(--white);
+  letter-spacing: 4px;
+  text-shadow: 0 0 30px rgba(240,237,232,0.3);
+  margin: 16px 0;
+}
+.done-pts { font-size: 0.9rem; color: var(--muted); letter-spacing: 4px; }
+.done-msg {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.7;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.btn-logout {
+  margin-top: 24px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all .2s;
+}
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+/* ── SCREEN SHAKE ── */
+@keyframes shake {
+  0%,100%{transform:translate(0,0)}
+  20%{transform:translate(-6px,2px)}
+  40%{transform:translate(5px,-3px)}
+  60%{transform:translate(-4px,4px)}
+  80%{transform:translate(4px,-2px)}
+}
+.shaking { animation: shake .5s ease; }
+
+@media(max-width:480px){
+  .hints-row { grid-template-columns: 1fr; }
+  .saw-logo { font-size: 2.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div class="screen active" id="scrLogin">
+  <div class="login-wrap">
+    <div class="saw-logo">L'INVISIBLE</div>
+    <div class="saw-sub">Un jeu de choix · 7 niveaux · Aucune pitié</div>
+    <div style="font-family:'Crimson Pro',serif;font-size:.95rem;color:var(--muted);text-align:center;line-height:1.7;margin-bottom:28px;font-style:italic;">
+      "Je veux jouer à un jeu.<br>Chaque porte cache une vérité.<br>Le bon choix avance. Le mauvais recule — et complique."
+    </div>
+    <p class="field-label">Identifiant agent</p>
+    <input class="field-input" type="text" id="inputName" placeholder="VOTRE NOM" maxlength="20" autocomplete="off"
+           onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="btn-main" onclick="doLogin()">▶ ENTRER DANS LE JEU</button>
+    <p class="err-msg" id="loginErr"></p>
+  </div>
+</div>
+
+<!-- ── JEU ── -->
+<div class="screen" id="scrGame">
+  <div class="game-header">
+    <div>
+      <div class="level-badge" id="gLevelBadge">S1</div>
+      <div class="level-name" id="gLevelName">NIVEAU 1</div>
+    </div>
+    <div class="score-display">
+      <div class="player-name" id="gPlayerName">AGENT</div>
+      <div class="score-val" id="gScore">0</div>
+      <div class="score-label">POINTS</div>
+    </div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="gProgressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-dots" id="gProgressDots"></div>
+
+  <div style="height:14px"></div>
+
+  <div class="room-title" id="gRoomTitle">SALLE I</div>
+
+  <div class="scenario-box" id="gScenario">...</div>
+
+  <div class="hints-row">
+    <div class="hint-card" id="gHint1">...</div>
+    <div class="hint-card" id="gHint2">...</div>
+  </div>
+
+  <div class="retry-warn" id="gRetryWarn">
+    ⚠ NIVEAU RENFORCÉ — Ce niveau est plus difficile qu'avant
+  </div>
+
+  <div class="feedback-box" id="gFeedback" style="display:none"></div>
+
+  <p class="choice-label">VOTRE CHOIX — UNE SEULE CHANCE</p>
+  <div class="choice-row">
+    <button class="btn-choice btn-visible" id="btnV" onclick="makeChoice('VISIBLE')">
+      🟦 VISIBLE
+    </button>
+    <button class="btn-choice btn-invisible" id="btnI" onclick="makeChoice('INVISIBLE')">
+      ⬜ INVISIBLE
+    </button>
+  </div>
+</div>
+
+<!-- ── FIN ── -->
+<div class="screen" id="scrDone">
+  <div class="done-wrap">
+    <div class="done-title">✓ MISSION ACCOMPLIE</div>
+    <p style="font-size:.65rem;letter-spacing:4px;color:var(--muted)" id="doneAgent">AGENT</p>
+    <div class="done-score" id="doneScore">0</div>
+    <div class="done-pts">POINTS</div>
+    <p class="done-msg" id="doneMsg">...</p>
+    <button class="btn-logout" onclick="doLogout()">⏻ QUITTER</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+//  DONNÉES DES NIVEAUX
+// ═══════════════════════════════════════════════
+const LEVELS = [
+  {
+    id:1,
+    title:"SALLE I — L'ÉVEIL",
+    scenario:`Vous vous réveillez dans une pièce sans fenêtre.
+Votre corps vous rappelle que vous existez — à sa manière.
+Sur le mur devant vous, une question peinte en rouge :
+
+« ES-TU CE QUE LES AUTRES VOIENT ? »
+
+Deux leviers. Deux mots. Un seul passage.`,
+    hint1:'« La lumière révèle tout. Elle n\'est pas toujours une alliée. »',
+    hint2:'« L\'ombre n\'est pas l\'absence. Elle est parfois le seul refuge qui vous appartient. »',
+    answer:'INVISIBLE',
+    titleHard:'SALLE I — L\'ÉVEIL [2ᵉ PASSAGE]',
+    scenarioHard:`Vous revenez dans la première salle. Les murs sont plus proches.
+La même question brûle sur le mur, mais cette fois elle vous regarde.
+Votre corps insiste. Quelque chose en vous veut être vu.
+Quelque chose en vous sait que ce n'est pas le bon moment.
+
+« ES-TU CE QUE LES AUTRES VOIENT ? »`,
+    hint1Hard:'« Vouloir être vu et devoir l\'être sont deux choses très différentes. »',
+    hint2Hard:'« Ce que tu caches aujourd\'hui, tu le choisis. Ce n\'est pas de la honte. »',
+  },
+  {
+    id:2,
+    title:'SALLE II — LE CONTRAT',
+    scenario:`Une table en métal. Un dossier. Votre nom dessus.
+En bas du document : une case. Elle demande la vérité sur votre état.
+Elle est vide depuis des années.
+Le stylo attend. Le temps tourne.
+
+Cocher ou ne pas cocher.`,
+    hint1:'« Ce qui n\'est pas déclaré ne peut pas être protégé. »',
+    hint2:'« Mais ce qui est déclaré ne peut plus jamais être retiré. »',
+    answer:'VISIBLE',
+    titleHard:'SALLE II — LE CONTRAT [2ᵉ PASSAGE]',
+    scenarioHard:`La table est là. Le stylo est enchaîné à votre main cette fois.
+Vous ne pouvez pas quitter la pièce sans avoir décidé.
+La case est toujours vide. Votre corps s'impatiente.
+La vérité pèse. Le masque aussi.`,
+    hint1Hard:'« Les protections n\'existent que pour ceux qui acceptent d\'en avoir besoin. »',
+    hint2Hard:'« Garder le masque a un coût. Il se paie en silence et en fatigue accumulée. »',
+  },
+  {
+    id:3,
+    title:'SALLE III — LES REGARDS',
+    scenario:`Une salle d'attente bondée. Debout depuis vingt minutes.
+Votre douleur est réelle. Elle ne se voit pas.
+Un siège prioritaire est libre.
+Tout le monde vous regarde.
+
+Prenez-vous ce siège ?`,
+    hint1:'« Réclamer ce qu\'on mérite n\'est pas de l\'arrogance. C\'est de la survie. »',
+    hint2:'« Mais s\'exposer au jugement de ceux qui ne comprennent pas a un prix. »',
+    answer:'INVISIBLE',
+    titleHard:'SALLE III — LES REGARDS [2ᵉ PASSAGE]',
+    scenarioHard:`Vous revenez. La salle est plus pleine. Vos jambes tremblent davantage.
+Les regards sont plus lourds. Le siège prioritaire est toujours libre.
+Il clignote faiblement — comme s'il vous attendait.
+Il n'y a plus que vous, les autres, et votre douleur silencieuse.`,
+    hint1Hard:'« Se montrer dans la douleur est un acte politique. Pas toujours le bon moment. »',
+    hint2Hard:'« Choisir de ne pas se battre certains jours, c\'est aussi se préserver pour demain. »',
+  },
+  {
+    id:4,
+    title:'SALLE IV — LA BALANCE',
+    scenario:`Une balance mécanique au centre de la pièce.
+D'un côté : votre masque quotidien, usé, lourd de mensonges ordinaires.
+De l'autre : votre vérité, nue, vulnérable.
+La balance penche du même côté depuis trop longtemps.
+Le sol vibre. Il demande un rééquilibrage.`,
+    hint1:'« Ce qu\'on cache finit toujours par peser plus lourd que ce qu\'on montre. »',
+    hint2:'« Mais tout dévoiler d\'un coup peut briser la balance plutôt que l\'équilibrer. »',
+    answer:'VISIBLE',
+    titleHard:'SALLE IV — LA BALANCE [2ᵉ PASSAGE]',
+    scenarioHard:`La balance est là. Cette fois, des chaînes retiennent le plateau du masque.
+Comme si une partie de vous refusait de le poser.
+La vérité attend depuis si longtemps. Elle commence à avoir un nom.
+Combien de temps encore peut-on porter ce que les autres ne voient pas ?`,
+    hint1Hard:'« Le masque protège. Mais il étouffe aussi celui qui le porte trop longtemps. »',
+    hint2Hard:'« Toute vérité n\'a pas besoin d\'être criée. Certaines méritent juste d\'être dites. »',
+  },
+  {
+    id:5,
+    title:'SALLE V — LES DEUX CLÉS',
+    scenario:`Deux clés posées sur un socle de pierre.
+L'une est dorée — marquée d'un œil ouvert.
+L'autre est noire — marquée d'un œil fermé.
+Une seule serrure devant vous.
+Si vous choisissez mal, les murs se rapprochent.`,
+    hint1:'« Tout ce qui brille attire aussi ce qu\'on ne voulait pas voir. »',
+    hint2:'« L\'obscurité n\'est pas le vide. C\'est parfois la seule pièce qui vous appartienne vraiment. »',
+    answer:'INVISIBLE',
+    titleHard:'SALLE V — LES DEUX CLÉS [2ᵉ PASSAGE]',
+    scenarioHard:`Les deux clés sont toujours là. Leurs inscriptions ont changé.
+L'œil ouvert saigne légèrement. L'œil fermé sourit.
+Les murs sont déjà plus proches qu'avant.
+Vous connaissez la réponse. Vous l'avez toujours connue.`,
+    hint1Hard:'« La clé que tout le monde voit n\'est pas forcément celle qui ouvre ta porte. »',
+    hint2Hard:'« Certaines libertés commencent par un refus d\'être défini par le regard des autres. »',
+  },
+  {
+    id:6,
+    title:'SALLE VI — LE TRIBUNAL',
+    scenario:`Vous êtes à la barre. La salle est pleine.
+L'accusation est simple : vous avez prétendu aller bien pendant des années.
+Vos propres souvenirs défilent comme des preuves à charge.
+Un seul acte peut vous défendre.
+
+Parler ou se taire.`,
+    hint1:'« Se taire face à l\'injustice est une forme de consentement. »',
+    hint2:'« La honte n\'appartient pas à celui qui souffre. Elle appartient à ceux qui n\'écoutent pas. »',
+    answer:'VISIBLE',
+    titleHard:'SALLE VI — LE TRIBUNAL [2ᵉ PASSAGE]',
+    scenarioHard:`Vous revenez à la barre. Cette fois vos souvenirs ont des visages.
+Des gens qui ne vous ont pas cru. Des médecins qui mettaient des années à écouter.
+Des proches qui disaient "tu exagères".
+Ils sont tous là. Ils attendent toujours votre réponse.`,
+    hint1Hard:'« Ce qu\'on tait trop longtemps devient une prison à l\'intérieur d\'une prison. »',
+    hint2Hard:'« Témoigner n\'est pas se plaindre. C\'est exister pour de vrai. »',
+  },
+  {
+    id:7,
+    title:'SALLE VII — LE MIROIR FINAL',
+    scenario:`La dernière salle. Un miroir brisé en mille fragments.
+Chaque éclat reflète une version de vous.
+Certaines visibles. Certaines dans l'ombre. Aucune n'est fausse.
+La sortie n'a pas de serrure.
+Elle s'ouvre quand vous choisissez ce que vous êtes vraiment —
+non pour les autres, mais pour vous.`,
+    hint1:'« La visibilité que les autres t\'accordent ne te définit pas. »',
+    hint2:'« La liberté, ce n\'est pas d\'être vu. C\'est de choisir par qui, et quand. »',
+    answer:'INVISIBLE',
+    titleHard:'SALLE VII — DERNIÈRE CHANCE',
+    scenarioHard:`Le miroir est toujours là. Les fragments reflètent maintenant tout votre parcours.
+Les choix. Les erreurs. Les silences. Les moments de courage.
+La sortie attend. Elle a attendu tout ce temps.
+Elle ne demande pas que vous soyez parfait.
+Elle demande juste que vous soyez sincère avec vous-même.`,
+    hint1Hard:'« Ni visible ni invisible ne gagne toujours. L\'un des deux vous ressemble vraiment. »',
+    hint2Hard:'« La porte ne s\'ouvre pas pour celui qui choisit pour les autres. Elle s\'ouvre pour toi. »',
+  },
+];
+
+// ═══════════════════════════════════════════════
+//  FIREBASE
+// ═══════════════════════════════════════════════
+firebase.initializeApp({
+  apiKey:"AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
+  authDomain:"quiz-oldy-sebastien.firebaseapp.com",
+  databaseURL:"https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"quiz-oldy-sebastien",
+  storageBucket:"quiz-oldy-sebastien.firebasestorage.app",
+  messagingSenderId:"315241947179",
+  appId:"1:315241947179:web:48c53a445565654e338a6e"
+});
+const db = firebase.database();
+
+// ═══════════════════════════════════════════════
+//  ÉTAT LOCAL
+// ═══════════════════════════════════════════════
+let playerRef  = null;
+let playerData = null;
+let playerKey  = null;
+let _renderedLevel = 0;
+let _choiceLocked  = false;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════════
+function doLogin(){
+  const raw = (document.getElementById('inputName').value||'').trim();
+  if(!raw){ document.getElementById('loginErr').textContent='❌ IDENTIFIANT REQUIS'; return; }
+  const key = raw.toUpperCase().replace(/\s+/g,'_').replace(/[^A-Z0-9_]/g,'');
+  if(!key){ document.getElementById('loginErr').textContent='❌ NOM INVALIDE'; return; }
+  document.getElementById('loginErr').textContent='';
+  playerKey = key;
+  playerRef = db.ref('saw_game/players/'+key);
+  playerRef.once('value').then(snap=>{
+    if(!snap.exists()){
+      return playerRef.set({
+        name: raw,
+        level: 1,
+        score: 0,
+        done: false,
+        retries: {},
+        startedAt: Date.now()
+      });
+    }
+  }).then(()=>{
+    playerRef.on('value', snap=>{
+      if(!snap.exists()) return;
+      playerData = snap.val();
+      if(playerData.done) renderDone();
+      else renderGame();
+    });
+  }).catch(err=>{
+    document.getElementById('loginErr').textContent='⚠ Erreur : '+err.message;
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER GAME
+// ═══════════════════════════════════════════════
+function renderGame(){
+  showScreen('scrGame');
+  const lvl = Math.min(playerData.level, LEVELS.length);
+  const L   = LEVELS[lvl-1];
+  const retries = (playerData.retries && playerData.retries['l'+lvl]) || 0;
+  const isHard  = retries > 0;
+
+  // Mise à jour header
+  document.getElementById('gPlayerName').textContent = playerData.name;
+  document.getElementById('gScore').textContent      = playerData.score;
+  document.getElementById('gLevelBadge').textContent = 'S'+lvl;
+  document.getElementById('gLevelName').textContent  = 'NIVEAU '+lvl+' / '+LEVELS.length;
+
+  // Progress dots
+  const dots = document.getElementById('gProgressDots');
+  dots.innerHTML = LEVELS.map((_,i)=>{
+    let cls = 'prog-dot';
+    if(i+1 < lvl) cls += ' done';
+    else if(i+1 === lvl) cls += ' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+  document.getElementById('gProgressFill').style.width = (((lvl-1)/LEVELS.length)*100)+'%';
+
+  // Ne re-rend le contenu que si le niveau change
+  if(_renderedLevel !== lvl || isHard !== _lastHard){
+    _renderedLevel = lvl;
+    _lastHard = isHard;
+    _choiceLocked = false;
+
+    const title    = isHard ? L.titleHard    : L.title;
+    const scenario = isHard ? L.scenarioHard : L.scenario;
+    const h1       = isHard ? L.hint1Hard    : L.hint1;
+    const h2       = isHard ? L.hint2Hard    : L.hint2;
+
+    const hardBadge = isHard ? '<span class="hard-badge">RENFORCÉ</span>' : '';
+    document.getElementById('gRoomTitle').innerHTML = title + hardBadge;
+    document.getElementById('gScenario').textContent = scenario;
+    document.getElementById('gHint1').textContent = h1;
+    document.getElementById('gHint2').textContent = h2;
+
+    document.getElementById('gRetryWarn').className = 'retry-warn'+(isHard?' show':'');
+    document.getElementById('gFeedback').style.display = 'none';
+    document.getElementById('btnV').disabled = false;
+    document.getElementById('btnI').disabled = false;
+  }
+}
+let _lastHard = false;
+
+// ═══════════════════════════════════════════════
+//  CHOIX
+// ═══════════════════════════════════════════════
+function makeChoice(choice){
+  if(_choiceLocked) return;
+  _choiceLocked = true;
+  document.getElementById('btnV').disabled = true;
+  document.getElementById('btnI').disabled = true;
+
+  const lvl = Math.min(playerData.level, LEVELS.length);
+  const L   = LEVELS[lvl-1];
+  const fb  = document.getElementById('gFeedback');
+  fb.style.display = 'flex';
+
+  if(choice === L.answer){
+    // ── BON CHOIX ──
+    fb.className = 'feedback-box feedback-ok';
+    fb.textContent = '✓ ACCÈS ACCORDÉ — +100 PTS';
+    const newScore = playerData.score + 100;
+    const nextLevel = lvl + 1;
+    setTimeout(()=>{
+      _renderedLevel = 0;
+      if(nextLevel > LEVELS.length){
+        playerRef.update({score:newScore, done:true, completedAt:Date.now()});
+      } else {
+        playerRef.update({score:newScore, level:nextLevel});
+      }
+    }, 1400);
+  } else {
+    // ── MAUVAIS CHOIX ──
+    fb.className = 'feedback-box feedback-fail';
+    fb.textContent = '✗ MAUVAIS CHOIX — −50 PTS — RECUL';
+    document.getElementById('scrGame').classList.add('shaking');
+    setTimeout(()=>document.getElementById('scrGame').classList.remove('shaking'), 600);
+
+    const newScore  = Math.max(0, playerData.score - 50);
+    const prevLevel = Math.max(1, lvl - 1);
+    // Marquer le niveau actuel comme "retried" (sera harder au prochain passage)
+    const retries   = Object.assign({}, playerData.retries||{});
+    retries['l'+lvl] = (retries['l'+lvl]||0) + 1;
+
+    setTimeout(()=>{
+      _renderedLevel = 0;
+      _lastHard = false;
+      playerRef.update({score:newScore, level:prevLevel, retries:retries});
+    }, 1800);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  ÉCRAN FIN
+// ═══════════════════════════════════════════════
+function renderDone(){
+  showScreen('scrDone');
+  document.getElementById('doneAgent').textContent = 'AGENT : '+(playerData.name||'').toUpperCase();
+  document.getElementById('doneScore').textContent = playerData.score;
+  const msgs = [
+    [400, "Vous avez traversé les 7 salles sans fléchir. Vous avez compris que l'invisibilité n'est pas une faiblesse — c'est un choix, et parfois une protection."],
+    [250, "Vous avez traversé. Pas sans douleur. Chaque recul vous a appris quelque chose sur vous-même."],
+    [0,   "Le chemin a été difficile. Mais vous êtes allé jusqu'au bout. C'est ce qui compte."],
+  ];
+  const m = msgs.find(([min])=>playerData.score>=min);
+  document.getElementById('doneMsg').textContent = m ? m[1] : msgs[2][1];
+}
+
+// ═══════════════════════════════════════════════
+//  LOGOUT
+// ═══════════════════════════════════════════════
+function doLogout(){
+  if(playerRef) playerRef.off();
+  playerRef=null; playerData=null; playerKey=null;
+  _renderedLevel=0; _choiceLocked=false; _lastHard=false;
+  document.getElementById('inputName').value='';
+  document.getElementById('loginErr').textContent='';
+  showScreen('scrLogin');
+}
+</script>
+</body>
+</html>
