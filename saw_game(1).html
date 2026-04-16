@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>OLDY GAME — Le Coffre Maudit</title>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#040404;--red:#CC0000;--dkred:#6B0000;--gold:#C9A227;--txt:#B0A090;--dim:#111;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);
+  font-family:'Special Elite',cursive;overflow:hidden;user-select:none;touch-action:none;}
+#game{width:100vw;height:100vh;position:relative;}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .5s;}
+.screen.active{opacity:1;pointer-events:all;}
+
+#overlay{position:fixed;inset:0;background:#000;z-index:200;
+  pointer-events:none;opacity:0;transition:opacity .4s;}
+#overlay.on{opacity:1;}
+
+/* ── KEYS BAR ── */
+#keys-bar{position:fixed;top:0;left:0;right:0;display:none;
+  justify-content:center;gap:14px;z-index:100;padding:7px 0;
+  background:linear-gradient(180deg,rgba(0,0,0,.9),transparent);}
+.kicon{font-size:1.3rem;opacity:.1;filter:grayscale(1);transition:all .5s;}
+.kicon.got{opacity:1;filter:none;animation:kpop .5s ease;}
+@keyframes kpop{0%{transform:scale(0)rotate(-180deg);}65%{transform:scale(1.4)rotate(8deg);}100%{transform:scale(1);}}
+
+/* ── TYPOGRAPHY ── */
+.saw-logo{font-family:'Creepster',cursive;font-size:6.5rem;color:var(--red);
+  letter-spacing:14px;text-shadow:0 0 40px #F00,0 0 80px #600;
+  animation:flick 4.5s infinite;}
+@keyframes flick{0%,84%,100%{opacity:1;}85%{opacity:.15;}87%{opacity:1;}89%{opacity:.05;}91%{opacity:1;}}
+
+.j-quote{font-style:italic;color:#444;font-size:.83rem;line-height:2.1;
+  text-align:center;max-width:255px;margin:18px 0 26px;}
+
+.salle-tag{font-size:.58rem;color:#222;letter-spacing:7px;text-transform:uppercase;
+  position:absolute;top:16px;left:0;right:0;text-align:center;}
+
+.j-msg{font-family:'Creepster',cursive;font-size:1rem;color:#2e2e2e;
+  text-align:center;max-width:260px;line-height:1.8;
+  position:absolute;top:32px;left:0;right:0;margin:auto;padding:0 20px;}
+
+/* ── ÉCRAN MOT DE PASSE ── */
+#screen-password{background:var(--bg);z-index:50;}
+.pw-logo{font-family:'Creepster',cursive;font-size:3.8rem;color:var(--red);
+  letter-spacing:8px;text-shadow:0 0 28px #900;margin-bottom:6px;}
+.pw-sub{font-family:'Creepster',cursive;font-size:1rem;color:#2a2a2a;
+  letter-spacing:4px;text-align:center;margin-bottom:28px;}
+.pw-field{background:#0a0a0a;border:1px solid #2a2a2a;color:var(--txt);
+  font-family:'Special Elite',cursive;font-size:1.3rem;letter-spacing:4px;
+  text-align:center;padding:14px 20px;width:min(240px,80vw);outline:none;
+  text-transform:uppercase;caret-color:var(--red);border-radius:2px;
+  -webkit-appearance:none;}
+.pw-field:focus{border-color:#3a1515;}
+.pw-field::placeholder{color:#222;letter-spacing:2px;font-size:1rem;}
+.pw-err{font-size:.78rem;color:var(--red);min-height:22px;text-align:center;
+  margin-top:8px;font-style:italic;opacity:0;transition:opacity .3s;}
+.pw-err.show{opacity:1;}
+.pw-hint{font-size:.68rem;color:#1e1e1e;text-align:center;margin-top:18px;
+  line-height:1.8;max-width:220px;}
+
+/* ── BUTTON ── */
+.btn{background:none;border:2px solid var(--red);color:var(--txt);
+  font-family:'Special Elite',cursive;font-size:1.05rem;padding:14px 38px;
+  cursor:pointer;letter-spacing:3px;text-transform:uppercase;touch-action:manipulation;
+  box-shadow:0 0 18px rgba(204,0,0,.35);transition:all .18s;}
+.btn:active{background:rgba(204,0,0,.18);transform:scale(.94);}
+.btn-gold{border-color:var(--gold);box-shadow:0 0 18px rgba(201,162,39,.3);}
+
+.puppet{font-size:3rem;margin:10px 0;animation:sway 3s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+
+/* ════════════════════
+   ROOM 1 — TROIS PORTES
+════════════════════ */
+.doors-wrap{display:flex;gap:18px;align-items:flex-end;margin-top:85px;}
+.door{width:82px;height:148px;background:#0b0b0b;border:2px solid #161616;
+  border-radius:4px 4px 0 0;position:relative;cursor:pointer;touch-action:manipulation;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:border-color .2s;}
+.door:active{border-color:#3a0000;background:#0f0808;}
+.door-knob{width:9px;height:9px;border-radius:50%;background:#181818;border:1px solid #222;
+  position:absolute;right:12px;top:50%;}
+.door-label{font-family:'Creepster',cursive;font-size:.65rem;color:#1c1c1c;
+  position:absolute;bottom:8px;letter-spacing:2px;}
+
+/* ════════════════════
+   ROOM 2 — DILEMME MORAL
+════════════════════ */
+.figures{display:flex;gap:36px;align-items:center;margin-top:85px;}
+.figure{display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:20px 18px;cursor:pointer;touch-action:manipulation;transition:all .2s;
+  border:1px solid #111;}
+.figure:active{border-color:#3a0000;background:rgba(204,0,0,.06);transform:scale(.94);}
+.fig-ico{font-size:4.5rem;filter:grayscale(1) brightness(.35);}
+.fig-lbl{font-family:'Creepster',cursive;font-size:.75rem;color:#2a2a2a;letter-spacing:3px;}
+.vs-icon{font-size:1.4rem;color:#181818;}
+
+/* ════════════════════
+   ROOM 3 — SÉQUENCE
+════════════════════ */
+.seq-show{width:min(240px,80vw);height:75px;background:#080808;
+  border:1px solid #141414;display:flex;align-items:center;justify-content:center;
+  font-size:4rem;margin:10px 0;}
+.seq-dots{display:flex;gap:10px;margin:6px 0;}
+.sdot{width:9px;height:9px;border-radius:50%;background:#161616;
+  border:1px solid #222;transition:all .3s;}
+.sdot.on{background:var(--red);border-color:var(--red);box-shadow:0 0 7px var(--red);}
+.sdot.done{background:#444;border-color:#444;}
+.seq-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  width:min(210px,80vw);margin-top:14px;pointer-events:none;opacity:.25;transition:opacity .4s;}
+.seq-btns.active{pointer-events:all;opacity:1;}
+.sbtn{background:#080808;border:2px solid #181818;padding:16px;
+  font-size:2.3rem;cursor:pointer;touch-action:manipulation;
+  border-radius:3px;text-align:center;transition:all .14s;}
+.sbtn:active{border-color:var(--red);background:rgba(204,0,0,.1);}
+.sbtn.hit{border-color:var(--red);background:rgba(204,0,0,.08);}
+
+/* ════════════════════
+   ROOM 4 — OBJETS (Choix d'objet)
+   5 objets, un seul ouvre
+════════════════════ */
+.obj-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+  max-width:min(300px,88vw);margin-top:85px;}
+.obj{width:min(80px,22vw);height:min(80px,22vw);background:#080808;
+  border:1px solid #141414;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.3rem;cursor:pointer;touch-action:manipulation;transition:all .18s;}
+.obj:active{transform:scale(.88);border-color:#3a0000;}
+
+/* ════════════════════
+   ROOM 5 — DOUBLE VERROU
+   Découverte : 2 doigts simultanés
+════════════════════ */
+.vault{width:min(210px,72vw);height:min(210px,72vw);
+  background:radial-gradient(circle,#160808 0%,#060606 100%);
+  border:2px solid #141414;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;touch-action:none;position:relative;}
+.vault-ico{font-size:5.5rem;}
+.vault-locks{display:flex;gap:22px;font-size:1.3rem;color:#1a1a1a;}
+
+/* ════════════════════
+   COFFRE ANIMATION
+════════════════════ */
+.ckeys-row{display:flex;gap:12px;margin:10px 0;}
+.ckey{font-size:1.6rem;opacity:.12;filter:grayscale(1);transition:all .5s;}
+.ckey.placed{opacity:1;filter:none;animation:kplace .6s ease;}
+@keyframes kplace{0%{transform:translateY(-18px)scale(1.3);}100%{transform:none;}}
+.chest-stat{font-family:'Creepster',cursive;font-size:1.05rem;text-align:center;color:#444;}
+
+/* ════════════════════
+   CHOIX FINAL
+════════════════════ */
+.fin-boxes{display:flex;gap:22px;justify-content:center;margin:20px 0;}
+.fin-box{width:min(132px,40vw);height:min(132px,40vw);background:#0a0a0a;
+  border:1px solid #1e1e1e;border-radius:5px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:manipulation;transition:all .2s;box-shadow:0 4px 20px #000;}
+.fin-box:active{transform:scale(.91);border-color:var(--red);}
+.fin-box .ico{font-size:2.8rem;margin-bottom:6px;}
+.fin-box .lbl{font-family:'Creepster',cursive;font-size:.82rem;color:#333;letter-spacing:1px;}
+
+/* ════════════════════
+   RÉSULTATS
+════════════════════ */
+.res-ico{font-size:5.5rem;animation:rpop .5s ease-out;}
+@keyframes rpop{0%{transform:scale(0)rotate(-15deg);}65%{transform:scale(1.2)rotate(4deg);}100%{transform:none;}}
+.res-title{font-family:'Creepster',cursive;font-size:2.8rem;letter-spacing:4px;text-align:center;margin:10px 0;}
+.res-title.win{color:var(--gold);text-shadow:0 0 24px rgba(201,162,39,.65);}
+.res-title.lose{color:var(--red);text-shadow:0 0 24px rgba(204,0,0,.65);}
+.res-txt{font-size:.84rem;color:#555;text-align:center;max-width:265px;line-height:1.95;margin-bottom:24px;}
+
+/* ════════════════════
+   ÉCRAN DE MORT
+════════════════════ */
+.death-ico{font-size:5rem;animation:dpop .4s ease-out;}
+@keyframes dpop{from{transform:scale(0)rotate(-20deg);}to{transform:scale(1);}}
+.death-title{font-family:'Creepster',cursive;font-size:3.2rem;color:var(--red);
+  letter-spacing:5px;text-shadow:0 0 24px rgba(204,0,0,.7);margin:10px 0;}
+.death-quote{font-style:italic;color:#3a3a3a;font-size:.82rem;text-align:center;
+  max-width:248px;line-height:2;margin-bottom:26px;}
+</style>
+</head>
+<body>
+<div id="game">
+
+  <div id="keys-bar">
+    <span class="kicon" id="k0">🗝️</span><span class="kicon" id="k1">🗝️</span>
+    <span class="kicon" id="k2">🗝️</span><span class="kicon" id="k3">🗝️</span>
+    <span class="kicon" id="k4">🗝️</span>
+  </div>
+
+  <!-- ════ MOT DE PASSE ════ -->
+  <div class="screen active" id="screen-password">
+    <div class="pw-logo">🐾 OLDY</div>
+    <div class="pw-sub">GAME — ACCÈS PRIVÉ</div>
+    <input class="pw-field" id="pw-input" type="password"
+           placeholder="Mot de passe"
+           autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+           onkeydown="if(event.key==='Enter')checkPw()"/>
+    <div class="pw-err" id="pw-err">Code incorrect. Réessaie.</div>
+    <button class="btn" style="margin-top:16px" onclick="checkPw()">ENTRER</button>
+    <div class="pw-hint">
+      Code reçu par e-mail.<br>
+      Contacte <span style="color:#3a2a2a">seb.tribet2112@gmail.com</span><br>
+      pour en obtenir un.
+    </div>
+  </div>
+
+  <!-- ════ INTRO ════ -->
+  <div class="screen" id="screen-intro">
+    <div class="saw-logo">OLDY</div>
+    <div style="font-family:'Creepster',cursive;font-size:1.1rem;color:#2a2a2a;
+      letter-spacing:4px;text-align:center">LE COFFRE MAUDIT</div>
+    <div class="puppet">🎭</div>
+    <p class="j-quote">
+      "Je veux jouer à un jeu.<br>
+      Cinq épreuves t'attendent.<br>
+      Aucune règle ne te sera donnée.<br>
+      Chaque mauvais choix te ramène au début.<br>
+      Bonne chance."
+    </p>
+    <button class="btn" onclick="startGame()">ENTRER</button>
+  </div>
+
+  <!-- ════ SALLE I — TROIS PORTES ════
+       Correcte : porte II (centre, index 1)
+       Les deux autres = mort
+  ════ -->
+  <div class="screen" id="screen-room1">
+    <div class="salle-tag">SALLE I</div>
+    <p class="j-msg">"Trois portes.<br>Trois destins.<br>Choisis."</p>
+    <div class="doors-wrap">
+      <div class="door" ontouchstart="doorTap(event,0)" onclick="doorTap(null,0)">
+        <div class="door-knob"></div>
+        <div class="door-label">I</div>
+      </div>
+      <div class="door" ontouchstart="doorTap(event,1)" onclick="doorTap(null,1)">
+        <div class="door-knob"></div>
+        <div class="door-label">II</div>
+      </div>
+      <div class="door" ontouchstart="doorTap(event,2)" onclick="doorTap(null,2)">
+        <div class="door-knob"></div>
+        <div class="door-label">III</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SALLE II — DILEMME MORAL ════
+       Correct : LUI (B, le vieil homme)
+       Sauver l'enfant = mort (trop évident → piège)
+  ════ -->
+  <div class="screen" id="screen-room2">
+    <div class="salle-tag">SALLE II</div>
+    <p class="j-msg">"L'un doit vivre.<br>L'autre doit mourir.<br>À toi de choisir."</p>
+    <div class="figures">
+      <div class="figure" ontouchstart="moralTap(event,'A')" onclick="moralTap(null,'A')">
+        <div class="fig-ico">👧</div>
+        <div class="fig-lbl">ELLE</div>
+      </div>
+      <div class="vs-icon">⚔️</div>
+      <div class="figure" ontouchstart="moralTap(event,'B')" onclick="moralTap(null,'B')">
+        <div class="fig-ico">👴</div>
+        <div class="fig-lbl">LUI</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SALLE III — SÉQUENCE ════
+       Séquence fixe : 🔒 ☠️ ⛓️ 🩸
+       Affichée une fois → le joueur doit la reproduire
+       Aucune instruction — il comprend en voyant
+  ════ -->
+  <div class="screen" id="screen-room3">
+    <div class="salle-tag">SALLE III</div>
+    <div class="seq-show" id="seq-show">·</div>
+    <div class="seq-dots">
+      <div class="sdot" id="sd0"></div>
+      <div class="sdot" id="sd1"></div>
+      <div class="sdot" id="sd2"></div>
+      <div class="sdot" id="sd3"></div>
+    </div>
+    <div class="seq-btns" id="seq-btns">
+      <div class="sbtn" data-s="🔒" ontouchstart="seqTap(event,'🔒')" onclick="seqTap(null,'🔒')">🔒</div>
+      <div class="sbtn" data-s="☠️" ontouchstart="seqTap(event,'☠️')" onclick="seqTap(null,'☠️')">☠️</div>
+      <div class="sbtn" data-s="⛓️" ontouchstart="seqTap(event,'⛓️')" onclick="seqTap(null,'⛓️')">⛓️</div>
+      <div class="sbtn" data-s="🩸" ontouchstart="seqTap(event,'🩸')" onclick="seqTap(null,'🩸')">🩸</div>
+    </div>
+  </div>
+
+  <!-- ════ SALLE IV — OBJETS ════
+       5 objets. 1 seul ouvre la porte.
+       Correct : 📿 (le chapelet — contre-intuitif)
+       Aucun indice. Pure découverte.
+  ════ -->
+  <div class="screen" id="screen-room4">
+    <div class="salle-tag">SALLE IV</div>
+    <p class="j-msg">"Sur cette table se trouve<br>ta salvation...<br>et ta mort."</p>
+    <div class="obj-grid">
+      <div class="obj" ontouchstart="objTap(event,'knife')" onclick="objTap(null,'knife')">🗡️</div>
+      <div class="obj" ontouchstart="objTap(event,'skull')" onclick="objTap(null,'skull')">💀</div>
+      <div class="obj" ontouchstart="objTap(event,'rosary')" onclick="objTap(null,'rosary')">📿</div>
+      <div class="obj" ontouchstart="objTap(event,'syringe')" onclick="objTap(null,'syringe')">💉</div>
+      <div class="obj" ontouchstart="objTap(event,'chain')" onclick="objTap(null,'chain')">⛓️</div>
+    </div>
+  </div>
+
+  <!-- ════ SALLE V — DOUBLE VERROU ════
+       2 doigts simultanés = ouvre
+       1 doigt = rien (pas de mort, juste rien)
+       Pure découverte — aucune instruction
+  ════ -->
+  <div class="screen" id="screen-room5">
+    <div class="salle-tag">SALLE V</div>
+    <div class="vault" id="r5-vault">
+      <div class="vault-ico" id="vault-ico">🔒</div>
+      <div class="vault-locks">🔑 🔑</div>
+    </div>
+  </div>
+
+  <!-- ════ COFFRE ════ -->
+  <div class="screen" id="screen-chest">
+    <div style="height:44px"></div>
+    <p style="font-family:'Creepster',cursive;font-size:1.5rem;color:var(--txt);text-align:center">
+      Le Coffre
+    </p>
+    <p style="font-style:italic;font-size:.78rem;color:#2e2e2e;text-align:center;margin:6px 0 14px">
+      "Tu as réussi les cinq épreuves..."
+    </p>
+    <svg id="chest-svg" style="width:min(165px,55vw);filter:drop-shadow(0 0 16px rgba(201,162,39,.25))"
+         viewBox="0 0 180 145">
+      <defs><radialGradient id="cg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#C9A227" stop-opacity=".4"/>
+        <stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
+      </radialGradient></defs>
+      <rect x="10" y="60" width="160" height="80" rx="4" fill="#3D2008" stroke="#6B3D10" stroke-width="2"/>
+      <rect x="10" y="80" width="160" height="7" fill="#2a1805" stroke="#4a3a15"/>
+      <rect x="79" y="60" width="22" height="80" fill="#2a1805" stroke="#4a3a15"/>
+      <rect x="83" y="90" width="14" height="13" rx="2" fill="#C9A227"/>
+      <path d="M87 90 Q90 80 93 90" stroke="#C9A227" stroke-width="3" fill="none"/>
+      <rect x="10" y="10" width="160" height="53" rx="4" fill="#4a2810" stroke="#7a4820" stroke-width="2" id="chest-lid"/>
+      <rect x="10" y="28" width="160" height="7" fill="#2a1805" stroke="#4a3a15"/>
+      <rect x="28" y="57" width="14" height="9" rx="2" fill="#888" stroke="#555"/>
+      <rect x="138" y="57" width="14" height="9" rx="2" fill="#888" stroke="#555"/>
+      <rect x="10" y="10" width="160" height="53" rx="4" fill="url(#cg)" opacity="0" id="chest-glow"/>
+    </svg>
+    <div class="ckeys-row">
+      <span class="ckey" id="ck0">🗝️</span><span class="ckey" id="ck1">🗝️</span>
+      <span class="ckey" id="ck2">🗝️</span><span class="ckey" id="ck3">🗝️</span>
+      <span class="ckey" id="ck4">🗝️</span>
+    </div>
+    <div class="chest-stat" id="chest-stat">Insertion des clés...</div>
+  </div>
+
+  <!-- ════ CHOIX FINAL ════ -->
+  <div class="screen" id="screen-choice">
+    <div style="height:44px"></div>
+    <p style="font-family:'Creepster',cursive;font-size:1.5rem;color:var(--txt);text-align:center">
+      Le Choix Final
+    </p>
+    <p style="font-style:italic;font-size:.8rem;color:#333;text-align:center;
+      max-width:250px;line-height:2;margin:12px 0">
+      "Deux boîtes.<br>Une liberté. Un piège.<br>Tu ne sauras qu'après."
+    </p>
+    <div class="fin-boxes">
+      <div class="fin-box" ontouchstart="finalChoice(event,'left')" onclick="finalChoice(null,'left')">
+        <div class="ico">📦</div><div class="lbl">GAUCHE</div>
+      </div>
+      <div class="fin-box" ontouchstart="finalChoice(event,'right')" onclick="finalChoice(null,'right')">
+        <div class="ico">📦</div><div class="lbl">DROITE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ VICTOIRE ════ -->
+  <div class="screen" id="screen-win">
+    <div class="res-ico">🏆</div>
+    <div class="res-title win">LIBERTÉ</div>
+    <p class="res-txt">La boîte s'ouvre.<br>Une clé dorée brille.<br>
+      La porte grince. L'air frais.<br><br>
+      <em style="color:var(--gold)">Tu as survécu au Coffre Maudit.</em></p>
+    <button class="btn btn-gold" onclick="restart()">REJOUER</button>
+  </div>
+
+  <!-- ════ PIÈGE FINAL ════ -->
+  <div class="screen" id="screen-final-trap">
+    <div class="res-ico">💀</div>
+    <div class="res-title lose">PIÈGE</div>
+    <p class="res-txt">La boîte s'ouvre.<br>Un mécanisme. Un éclair. Le noir.<br><br>
+      <em style="color:#2e2e2e">"Tu as choisi la mauvaise boîte."<br>— Jigsaw</em></p>
+    <button class="btn" onclick="restart()">RÉESSAYER</button>
+  </div>
+
+  <!-- ════ MORT ════ -->
+  <div class="screen" id="screen-death">
+    <div class="death-ico">💀</div>
+    <div class="death-title">MORT</div>
+    <p class="death-quote" id="death-quote">
+      "Mauvais choix.<br>Recommence depuis le début."
+    </p>
+    <button class="btn" onclick="restart()">RECOMMENCER</button>
+  </div>
+
+  <div id="overlay"></div>
+</div>
+
+<script>
+/* ══════════════════════════
+   MOT DE PASSE
+   Pour changer le code : modifier la valeur de PW ci-dessous
+══════════════════════════ */
+const PW = 'OLDYGAME';
+
+function checkPw() {
+  const val = document.getElementById('pw-input').value.trim().toUpperCase();
+  const err = document.getElementById('pw-err');
+  if (val === PW) {
+    err.classList.remove('show');
+    document.getElementById('screen-password').classList.remove('active');
+    document.getElementById('screen-intro').classList.add('active');
+  } else {
+    err.classList.add('show');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    setTimeout(() => err.classList.remove('show'), 2800);
+  }
+}
+
+/* ══════════════════════════
+   ÉTAT
+══════════════════════════ */
+let keysGot = 0;
+let trapSide = Math.random() < .5 ? 'left' : 'right';
+let curScreen = 'intro';
+let touchLocked = false; // prevent double-fire touch+click
+
+const DEATH_QUOTES = [
+  '"Mauvais choix.<br>Recommence depuis le début."',
+  '"La mort est patiente.<br>Recommence."',
+  '"Je t\'avais dit que je voulais jouer.<br>Pas que ce serait facile."',
+  '"L\'espoir s\'éteint avec toi.<br>Mais tu peux réessayer."',
+  '"Certains ne comprennent qu\'après avoir tout perdu."',
+];
+
+/* ══════════════════════════
+   NAVIGATION
+══════════════════════════ */
+function go(id, cb) {
+  const ov = document.getElementById('overlay');
+  ov.classList.add('on');
+  setTimeout(() => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    curScreen = id;
+    ov.classList.remove('on');
+    if (cb) cb();
+  }, 430);
+}
+
+function die(msg) {
+  document.getElementById('death-quote').innerHTML =
+    msg || DEATH_QUOTES[Math.floor(Math.random() * DEATH_QUOTES.length)];
+  go('death');
+}
+
+function gainKey() {
+  const el = document.getElementById('k' + keysGot);
+  if (el) el.classList.add('got');
+  keysGot++;
+}
+
+function startGame() {
+  keysGot = 0;
+  document.querySelectorAll('.kicon').forEach(k => k.classList.remove('got'));
+  document.getElementById('keys-bar').style.display = 'flex';
+  go('room1');
+}
+
+function restart() {
+  keysGot = 0;
+  trapSide = Math.random() < .5 ? 'left' : 'right';
+  touchLocked = false;
+  document.querySelectorAll('.kicon').forEach(k => k.classList.remove('got'));
+  document.querySelectorAll('.ckey').forEach(k => k.classList.remove('placed'));
+  const lid = document.getElementById('chest-lid');
+  if (lid) { lid.style.transform = ''; lid.style.transition = ''; }
+  const glow = document.getElementById('chest-glow');
+  if (glow) glow.style.opacity = '0';
+  document.getElementById('chest-stat').textContent = 'Insertion des clés...';
+  document.getElementById('chest-stat').style.color = '#444';
+  document.getElementById('keys-bar').style.display = 'none';
+  go('intro');
+}
+
+// Prevent double fire (touchstart + click on mobile)
+function touchGuard(e) {
+  if (e && e.type === 'touchstart') {
+    e.preventDefault();
+    touchLocked = true;
+    setTimeout(() => touchLocked = false, 600);
+    return true; // process
+  }
+  if (e === null && touchLocked) return false; // skip click
+  return true; // process click
+}
+
+/* ══════════════════════════
+   SALLE I — TROIS PORTES
+   Correcte : index 1 (porte II, centre)
+   I et III = mort
+══════════════════════════ */
+function doorTap(e, idx) {
+  if (!touchGuard(e)) return;
+  if (idx === 1) {
+    gainKey();
+    go('room2');
+  } else {
+    die();
+  }
+}
+
+/* ══════════════════════════
+   SALLE II — DILEMME MORAL
+   Correct : B (le vieil homme — LUI)
+   Sauver l'enfant = instinct = piège
+   Sauver le vieux = contre-intuitif = correct
+══════════════════════════ */
+function moralTap(e, choice) {
+  if (!touchGuard(e)) return;
+  if (choice === 'B') {
+    gainKey();
+    go('room3', initR3);
+  } else {
+    die('"La pitié n\'a pas sa place ici.<br>Recommence."');
+  }
+}
+
+/* ══════════════════════════
+   SALLE III — SÉQUENCE MÉMORISÉE
+   Séquence fixe : 🔒 ☠️ ⛓️ 🩸
+   Montrée une fois → reproduire
+   Aucune instruction
+══════════════════════════ */
+const SEQ = ['🔒', '☠️', '⛓️', '🩸'];
+let seqPhase = 'wait', seqIdx = 0, seqAnswer = [], seqTmr = null;
+
+function initR3() {
+  seqPhase = 'wait'; seqIdx = 0; seqAnswer = [];
+  clearTimeout(seqTmr);
+  const btns = document.getElementById('seq-btns');
+  btns.className = 'seq-btns'; // remove active
+  document.querySelectorAll('.sdot').forEach(d => { d.classList.remove('on'); d.classList.remove('done'); });
+  document.getElementById('seq-show').textContent = '·';
+  seqTmr = setTimeout(playSeq, 1100);
+}
+
+function playSeq() {
+  if (seqIdx >= SEQ.length) {
+    // Sequence shown — let player input
+    seqPhase = 'input'; seqIdx = 0;
+    document.getElementById('seq-show').textContent = '?';
+    document.getElementById('seq-btns').className = 'seq-btns active';
+    return;
+  }
+  // Show symbol
+  document.getElementById('seq-show').textContent = SEQ[seqIdx];
+  document.getElementById('sd' + seqIdx).classList.add('on');
+  const i = seqIdx;
+  seqTmr = setTimeout(() => {
+    document.getElementById('sd' + i).classList.remove('on');
+    document.getElementById('sd' + i).classList.add('done');
+    document.getElementById('seq-show').textContent = '·';
+    seqIdx++;
+    seqTmr = setTimeout(playSeq, 380);
+  }, 850);
+}
+
+function seqTap(e, sym) {
+  if (!touchGuard(e)) return;
+  if (seqPhase !== 'input') return;
+  seqAnswer.push(sym);
+  const n = seqAnswer.length - 1;
+  // Highlight button briefly
+  const btn = document.querySelector(`.sbtn[data-s="${sym}"]`);
+  if (btn) { btn.classList.add('hit'); setTimeout(() => btn.classList.remove('hit'), 200); }
+  // Check
+  if (seqAnswer[n] !== SEQ[n]) {
+    seqPhase = 'wait';
+    die('"Mauvaise séquence.<br>Recommence depuis le début."');
+    return;
+  }
+  if (seqAnswer.length === SEQ.length) {
+    gainKey();
+    go('room4');
+  }
+}
+
+/* ══════════════════════════
+   SALLE IV — OBJETS
+   Correct : 📿 (le chapelet)
+   Tous les autres = mort
+   Aucun indice
+══════════════════════════ */
+function objTap(e, id) {
+  if (!touchGuard(e)) return;
+  if (id === 'rosary') {
+    gainKey();
+    go('room5', initR5);
+  } else {
+    die('"Tu as choisi la mort.<br>Recommence."');
+  }
+}
+
+/* ══════════════════════════
+   SALLE V — DOUBLE VERROU
+   Mechanique de découverte :
+   • 1 doigt → rien (pas de mort)
+   • 2 doigts simultanés → succès
+   Aucune instruction
+══════════════════════════ */
+let r5Done = false;
+
+function initR5() {
+  r5Done = false;
+  document.getElementById('vault-ico').textContent = '🔒';
+  document.getElementById('vault-locks').style.opacity = '1';
+  const v = document.getElementById('r5-vault');
+  v.removeEventListener('touchstart', r5Touch);
+  v.addEventListener('touchstart', r5Touch, { passive: false });
+  // Desktop: double-click = success
+  v.removeEventListener('dblclick', r5DblClick);
+  v.addEventListener('dblclick', r5DblClick);
+}
+
+function r5Touch(e) {
+  e.preventDefault();
+  if (r5Done) return;
+  if (e.touches.length >= 2) {
+    r5Done = true;
+    document.getElementById('vault-ico').textContent = '🔓';
+    gainKey();
+    setTimeout(() => go('chest', animChest), 900);
+  }
+  // 1 doigt → rien du tout (pas de punition, pas d'indice)
+}
+
+function r5DblClick() {
+  if (r5Done) return;
+  r5Done = true;
+  document.getElementById('vault-ico').textContent = '🔓';
+  gainKey();
+  setTimeout(() => go('chest', animChest), 900);
+}
+
+/* ══════════════════════════
+   ANIMATION COFFRE
+══════════════════════════ */
+function animChest() {
+  ['ck0','ck1','ck2','ck3','ck4'].forEach((id, i) =>
+    setTimeout(() => document.getElementById(id).classList.add('placed'), i * 400)
+  );
+  setTimeout(() => {
+    document.getElementById('chest-stat').textContent = 'Le coffre tremble...';
+    const lid = document.getElementById('chest-lid');
+    lid.style.transformOrigin = '90px 63px';
+    lid.style.transition = 'transform 1.1s ease-in-out';
+    lid.style.transform = 'rotate(-42deg)';
+    document.getElementById('chest-glow').style.transition = 'opacity 1.1s';
+    document.getElementById('chest-glow').style.opacity = '1';
+    setTimeout(() => {
+      document.getElementById('chest-stat').textContent = '✨ Le coffre est ouvert !';
+      document.getElementById('chest-stat').style.color = 'var(--gold)';
+      setTimeout(() => go('choice'), 1900);
+    }, 1200);
+  }, 2200);
+}
+
+/* ══════════════════════════
+   CHOIX FINAL
+══════════════════════════ */
+function finalChoice(e, side) {
+  if (!touchGuard(e)) return;
+  go(side === trapSide ? 'final-trap' : 'win');
+}
+</script>
+</body>
+</html>
