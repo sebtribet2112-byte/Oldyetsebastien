@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeux & Quiz – Les aventures d'Oldy et Sébastien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: #fefae0; color: #1b2a1b; }
+    nav { background: #2d6a4f; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); gap: 8px; }
+    .nav-logo { font-size: 15px; font-weight: 900; color: white; text-decoration: none; white-space: nowrap; }
+    .nav-logo span { color: #d4a843; }
+    .nav-links { display: flex; gap: 4px; overflow-x: auto; flex-shrink: 1; }
+    .nav-links a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 20px; white-space: nowrap; }
+    .nav-links a:hover { background: rgba(255,255,255,0.15); }
+    .nav-or { background: rgba(212,168,67,0.3); color: #f5c842 !important; }
+    .nav-active { background: rgba(255,255,255,0.2) !important; color: white !important; }
+    .hero { background: linear-gradient(135deg, #2d6a4f, #0d2b1f); padding: 50px 20px 40px; text-align: center; }
+    .hero-label { display: inline-block; background: rgba(212,168,67,0.2); border: 1px solid rgba(212,168,67,0.4); color: #d4a843; padding: 5px 16px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+    .hero h1 { font-size: clamp(24px,6vw,42px); font-weight: 900; color: white; margin-bottom: 10px; }
+    .hero h1 span { color: #d4a843; }
+    .hero p { font-size: 14px; color: rgba(255,255,255,0.65); max-width: 500px; margin: 0 auto 24px; line-height: 1.7; }
+    .hero-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .hstat { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 18px; border-radius: 24px; font-size: 13px; font-weight: 700; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; justify-content: center; }
+    .filter-btn { padding: 7px 16px; border: 2px solid #d8f3dc; background: white; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 12px; cursor: pointer; color: #4a5c4a; transition: all 0.2s; }
+    .filter-btn:hover { border-color: #2d6a4f; color: #2d6a4f; }
+    .filter-btn.active { background: #2d6a4f; color: white; border-color: #2d6a4f; }
+    .jeux-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .jeu-card { background: white; border-radius: 20px; overflow: hidden; border: 2px solid #d8f3dc; transition: all 0.25s; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .jeu-card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,0,0,0.12); border-color: #52b788; }
+    .jeu-card-header { padding: 24px 20px 16px; text-align: center; position: relative; }
+    .jeu-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+    .jeu-badge-age { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.3); color: white; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+    .jeu-badge-new { position: absolute; top: 12px; left: 12px; background: #d4a843; color: #1b2a1b; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+    .jeu-title { font-size: 17px; font-weight: 900; color: white; margin-bottom: 4px; }
+    .jeu-subtitle { font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 700; }
+    .jeu-card-body { padding: 16px 20px; flex: 1; }
+    .jeu-desc { font-size: 13px; color: #4a5c4a; line-height: 1.6; margin-bottom: 14px; }
+    .jeu-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .jeu-tag { background: #f0faf4; border: 1px solid #d8f3dc; color: #4a5c4a; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .jeu-formats { display: flex; gap: 6px; margin-bottom: 16px; }
+    .fmt-badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+    .fmt-html { background: #EBF5FB; color: #118AB2; }
+    .fmt-pdf { background: #FEE8EE; color: #e63946; }
+    .jeu-card-footer { padding: 0 20px 20px; }
+    .btn-jouer { display: block; text-align: center; color: white; text-decoration: none; padding: 11px; border-radius: 50px; font-size: 14px; font-weight: 800; transition: all 0.15s; box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
+    .btn-jouer:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(0,0,0,0.2); }
+    .info-box { background: white; border: 2px solid #d8f3dc; border-radius: 16px; padding: 20px 24px; margin-top: 40px; display: flex; gap: 16px; align-items: flex-start; }
+    .info-icon { font-size: 2.2rem; flex-shrink: 0; }
+    .info-text h3 { font-size: 15px; font-weight: 900; color: #2d6a4f; margin-bottom: 6px; }
+    .info-text p { font-size: 13px; color: #4a5c4a; line-height: 1.7; }
+    footer { background: #2d6a4f; color: rgba(255,255,255,0.7); text-align: center; padding: 28px 20px; font-size: 12px; line-height: 2; }
+    footer strong { color: white; }
+    footer a { color: #52b788; text-decoration: none; }
+    @media (max-width: 480px) { .jeux-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">🐶 Oldy <span>&</span> Sébastien</a>
+  <div class="nav-links">
+    <a href="/#bd">La BD</a>
+    <a href="/#conditions">73 Conditions</a>
+    <a href="/#jeu">Le Jeu</a>
+    <a href="/#sebastien">L'auteur</a>
+    <a href="/#contact">Contact</a>
+    <a href="/mes-livres.html" class="nav-or">📚 Livres</a>
+    <a href="/coloriage.html" class="nav-or">🎨 Coloriage</a>
+    <a href="/sensibilisation-pathologies.html" class="nav-or">🩺 Pathologies</a>
+    <a href="/kit_intervention_oldy_sebastien.html" class="nav-or">🎓 Kit</a>
+    <a href="/jeux.html" class="nav-or nav-active">🎲 Jeux</a>
+    <a href="/#mes-heros" class="nav-or">💌 Mes Héros</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-label">🎲 Jeux éducatifs</div>
+  <h1>Jouer pour <span>comprendre</span></h1>
+  <p>8 jeux gratuits pour découvrir, comprendre et sensibiliser aux handicaps invisibles. Pour tous les âges, en classe, en famille ou en association.</p>
+  <div class="hero-stats">
+    <div class="hstat">🎲 9 jeux complets</div>
+    <div class="hstat">📱 Jouables en ligne</div>
+    <div class="hstat">🖨️ PDFs imprimables</div>
+    <div class="hstat">🆓 100% gratuit</div>
+    <div class="hstat">🏫 Usage pédagogique</div>
+  </div>
+</section>
+
+<div class="container">
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filtrer('tous', this)">Tous les jeux</button>
+    <button class="filter-btn" onclick="filtrer('enfants', this)">🌱 Enfants</button>
+    <button class="filter-btn" onclick="filtrer('ados', this)">🌿 Ados</button>
+    <button class="filter-btn" onclick="filtrer('adultes', this)">🌳 Adultes</button>
+    <button class="filter-btn" onclick="filtrer('groupe', this)">👥 Groupe</button>
+  </div>
+
+  <div class="jeux-grid" id="jeux-grid">
+
+    <!-- QUIZ OLDY -->
+    <div class="jeu-card" data-cats="enfants ados adultes solo">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#2d6a4f,#52b788);">
+        <span class="jeu-badge-age">6 ans +</span>
+        <span class="jeu-icon">🐾</span>
+        <div class="jeu-title">Quiz avec Oldy</div>
+        <div class="jeu-subtitle">Édition complète — 76 questions</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Oldy te guide à travers 76 questions sur tous les handicaps invisibles. 3 niveaux selon l'âge. 10 questions tirées au sort à chaque partie !</div>
+        <div class="jeu-tags"><span class="jeu-tag">🌱 6–8 ans</span><span class="jeu-tag">🌿 9–12 ans</span><span class="jeu-tag">🌳 13+ ans</span><span class="jeu-tag">Solo</span></div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span></div>
+      </div>
+      <div class="jeu-card-footer"><a href="/quiz.html" class="btn-jouer" style="background:#2d6a4f;">🐾 Jouer au Quiz</a></div>
+    </div>
+
+    <!-- JEU DE PLATEAU -->
+    <div class="jeu-card" data-cats="enfants ados adultes groupe">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#d4a843,#f5c842);">
+        <span class="jeu-badge-age" style="color:#1b2a1b;">7 ans +</span>
+        <span class="jeu-badge-new">🆕 Nouveau</span>
+        <span class="jeu-icon">🎲</span>
+        <div class="jeu-title" style="color:#1b2a1b;">Invisible Visible</div>
+        <div class="jeu-subtitle" style="color:rgba(0,0,0,0.6);">Jeu de plateau coopératif</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Traversez ensemble le plateau en 40 cases. Défis, soutiens, événements... Vivez le quotidien d'une personne avec un handicap invisible !</div>
+        <div class="jeu-tags"><span class="jeu-tag">🤝 Coopératif</span><span class="jeu-tag">2–4 joueurs</span><span class="jeu-tag">~30 min</span><span class="jeu-tag">40 cases</span></div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span><span class="fmt-badge fmt-pdf">🖨️ PDF</span></div>
+      </div>
+      <div class="jeu-card-footer"><a href="/invisible_visible_jeu.html" class="btn-jouer" style="background:#d4a843;color:#1b2a1b;">🎲 Jouer au plateau</a></div>
+    </div>
+
+    <!-- MEMORY LOTO -->
+    <div class="jeu-card" data-cats="enfants ados adultes groupe">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#118AB2,#52b788);">
+        <span class="jeu-badge-age">Tous âges</span>
+        <span class="jeu-badge-new">🆕 Nouveau</span>
+        <span class="jeu-icon">🃏</span>
+        <div class="jeu-title">Memory & Loto</div>
+        <div class="jeu-subtitle">2 jeux en 1 — 36 pathologies</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Memory : associez les noms aux descriptions. Loto : cochez votre grille quand la pathologie est tirée. 2 jeux dans le même fichier !</div>
+        <div class="jeu-tags"><span class="jeu-tag">🃏 Memory</span><span class="jeu-tag">🎯 Loto</span><span class="jeu-tag">1–4 joueurs</span><span class="jeu-tag">3 niveaux</span></div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span><span class="fmt-badge fmt-pdf">🖨️ PDF</span></div>
+      </div>
+      <div class="jeu-card-footer"><a href="/memory_loto.html" class="btn-jouer" style="background:#118AB2;">🃏 Jouer au Memory & Loto</a></div>
+    </div>
+
+    <!-- JEU DE RÔLE -->
+    <div class="jeu-card" data-cats="enfants ados adultes groupe">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#7B5EA7,#E91E8C);">
+        <span class="jeu-badge-age">6 ans +</span>
+        <span class="jeu-badge-new">🆕 Nouveau</span>
+        <span class="jeu-icon">🎭</span>
+        <div class="jeu-title">Jeu de Rôle</div>
+        <div class="jeu-subtitle">Incarnez, ressentez, comprenez</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Certains joueurs incarnent des personnes handicapées, d'autres leur entourage. Jouez des scénarios de la vie réelle et discutez ensemble !</div>
+        <div class="jeu-tags"><span class="jeu-tag">🎭 Rôles mixtes</span><span class="jeu-tag">2–4 joueurs</span><span class="jeu-tag">3 niveaux</span><span class="jeu-tag">⏱️ 30–45 min</span></div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span><span class="fmt-badge fmt-pdf">🖨️ PDF</span></div>
+      </div>
+      <div class="jeu-card-footer"><a href="/jeu_de_role.html" class="btn-jouer" style="background:#7B5EA7;">🎭 Jouer au Jeu de Rôle</a></div>
+    </div>
+
+    <!-- DEVINE MON INVISIBLE -->
+    <div class="jeu-card" data-cats="enfants ados adultes groupe solo">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#FF8C42,#FFD166);">
+        <span class="jeu-badge-age" style="color:#1b2a1b;">Tous âges</span>
+        <span class="jeu-badge-new">🆕 Nouveau</span>
+        <span class="jeu-icon">🃏</span>
+        <div class="jeu-title" style="color:#1b2a1b;">Devine mon Invisible</div>
+        <div class="jeu-subtitle" style="color:rgba(0,0,0,0.6);">Le jeu de devinettes</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Des indices décrivent une pathologie sans jamais la nommer. Plus vite vous trouvez, plus vous gagnez de points ! Solo, Duo ou Équipes.</div>
+        <div class="jeu-tags"><span class="jeu-tag">🧩 Solo</span><span class="jeu-tag">🤝 Duo</span><span class="jeu-tag">🏆 Équipes</span><span class="jeu-tag">20 cartes</span></div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span><span class="fmt-badge fmt-pdf">🖨️ PDF</span></div>
+      </div>
+      <div class="jeu-card-footer"><a href="/devine_mon_invisible.html" class="btn-jouer" style="background:#FF8C42;">🃏 Jouer à Devine mon Invisible</a></div>
+    </div>
+
+    <!-- QUIZ ADULTES -->
+    <div class="jeu-card" data-cats="adultes groupe">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#1b2a1b,#2d6a4f);">
+        <span class="jeu-badge-age">Adultes</span>
+        <span class="jeu-badge-new">🆕 Nouveau</span>
+        <span class="jeu-icon">🧠</span>
+        <div class="jeu-title">Quiz Adultes Complet</div>
+        <div class="jeu-subtitle">120 questions · 8 catégories</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Quiz de sensibilisation pour groupes, formations et associations. 120 questions couvrant toutes les pathologies invisibles reconnues en France.</div>
+        <div class="jeu-tags"><span class="jeu-tag">👥 2–6 équipes</span><span class="jeu-tag">🧬 45+ pathologies</span><span class="jeu-tag">⚖️ Droits & lois</span><span class="jeu-tag">Formation</span></div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span><span class="fmt-badge fmt-pdf">🖨️ PDF animateur</span></div>
+      </div>
+      <div class="jeu-card-footer"><a href="/quiz_adultes_complet.html" class="btn-jouer" style="background:#2d6a4f;">🧠 Jouer au Quiz Adultes</a></div>
+    </div>
+
+    <!-- ESCAPE GAME V2 -->
+    <div class="jeu-card" data-cats="ados adultes groupe" style="border-color:#f0a500;">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#0d0f1a,#1c2035);">
+        <span class="jeu-badge-age" style="color:#f0a500;">Ados / Adultes</span>
+        <span class="jeu-icon">🔐</span>
+        <div class="jeu-title" style="color:#f0a500;text-shadow:0 0 10px rgba(240,165,0,0.4);">Escape Game Classic</div>
+        <div class="jeu-subtitle" style="color:rgba(240,165,0,0.55);">10 séries · Firebase multijoueur</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">L'escape game original ! 10 séries thématiques, 4 salles progressives par série. En équipes, avec un animateur qui gère la session en temps réel.</div>
+        <div class="jeu-tags">
+          <span class="jeu-tag">🔐 4 salles</span>
+          <span class="jeu-tag">📚 10 séries</span>
+          <span class="jeu-tag">👥 Équipes</span>
+          <span class="jeu-tag">⚡ Temps réel</span>
+        </div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span></div>
+      </div>
+      <div class="jeu-card-footer" style="display:flex;gap:8px;">
+        <a href="/escape_player_v2.html" class="btn-jouer" style="background:#f0a500;color:#0d0f1a;flex:1;box-shadow:0 3px 0 #7a5200;">🎮 Jouer</a>
+        <a href="/escape_host_v2.html" class="btn-jouer" style="background:#0d0f1a;border:2px solid #f0a500;color:#f0a500;flex:1;box-shadow:0 3px 0 #3a2800;">🎛️ Animateur</a>
+      </div>
+    </div>
+
+    <!-- ESCAPE GAME V3 — NOUVEAU -->
+    <div class="jeu-card" data-cats="ados adultes groupe" style="border-color:#00aa2a;">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#050f05,#0d2b0d);">
+        <span class="jeu-badge-age" style="color:#00ff41;">Ados / Adultes</span>
+        <span class="jeu-badge-new" style="background:#00aa2a;color:#000;">🆕 Nouveau</span>
+        <span class="jeu-icon">🔐</span>
+        <div class="jeu-title" style="color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.4);">Escape Game</div>
+        <div class="jeu-subtitle" style="color:rgba(0,255,65,0.55);">7 salles · Multijoueur temps réel</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Résolvez des énigmes sur les handicaps invisibles salle par salle. Chaque joueur progresse à son rythme, l'animateur suit tout en direct sur son écran !</div>
+        <div class="jeu-tags">
+          <span class="jeu-tag">🔐 7 salles</span>
+          <span class="jeu-tag">👥 Multijoueur</span>
+          <span class="jeu-tag">⚡ Temps réel</span>
+          <span class="jeu-tag">🖼️ Images</span>
+          <span class="jeu-tag">106 pathologies</span>
+        </div>
+        <div class="jeu-formats"><span class="fmt-badge fmt-html">🖥️ En ligne</span></div>
+      </div>
+      <div class="jeu-card-footer" style="display:flex;gap:8px;">
+        <a href="/escape_player_v3.html" class="btn-jouer" style="background:#00aa2a;flex:1;box-shadow:0 3px 0 #004400;">🎮 Jouer</a>
+        <a href="/escape_host_v3.html" class="btn-jouer" style="background:#050f05;border:2px solid #00aa2a;color:#00ff41;flex:1;box-shadow:0 3px 0 #001a00;">🎛️ Animateur</a>
+      </div>
+    </div>
+
+
+    <!-- OLDY À LA POURSUITE DE L'INVISIBLE -->
+    <div class="jeu-card" data-cats="enfants ados adultes groupe solo" style="border-color:#C9A227;">
+      <div class="jeu-card-header" style="background:linear-gradient(135deg,#0d2b07,#1E4D10);">
+        <span class="jeu-badge-age">Tous âges</span>
+        <span class="jeu-badge-new" style="background:#C9A227;color:#1E4D10;">🆕 Nouveau</span>
+        <span class="jeu-icon">🐕</span>
+        <div class="jeu-title" style="color:#C9A227;">Oldy à la Poursuite de l'Invisible</div>
+        <div class="jeu-subtitle" style="color:rgba(201,162,39,0.65);">48 questions · 6 catégories · Pièges !</div>
+      </div>
+      <div class="jeu-card-body">
+        <div class="jeu-desc">Un Trivial Pursuit sur le handicap invisible ! 48 questions sur les 106 pathologies, les droits, la reconnaissance (MDPH, CMI…), les idées reçues et le vécu quotidien. Des pièges à déjouer à chaque tour. 1 à 4 joueurs.</div>
+        <div class="jeu-tags">
+          <span class="jeu-tag">🧬 Pathologies</span>
+          <span class="jeu-tag">⚖️ Droits</span>
+          <span class="jeu-tag">⚠️ Pièges</span>
+          <span class="jeu-tag">🏆 1–4 joueurs</span>
+          <span class="jeu-tag">📋 MDPH / CMI</span>
+        </div>
+        <div class="jeu-formats">
+          <span class="fmt-badge fmt-html">🖥️ En ligne</span>
+          <span class="fmt-badge fmt-pdf">🖨️ Cartes PDF</span>
+          <span class="fmt-badge fmt-pdf">🖨️ Plateau PDF</span>
+        </div>
+      </div>
+      <div class="jeu-card-footer">
+        <a href="/oldy-poursuite.html" class="btn-jouer" style="background:#1E4D10;box-shadow:0 3px 0 #0a1a06;">🐕 Jouer à la Poursuite !</a>
+      </div>
+    </div>
+
+  </div><!-- fin jeux-grid -->
+
+  <div class="info-box">
+    <div class="info-icon">🐾</div>
+    <div class="info-text">
+      <h3>Utilisation pédagogique</h3>
+      <p>Tous ces jeux sont <strong>100% gratuits</strong> pour un usage pédagogique non commercial. Ils peuvent être utilisés en classe, en association, en formation professionnelle ou en famille. Les versions PDF sont imprimables directement depuis votre navigateur.<br><br>
+      Pour toute demande d'intervention ou de partenariat : <a href="/#contact" style="color:#2d6a4f;font-weight:800;">nous contacter</a></p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Les aventures d'Oldy et Sébastien</strong><br>
+  Projet de sensibilisation aux handicaps invisibles · Indre (36)<br>
+  <a href="mailto:seb.tribet2112@gmail.com">seb.tribet2112 [at] gmail.com</a> ·
+  <a href="/mentions-legales.html">Mentions légales</a><br>
+  © 2026 TRIBET Sébastien — Tous droits réservés
+</footer>
+
+<script>
+function filtrer(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.jeu-card').forEach(card => {
+    if (cat === 'tous' || card.dataset.cats.includes(cat)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+<script src="/footer.js"></script>
+</body>
+</html>
