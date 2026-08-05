@@ -16,7 +16,7 @@
     }
     .boite {
       background: white; border-radius: 20px;
-      padding: 40px 28px; max-width: 400px; width: 100%;
+      padding: 40px 28px; max-width: 450px; width: 100%;
       text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
@@ -53,7 +53,7 @@
     }
 
     /* écran musique */
-    .lecteur { display: none; text-align: left; }
+    .lecteur { display: none; text-align: left; max-height: 80vh; overflow-y: auto; }
     .lecteur .emoji { text-align: center; }
     .lecteur h1 { text-align: center; margin-bottom: 4px; }
     .lecteur p.sous { text-align: center; font-size: 12px; color: #999; margin-bottom: 22px; }
@@ -65,8 +65,8 @@
       font-size: 14px; font-weight: 800; color: #1a2440; margin-bottom: 8px;
     }
     .piste iframe {
-      width: 100%; height: 80px; border: none; border-radius: 8px;
-      background: #eee;
+      width: 100%; height: 130px; border: none; border-radius: 8px;
+      background: #fff;
     }
     .note-fin {
       margin-top: 18px; font-size: 11.5px; color: #aaa;
@@ -98,7 +98,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-  // Même projet Firebase que les jeux du site (base "quiz-oldy-sebastien")
   const firebaseConfig = {
     apiKey: "AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
     authDomain: "quiz-oldy-sebastien.firebaseapp.com",
@@ -111,9 +110,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // ---- Liste des morceaux : ajoute une ligne par chanson ----
-  // "id" = l'identifiant du fichier dans ton lien Google Drive
-  // (dans https://drive.google.com/file/d/XXXXXXXXXXXXXXXXXXXXX/view, c'est le XXXX...)
+  // Tes 17 pistes d'origine avec tes identifiants Google Drive
   const PISTES = [
     { titre: "Oldy et sébastien", id: "17xFv_YokSOAwEWg3ocfW-z0E1xhi83Vm" },
     { titre: "Rupture invisible visible", id: "18W4uNybP201XMi9cKXKskhsPfOMB9rP6" },
@@ -138,34 +135,32 @@
   const ecranLecteur = document.getElementById('ecran-lecteur');
   const input = document.getElementById('code-input');
   const btn = document.getElementById('btn-valider');
-  const erreurMsg = document.getElementById('erreur-msg');
+  const erreurmsg = document.getElementById('erreur-msg');
 
   function afficherLecteur() {
     const liste = document.getElementById('liste-pistes');
     liste.innerHTML = PISTES.map(p => `
       <div class="piste">
         <div class="titre">${p.titre}</div>
-        <iframe src="https://drive.google.com/file/d/${p.id}/preview" allow="autoplay"></iframe>
+        <iframe src="https://drive.google.com/file/d/${p.id}/preview" allow="autoplay" scrolling="no"></iframe>
       </div>
     `).join('');
     ecranCode.style.display = 'none';
     ecranLecteur.style.display = 'block';
   }
 
-  // Si ce code a déjà été validé sur cet appareil pendant cette visite,
-  // on rouvre directement le lecteur (évite d'être bloqué par un simple rafraîchissement).
   if (sessionStorage.getItem('musique_deverrouille') === '1') {
     afficherLecteur();
   }
 
   function montrerErreur(msg) {
-    erreurMsg.textContent = msg;
-    erreurMsg.style.display = 'block';
+    erreurmsg.textContent = msg;
+    erreurmsg.style.display = 'block';
   }
 
   async function validerCode() {
     const code = input.value.trim().toUpperCase();
-    erreurMsg.style.display = 'none';
+    erreurmsg.style.display = 'none';
 
     if (!code) {
       montrerErreur('Merci de saisir ton code.');
@@ -178,11 +173,8 @@
     try {
       const ref = db.ref('musique_codes/' + code);
       const resultat = await ref.transaction(actuel => {
-        if (actuel === null) {
-          return; // annule : code inexistant
-        }
-        if (actuel.used === true) {
-          return; // annule : déjà utilisé
+        if (actuel === null || actuel.used === true) {
+          return;
         }
         actuel.used = true;
         actuel.usedAt = Date.now();
@@ -190,7 +182,6 @@
       });
 
       if (!resultat.committed) {
-        // on relit pour distinguer "inexistant" de "déjà utilisé"
         const snap = await ref.once('value');
         if (!snap.exists()) {
           montrerErreur('Ce code est introuvable. Vérifie qu\'il est bien recopié.');
