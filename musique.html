@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ma musique — Accès privé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a2440, #2a3a5c);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .boite {
+      background: white; border-radius: 20px;
+      padding: 40px 28px; max-width: 400px; width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .emoji { font-size: 48px; margin-bottom: 16px; display: block; }
+    h1 { font-size: 20px; font-weight: 900; color: #1a2440; margin-bottom: 8px; }
+    p.intro { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
+    input {
+      width: 100%; padding: 14px;
+      border: 2px solid #d4af6a; border-radius: 10px;
+      background: #fdf9f3;
+      font-family: 'Nunito', sans-serif;
+      font-size: 22px; text-align: center;
+      letter-spacing: 0.3rem; color: #1a2440;
+      outline: none; margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .btn-valider {
+      width: 100%; padding: 14px;
+      background: #1a2440; color: white;
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .btn-valider:disabled { opacity: .55; cursor: default; }
+    .erreur {
+      display: none; color: #c0392b; font-size: 13px;
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .retour {
+      display: inline-block; color: #aaa;
+      font-size: 12px; text-decoration: none;
+      margin-top: 4px;
+    }
+
+    /* écran musique */
+    .lecteur { display: none; text-align: left; }
+    .lecteur .emoji { text-align: center; }
+    .lecteur h1 { text-align: center; margin-bottom: 4px; }
+    .lecteur p.sous { text-align: center; font-size: 12px; color: #999; margin-bottom: 22px; }
+    .piste {
+      background: #f7f4ee; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .piste .titre {
+      font-size: 14px; font-weight: 800; color: #1a2440; margin-bottom: 8px;
+    }
+    .piste iframe {
+      width: 100%; height: 80px; border: none; border-radius: 8px;
+      background: #eee;
+    }
+    .note-fin {
+      margin-top: 18px; font-size: 11.5px; color: #aaa;
+      text-align: center; line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="boite" id="ecran-code">
+    <span class="emoji">🎧</span>
+    <h1>Ma musique</h1>
+    <p class="intro">Ce lien est personnel : le code que tu as reçu ne fonctionne qu'une seule fois.</p>
+    <input type="text" id="code-input" maxlength="10" placeholder="CODE" autocomplete="off" inputmode="text"/>
+    <div class="erreur" id="erreur-msg"></div>
+    <button class="btn-valider" id="btn-valider">Écouter</button>
+    <a href="/" class="retour">← Retour au site</a>
+  </div>
+
+  <div class="boite lecteur" id="ecran-lecteur">
+    <span class="emoji">🎶</span>
+    <h1>Bonne écoute</h1>
+    <p class="sous">Les aventures d'Oldy et Sébastien</p>
+    <div id="liste-pistes"></div>
+    <p class="note-fin">Merci de ne pas rediffuser ces morceaux sans autorisation. © Sébastien TRIBET.</p>
+    <a href="/" class="retour" style="display:block; text-align:center; margin-top:14px;">← Retour au site</a>
+  </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  // Même projet Firebase que les jeux du site (base "quiz-oldy-sebastien")
+  const firebaseConfig = {
+    apiKey: "AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
+    authDomain: "quiz-oldy-sebastien.firebaseapp.com",
+    databaseURL: "https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "quiz-oldy-sebastien",
+    storageBucket: "quiz-oldy-sebastien.firebasestorage.app",
+    messagingSenderId: "315241947179",
+    appId: "1:315241947179:web:48c53a445565654e338a6e"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // ---- Liste des morceaux : ajoute une ligne par chanson ----
+  // "id" = l'identifiant du fichier dans ton lien Google Drive
+  // (dans https://drive.google.com/file/d/XXXXXXXXXXXXXXXXXXXXX/view, c'est le XXXX...)
+  const PISTES = [
+    { titre: "Plus Fort Que Leur Prison", id: "COLLE_ICI_ID_1" },
+    { titre: "Stop au Jugement",          id: "COLLE_ICI_ID_2" },
+    { titre: "Miraculé",                  id: "COLLE_ICI_ID_3" },
+    { titre: "De quel droit",             id: "COLLE_ICI_ID_4" },
+    { titre: "Main dans la vie",          id: "COLLE_ICI_ID_5" },
+    { titre: "Revivre",                   id: "COLLE_ICI_ID_6" }
+  ];
+
+  const ecranCode = document.getElementById('ecran-code');
+  const ecranLecteur = document.getElementById('ecran-lecteur');
+  const input = document.getElementById('code-input');
+  const btn = document.getElementById('btn-valider');
+  const erreurMsg = document.getElementById('erreur-msg');
+
+  function afficherLecteur() {
+    const liste = document.getElementById('liste-pistes');
+    liste.innerHTML = PISTES.map(p => `
+      <div class="piste">
+        <div class="titre">${p.titre}</div>
+        <iframe src="https://drive.google.com/file/d/${p.id}/preview" allow="autoplay"></iframe>
+      </div>
+    `).join('');
+    ecranCode.style.display = 'none';
+    ecranLecteur.style.display = 'block';
+  }
+
+  // Si ce code a déjà été validé sur cet appareil pendant cette visite,
+  // on rouvre directement le lecteur (évite d'être bloqué par un simple rafraîchissement).
+  if (sessionStorage.getItem('musique_deverrouille') === '1') {
+    afficherLecteur();
+  }
+
+  function montrerErreur(msg) {
+    erreurMsg.textContent = msg;
+    erreurMsg.style.display = 'block';
+  }
+
+  async function validerCode() {
+    const code = input.value.trim().toUpperCase();
+    erreurMsg.style.display = 'none';
+
+    if (!code) {
+      montrerErreur('Merci de saisir ton code.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Vérification…';
+
+    try {
+      const ref = db.ref('musique_codes/' + code);
+      const resultat = await ref.transaction(actuel => {
+        if (actuel === null) {
+          return; // annule : code inexistant
+        }
+        if (actuel.used === true) {
+          return; // annule : déjà utilisé
+        }
+        actuel.used = true;
+        actuel.usedAt = Date.now();
+        return actuel;
+      });
+
+      if (!resultat.committed) {
+        // on relit pour distinguer "inexistant" de "déjà utilisé"
+        const snap = await ref.once('value');
+        if (!snap.exists()) {
+          montrerErreur('Ce code est introuvable. Vérifie qu\'il est bien recopié.');
+        } else {
+          montrerErreur('Ce code a déjà été utilisé. Chaque code ne fonctionne qu\'une fois.');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Écouter';
+        return;
+      }
+
+      sessionStorage.setItem('musique_deverrouille', '1');
+      afficherLecteur();
+
+    } catch (e) {
+      montrerErreur('Une erreur est survenue. Réessaie dans un instant.');
+      btn.disabled = false;
+      btn.textContent = 'Écouter';
+    }
+  }
+
+  btn.addEventListener('click', validerCode);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') validerCode(); });
+</script>
+</body>
+</html>
