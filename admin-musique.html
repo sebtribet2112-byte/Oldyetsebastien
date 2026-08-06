@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin musique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a2440, #2a3a5c);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .boite {
+      background: white; border-radius: 20px;
+      padding: 36px 26px; max-width: 420px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .emoji { font-size: 40px; margin-bottom: 12px; display: block; text-align: center; }
+    h1 { font-size: 19px; font-weight: 900; color: #1a2440; margin-bottom: 20px; text-align: center; }
+    input {
+      width: 100%; padding: 12px;
+      border: 2px solid #d4af6a; border-radius: 10px;
+      background: #fdf9f3; font-family: 'Nunito', sans-serif;
+      font-size: 15px; color: #1a2440;
+      outline: none; margin-bottom: 10px;
+    }
+    button {
+      width: 100%; padding: 13px;
+      background: #1a2440; color: white;
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-size: 14.5px; font-weight: 800;
+      margin-bottom: 10px;
+    }
+    button:disabled { opacity: .5; }
+    .msg { font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 16px; }
+    .msg.err { color: #c0392b; }
+    .msg.ok { color: #2a7a3a; }
+
+    #panneau { display: none; }
+    .code-genere {
+      background: #f7f4ee; border: 2px dashed #d4af6a; border-radius: 12px;
+      padding: 18px; text-align: center; margin: 14px 0;
+      font-size: 26px; font-weight: 900; letter-spacing: 0.2rem; color: #1a2440;
+      display: none;
+    }
+    .liste { margin-top: 22px; }
+    .liste h2 { font-size: 13px; color: #999; margin-bottom: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .ligne {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 4px; border-bottom: 1px solid #eee; font-size: 13.5px;
+    }
+    .ligne .c { font-weight: 800; color: #1a2440; letter-spacing: .05em; }
+    .pastille { font-size: 11px; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+    .pastille.dispo { background: #e4f4e6; color: #2a7a3a; }
+    .pastille.utilise { background: #f4e4e4; color: #a33; }
+    .deconnexion { text-align: center; margin-top: 18px; }
+    .deconnexion a { font-size: 12px; color: #aaa; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="boite" id="ecran-login">
+    <span class="emoji">🔐</span>
+    <h1>Administration musique</h1>
+    <input type="email" id="email" placeholder="Email" autocomplete="username"/>
+    <input type="password" id="mdp" placeholder="Mot de passe" autocomplete="current-password"/>
+    <div class="msg err" id="login-msg"></div>
+    <button id="btn-login">Se connecter</button>
+  </div>
+
+  <div class="boite" id="panneau">
+    <span class="emoji">🎧</span>
+    <h1>Générer un code musique</h1>
+    <button id="btn-generer">+ Générer un nouveau code</button>
+    <div class="code-genere" id="code-genere"></div>
+    <div class="msg ok" id="gen-msg"></div>
+
+    <div class="liste">
+      <h2>Codes existants</h2>
+      <div id="liste-codes"></div>
+    </div>
+
+    <div class="deconnexion"><a href="#" id="btn-logout">Se déconnecter</a></div>
+  </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
+    authDomain: "quiz-oldy-sebastien.firebaseapp.com",
+    databaseURL: "https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "quiz-oldy-sebastien",
+    storageBucket: "quiz-oldy-sebastien.firebasestorage.app",
+    messagingSenderId: "315241947179",
+    appId: "1:315241947179:web:48c53a445565654e338a6e"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  const ecranLogin = document.getElementById('ecran-login');
+  const panneau = document.getElementById('panneau');
+  const loginMsg = document.getElementById('login-msg');
+  const genMsg = document.getElementById('gen-msg');
+  const codeGenere = document.getElementById('code-genere');
+  const listeCodes = document.getElementById('liste-codes');
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      ecranLogin.style.display = 'none';
+      panneau.style.display = 'block';
+      chargerListe();
+    } else {
+      ecranLogin.style.display = 'block';
+      panneau.style.display = 'none';
+    }
+  });
+
+  document.getElementById('btn-login').addEventListener('click', () => {
+    const email = document.getElementById('email').value.trim();
+    const mdp = document.getElementById('mdp').value;
+    loginMsg.textContent = '';
+    auth.signInWithEmailAndPassword(email, mdp)
+      .catch(e => { loginMsg.textContent = 'Email ou mot de passe incorrect.'; });
+  });
+
+  document.getElementById('btn-logout').addEventListener('click', (e) => {
+    e.preventDefault();
+    auth.signOut();
+  });
+
+  function genererCode() {
+    const lettres = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let c = '';
+    for (let i = 0; i < 6; i++) c += lettres[Math.floor(Math.random() * lettres.length)];
+    return c;
+  }
+
+  document.getElementById('btn-generer').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-generer');
+    btn.disabled = true;
+    genMsg.textContent = '';
+    try {
+      let code, ref, snap;
+      do {
+        code = genererCode();
+        ref = db.ref('musique_codes/' + code);
+        snap = await ref.once('value');
+      } while (snap.exists());
+
+      await ref.set({ used: false, createdAt: Date.now() });
+
+      codeGenere.textContent = code;
+      codeGenere.style.display = 'block';
+      genMsg.textContent = '✓ Code créé — copie-le et envoie-le.';
+      chargerListe();
+    } catch (e) {
+      genMsg.textContent = '';
+      alert('Erreur : ' + e.message);
+    }
+    btn.disabled = false;
+  });
+
+  codeGenere.addEventListener('click', () => {
+    navigator.clipboard.writeText(codeGenere.textContent);
+    genMsg.textContent = '✓ Copié dans le presse-papiers.';
+  });
+
+  async function chargerListe() {
+    const snap = await db.ref('musique_codes').orderByChild('createdAt').once('value');
+    const items = [];
+    snap.forEach(child => {
+      items.push({ code: child.key, ...child.val() });
+    });
+    items.reverse();
+    listeCodes.innerHTML = items.map(it => `
+      <div class="ligne">
+        <span class="c">${it.code}</span>
+        <span class="pastille ${it.used ? 'utilise' : 'dispo'}">${it.used ? 'utilisé' : 'disponible'}</span>
+      </div>
+    `).join('') || '<p style="font-size:13px;color:#aaa;">Aucun code pour l\'instant.</p>';
+  }
+</script>
+</body>
+</html>
