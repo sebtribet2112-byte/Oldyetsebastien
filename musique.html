@@ -1,253 +1,205 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ma musique — Accès privé</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Nunito', sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1a2440, #2a3a5c);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-    }
-    .boite {
-      background: white; border-radius: 20px;
-      padding: 40px 28px; max-width: 450px; width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
-    .emoji { font-size: 48px; margin-bottom: 16px; display: block; }
-    h1 { font-size: 20px; font-weight: 900; color: #1a2440; margin-bottom: 8px; }
-    p.intro { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
-    input {
-      width: 100%; padding: 14px;
-      border: 2px solid #d4af6a; border-radius: 10px;
-      background: #fdf9f3;
-      font-family: 'Nunito', sans-serif;
-      font-size: 22px; text-align: center;
-      letter-spacing: 0.3rem; color: #1a2440;
-      outline: none; margin-bottom: 14px;
-      text-transform: uppercase;
-    }
-    .btn-valider {
-      width: 100%; padding: 14px;
-      background: #1a2440; color: white;
-      border: none; border-radius: 10px; cursor: pointer;
-      font-family: 'Nunito', sans-serif;
-      font-size: 15px; font-weight: 800;
-      margin-bottom: 12px;
-    }
-    .erreur {
-      display: none; color: #c0392b; font-size: 13px;
-      margin-bottom: 12px; line-height: 1.5;
-    }
-    .retour {
-      display: inline-block; color: #aaa;
-      font-size: 12px; text-decoration: none;
-      margin-top: 4px;
-    }
-
-    .lecteur { display: none; text-align: left; max-height: 80vh; overflow-y: auto; }
-    .lecteur .emoji { text-align: center; }
-    .lecteur h1 { text-align: center; margin-bottom: 4px; }
-    .lecteur p.sous { text-align: center; font-size: 12px; color: #999; margin-bottom: 22px; }
-    .piste {
-      background: #f7f4ee; border-radius: 12px;
-      padding: 14px 16px; margin-bottom: 12px;
-    }
-    .piste .titre {
-      font-size: 14px; font-weight: 800; color: #1a2440; margin-bottom: 8px;
-    }
-    .piste iframe {
-      width: 100%; height: 130px; border: none; border-radius: 8px;
-      background: #fff;
-    }
-    .note-fin {
-      margin-top: 18px; font-size: 11.5px; color: #aaa;
-      text-align: center; line-height: 1.6;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma musique — Accès privé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a2a40;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background: #fff;
+            color: #333;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            font-size: 1.1em;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        button.btn-valider {
+            background-color: #1a2a40;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button.btn-valider:hover {
+            background-color: #2c476e;
+        }
+        #erreur {
+            color: #d9534f;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9em;
+            color: #a0aec0;
+            padding: 20px 0;
+        }
+        footer a {
+            color: #d4af37;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="boite" id="ecran-code">
-    <span class="emoji">🎧</span>
-    <h1>Ma musique</h1>
-    <p class="intro">Entre le code que Sébastien t'a envoyé pour écouter les morceaux.</p>
-    <input type="text" id="code-input" maxlength="20" placeholder="CODE" autocomplete="off" inputmode="text"/>
-    <div class="erreur" id="erreur-msg">Code incorrect, réessaie.</div>
-    <button class="btn-valider" id="btn-valider">Écouter</button>
-    <a href="/" class="retour">← Retour au site</a>
-  </div>
-
-  <div class="boite lecteur" id="ecran-lecteur">
-    <span class="emoji">🎶</span>
-    <h1>Bonne écoute</h1>
-    <p class="sous">Les aventures d'Oldy et Sébastien</p>
-    <div id="liste-pistes"></div>
-    <p class="note-fin">Merci de ne pas rediffuser ces morceaux sans autorisation. © Sébastien TRIBET.</p>
-    <a href="/" class="retour" style="display:block; text-align:center; margin-top:14px;">← Retour au site</a>
-  </div>
-
-<script>
-  // ---- Le code d'accès : change-le ici quand tu veux ----
-  const CODE_MUSIQUE = "OLDYMUSIC";
-
-  // ---- Liste des morceaux ----
-  const PISTES = [
-    { titre: "Ma Vie 1",                        id: "1A6KSE3dw2ehyp0rwuUPmfziv8j-XePnr" },
-    { titre: "Rupture invisible visible",       id: "18W4uNybP201XMi9cKXKskhsPfOMB9rP6" },
-    { titre: "Face à face",                     id: "19HoLOrlb2rj2W-f1P7ucvDlkWKYxOVqo" },
-    { titre: "Non aux jugements",               id: "1E4jZpSteaJo1B1A3GU9Ro3bk7-VTPlNK" },
-    { titre: "L'invisible bis",                 id: "1EIi3DdTZQqbhWN4PkqCJq_9bMjO22tPh" },
-    { titre: "La dépression",                   id: "1GV1ejpp_MKVxoS8drGzK3dx9vPcM_fpv" },
-    { titre: "Je suis encore là",                id: "1JfJsfStLqq1KfwmvQqUZdQRj7f5f4ibO" },
-    { titre: "Techno trance l'invisible",       id: "1M_Xole5_omHmhdf0LNI_wP2h-2sL4I2o" },
-    { titre: "Je reviens",                       id: "1NSIaCGVSURFCZNVbulMYnRPXPdpupolI" },
-    { titre: "Reconstruction",                   id: "1NZXMIPk7hyi_4T32yeAZAk96V44q8eV9" },
-    { titre: "Silence",                          id: "1Oc86rZJ6xJ4kvySoCgRWq91Z71YFckvH" },
-    { titre: "L'invisible visible",              id: "1ZWywc6RMMc4FtQsTbOcSYX0OVOq3OApG" },
-    { titre: "Reggae électro invisible",         id: "1UMPFhsNKvyyFri7P6eT8zJnqfa_miiVd" },
-    { titre: "Face à face (2)",                  id: "1VZYliIKwc43QB9LpJj5XGEtAYvwZ1PqN" },
-    { titre: "Ma vie",                           id: "1XitCM6pffS9-wMgRPCqyHL8qm2DNs7Nr" },
-    { titre: "On te voit pas, on te croit pas",  id: "1qWvBL5-2lld4cwaQ-VcYVx3yU7Ee-hwx" },
-    { titre: "De quel droit",                    id: "1uCTVKohK2w6gyeMKoJv1-LbaakpPoQrn" }
-  ];
-
-  const ecranCode = document.getElementById('ecran-code');
-  const ecranLecteur = document.getElementById('ecran-lecteur');
-  const input = document.getElementById('code-input');
-  const btn = document.getElementById('btn-valider');
-  const erreurMsg = document.getElementById('erreur-msg');
-  </div>
-  function afficherLecteur() {
-    const ecranLecteur = document.getElementById('ecran-lecteur');
-    
-    ecranLecteur.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div id="audio-container">
-                <audio id="audio-player" controls style="width: 100%; max-width: 500px;"></audio>
+    <div class="container">
+        <h2>🎧 Ma musique</h2>
+        <p>Entre le code que Sébastien t'a envoyé pour écouter les morceaux.</p>
+        
+        <!-- Écran de saisie du code -->
+        <div id="ecran-code">
+            <input type="text" id="code-acces" placeholder="Ton code">
+            <br>
+            <button class="btn-valider" onclick="verifierCode()">Écouter</button>
+            <div id="erreur"></div>
+            <div style="margin-top: 20px;">
+                <a href="/" style="color: #666; font-size: 0.9em; text-decoration: none;">← Retour au site</a>
             </div>
-            <div id="titre-actif" style="font-weight: bold; margin-top: 10px; font-size: 1.1em;">Sélectionne une piste</div>
         </div>
-        <div id="liste-pistes-container" style="max-height: 400px; overflow-y: auto;">
-            ${PISTES.map((p, index) => `
-                <div class="piste-item" data-index="${index}" style="padding: 10px; margin: 5px 0; background: #f1f1f1; cursor: pointer; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>${p.titre}</span>
-                    <button style="padding: 5px 10px; cursor: pointer;">Lire</button>
-                </div>
-            `).join('')}
+
+        <!-- Lecteur audio masqué au départ -->
+        <div id="ecran-lecteur" style="display: none;"></div>
+    </div>
+
+    <!-- Section Dépôts Officiels (INPI / SACEM) -->
+    <div style="background: #fff; color: #333; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 500px; width: 100%; text-align: center; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: #333;">📜 Dépôts Officiels & Propriété</h3>
+        <p style="font-size: 0.95em; color: #666; line-height: 1.5;">
+            Les textes, chansons et créations littéraires associés à cet univers bénéficient d'une protection juridique officielle :
+        </p>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+            <div style="background: #f9f9f9; padding: 10px 15px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 130px;">
+                <strong>INPI</strong><br>
+                <span style="font-size: 0.85em; color: #555;">Protection intellectuelle</span>
+            </div>
+            <div style="background: #f9f9f9; padding: 10px 15px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 130px;">
+                <strong>SACEM</strong><br>
+                <span style="font-size: 0.85em; color: #555;">Œuvres musicales</span>
+            </div>
         </div>
-    `;
+    </div>
 
-    document.getElementById('ecran-code').style.display = 'none';
-    ecranLecteur.style.display = 'block';
+    <footer>
+        <strong>Les aventures d'Oldy et Sébastien</strong><br>
+        © 2026 TRIBET Sébastien, Auteur créateur – Tous droits réservés<br>
+        <a href="/">← Retour au site</a> · <a href="/mentions_legales.html">⚖️ Mentions légales</a>
+    </footer>
 
-    const titreActif = document.getElementById('titre-actif');
-    const pistesElements = document.querySelectorAll('.piste-item');
-    
-    let pisteActuelle = 0;
+    <script>
+        // Ta liste de pistes (modifie les titres et les IDs Google Drive ici)
+        const PISTES = [
+            { titre: "Morceau 1", id: "TON_ID_GOOGLE_DRIVE_1" },
+            { titre: "Morceau 2", id: "TON_ID_GOOGLE_DRIVE_2" }
+        ];
 
-    function chargerPiste(index) {
-        pisteActuelle = index;
-        const piste = PISTES[pisteActuelle];
-        titreActif.textContent = piste.titre;
-        
-        // On recrée proprement l'élément audio pour forcer le changement de source
-        const audioContainer = document.getElementById('audio-container');
-        audioContainer.innerHTML = `<audio id="audio-player" controls autoplay style="width: 100%; max-width: 500px;"></audio>`;
-        
-        const audioPlayer = document.getElementById('audio-player');
-        audioPlayer.src = `https://docs.google.com/uc?export=download&id=${piste.id}`;
-        
-        audioPlayer.play().catch(e => console.log("Lecture automatique bloquée :", e));
-        
-        // Enchaînement automatique à la fin
-        audioPlayer.addEventListener('ended', () => {
-            pisteActuelle++;
-            if (pisteActuelle < PISTES.length) {
-                chargerPiste(pisteActuelle);
+        const CODE_SECRET = "OLDYMUSIC"; // Modifie ton code ici si besoin
+
+        function verifierCode() {
+            const saisie = document.getElementById('code-acces').value.trim().toUpperCase();
+            const erreurDiv = document.getElementById('erreur');
+
+            if (saisie === CODE_SECRET) {
+                afficherLecteur();
             } else {
-                titreActif.textContent = "Fin de la liste de lecture";
+                erreurDiv.textContent = "Code incorrect. Réessaie !";
             }
-        });
-        
-        // Mise en surbrillance de la piste active
-        pistesElements.forEach((el, i) => {
-            el.style.background = i === pisteActuelle ? '#d1e7dd' : '#f1f1f1';
-        });
-    }
-
-    // Association des clics sur chaque ligne de la liste
-    pistesElements.forEach((el, index) => {
-        el.addEventListener('click', () => {
-            chargerPiste(index);
-        });
-        
-        // Utilisation du lien de téléchargement direct Google Drive pour le lecteur HTML5 audio
-        audioPlayer.src = `https://docs.google.com/uc?export=download&id=${piste.id}`;
-        audioPlayer.play().catch(e => console.log("Lecture automatique bloquée par le navigateur :", e));
-        
-        // Mettre en valeur visuellement la piste en cours
-        pistesElements.forEach((el, i) => {
-            el.style.background = i === pisteActuelle ? '#d1e7dd' : '#f1f1f1';
-        });
-    }
-
-    // Gestion des clics sur les pistes de la liste
-    pistesElements.forEach((el, index) => {
-        el.addEventListener('click', () => {
-            chargerPiste(index);
-        });
-    });
-
-    // Enchaînement automatique vers la piste suivante à la fin de la lecture
-    audioPlayer.addEventListener('ended', () => {
-        pisteActuelle++;
-        if (pisteActuelle < PISTES.length) {
-            chargerPiste(pisteActuelle);
-        } else {
-            titreActif.textContent = "Fin de la liste de lecture";
         }
-    });
-}
 
-  if (sessionStorage.getItem('musique_deverrouille') === '1') {
-    afficherLecteur();
-  }
+        function afficherLecteur() {
+            const ecranLecteur = document.getElementById('ecran-lecteur');
+            
+            ecranLecteur.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div id="audio-container">
+                        <audio id="audio-player" controls style="width: 100%; max-width: 500px;"></audio>
+                    </div>
+                    <div id="titre-actif" style="font-weight: bold; margin-top: 10px; font-size: 1.1em;">Sélectionne une piste</div>
+                </div>
+                <div id="liste-pistes-container" style="max-height: 300px; overflow-y: auto; text-align: left;">
+                    ${PISTES.map((p, index) => `
+                        <div class="piste-item" data-index="${index}" style="padding: 10px; margin: 5px 0; background: #f1f1f1; cursor: pointer; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; color: #333;">
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;">${p.titre}</span>
+                            <button style="padding: 5px 10px; cursor: pointer; background: #1a2a40; color: white; border: none; border-radius: 4px;">Lire</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
 
-  function validerCode() {
-    const saisie = input.value.trim().toUpperCase();
-    if (saisie === CODE_MUSIQUE.toUpperCase()) {
-      erreurMsg.style.display = 'none';
-      sessionStorage.setItem('musique_deverrouille', '1');
-      afficherLecteur();
-    } else {
-      erreurMsg.style.display = 'block';
-    }
-  }
+            // Cache l'écran de saisie et affiche le lecteur
+            document.getElementById('ecran-code').style.display = 'none';
+            ecranLecteur.style.display = 'block';
 
-  btn.addEventListener('click', validerCode);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') validerCode(); });
-</script>
- <!-- Section Dépôts Officiels (INPI / SACEM) -->
-<div style="margin: 40px auto; padding: 20px; max-width: 600px; background: #f9f9f9; border-radius: 8px; border: 1px solid #ddd; text-align: center;">
-    <h3 style="margin-top: 0; color: #333;">📜 Dépôts Officiels & Propriété</h3>
-    <p style="font-size: 0.95em; color: #666; line-height: 1.5;">
-        Les textes, chansons et créations littéraires associés à cet univers bénéficient d'une protection juridique officielle :
-    </p>
-    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 15px; flex-wrap: wrap;">
-        <div style="background: #fff; padding: 10px 15px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 150px;">
-            <strong>INPI</strong><br>
-            <span style="font-size: 0.85em; color: #555;">Protection de la propriété intellectuelle</span>
-        </div>
-        <div style="background: #fff; padding: 10px 15px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 150px;">
-            <strong>SACEM</strong><br>
-            <span style="font-size: 0.85em; color: #555;">Enregistrement des œuvres musicales</span>
-        </div> 
+            const titreActif = document.getElementById('titre-actif');
+            const pistesElements = document.querySelectorAll('.piste-item');
+            
+            let pisteActuelle = 0;
+
+            function chargerPiste(index) {
+                pisteActuelle = index;
+                const piste = PISTES[pisteActuelle];
+                titreActif.textContent = piste.titre;
+                
+                const audioContainer = document.getElementById('audio-container');
+                audioContainer.innerHTML = `<audio id="audio-player" controls autoplay style="width: 100%; max-width: 500px;"></audio>`;
+                
+                const audioPlayer = document.getElementById('audio-player');
+                audioPlayer.src = `https://docs.google.com/uc?export=download&id=${piste.id}`;
+                
+                audioPlayer.play().catch(e => console.log("Lecture automatique bloquée :", e));
+                
+                audioPlayer.addEventListener('ended', () => {
+                    pisteActuelle++;
+                    if (pisteActuelle < PISTES.length) {
+                        chargerPiste(pisteActuelle);
+                    } else {
+                        titreActif.textContent = "Fin de la liste de lecture";
+                    }
+                });
+                
+                pistesElements.forEach((el, i) => {
+                    el.style.background = i === pisteActuelle ? '#d1e7dd' : '#f1f1f1';
+                });
+            }
+
+            pistesElements.forEach((el, index) => {
+                el.addEventListener('click', () => {
+                    chargerPiste(index);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
