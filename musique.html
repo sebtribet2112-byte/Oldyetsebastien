@@ -125,16 +125,66 @@
   const erreurMsg = document.getElementById('erreur-msg');
 
   function afficherLecteur() {
-    const liste = document.getElementById('liste-pistes');
-    liste.innerHTML = PISTES.map(p => `
-      <div class="piste">
-        <div class="titre">${p.titre}</div>
-        <iframe src="https://drive.google.com/file/d/${p.id}/preview" allow="autoplay" scrolling="no"></iframe>
-      </div>
-    `).join('');
-    ecranCode.style.display = 'none';
+    const ecranLecteur = document.getElementById('ecran-lecteur');
+    
+    // On crée un lecteur unique propre avec une liste de pistes interactive
+    ecranLecteur.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <audio id="audio-player" controls style="width: 100%; max-width: 500px;"></audio>
+            <div id="titre-actif" style="font-weight: bold; margin-top: 10px; font-size: 1.1em;">Sélectionne une piste</div>
+        </div>
+        <div id="liste-pistes-container" style="max-height: 400px; overflow-y: auto;">
+            ${PISTES.map((p, index) => `
+                <div class="piste-item" data-index="${index}" data-id="${p.id}" style="padding: 10px; margin: 5px 0; background: #f1f1f1; cursor: pointer; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>${p.titre}</span>
+                    <button style="padding: 5px 10px; cursor: pointer;">Lire</button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    document.getElementById('ecran-code').style.display = 'none';
     ecranLecteur.style.display = 'block';
-  }
+
+    const audioPlayer = document.getElementById('audio-player');
+    const titreActif = document.getElementById('titre-actif');
+    const pistesElements = document.querySelectorAll('.piste-item');
+    
+    let pisteActuelle = 0;
+
+    // Fonction pour charger et jouer une piste
+    function chargerPiste(index) {
+        pisteActuelle = index;
+        const piste = PISTES[pisteActuelle];
+        titreActif.textContent = piste.titre;
+        
+        // Utilisation du lien de téléchargement direct Google Drive pour le lecteur HTML5 audio
+        audioPlayer.src = `https://docs.google.com/uc?export=download&id=${piste.id}`;
+        audioPlayer.play().catch(e => console.log("Lecture automatique bloquée par le navigateur :", e));
+        
+        // Mettre en valeur visuellement la piste en cours
+        pistesElements.forEach((el, i) => {
+            el.style.background = i === pisteActuelle ? '#d1e7dd' : '#f1f1f1';
+        });
+    }
+
+    // Gestion des clics sur les pistes de la liste
+    pistesElements.forEach((el, index) => {
+        el.addEventListener('click', () => {
+            chargerPiste(index);
+        });
+    });
+
+    // Enchaînement automatique vers la piste suivante à la fin de la lecture
+    audioPlayer.addEventListener('ended', () => {
+        pisteActuelle++;
+        if (pisteActuelle < PISTES.length) {
+            chargerPiste(pisteActuelle);
+        } else {
+            titreActif.textContent = "Fin de la liste de lecture";
+        }
+    });
+}
 
   if (sessionStorage.getItem('musique_deverrouille') === '1') {
     afficherLecteur();
