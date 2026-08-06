@@ -41,7 +41,6 @@
       font-size: 15px; font-weight: 800;
       margin-bottom: 12px;
     }
-    .btn-valider:disabled { opacity: .55; cursor: default; }
     .erreur {
       display: none; color: #c0392b; font-size: 13px;
       margin-bottom: 12px; line-height: 1.5;
@@ -52,7 +51,6 @@
       margin-top: 4px;
     }
 
-    /* écran musique */
     .lecteur { display: none; text-align: left; max-height: 80vh; overflow-y: auto; }
     .lecteur .emoji { text-align: center; }
     .lecteur h1 { text-align: center; margin-bottom: 4px; }
@@ -79,9 +77,9 @@
   <div class="boite" id="ecran-code">
     <span class="emoji">🎧</span>
     <h1>Ma musique</h1>
-    <p class="intro">Ce lien est personnel : le code que tu as reçu ne fonctionne qu'une seule fois.</p>
-    <input type="text" id="code-input" maxlength="10" placeholder="CODE" autocomplete="off" inputmode="text"/>
-    <div class="erreur" id="erreur-msg"></div>
+    <p class="intro">Entre le code que Sébastien t'a envoyé pour écouter les morceaux.</p>
+    <input type="text" id="code-input" maxlength="20" placeholder="CODE" autocomplete="off" inputmode="text"/>
+    <div class="erreur" id="erreur-msg">Code incorrect, réessaie.</div>
     <button class="btn-valider" id="btn-valider">Écouter</button>
     <a href="/" class="retour">← Retour au site</a>
   </div>
@@ -95,47 +93,36 @@
     <a href="/" class="retour" style="display:block; text-align:center; margin-top:14px;">← Retour au site</a>
   </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBKFwb14VXIAvkgLZDCIR58xD9gjRqWqoQ",
-    authDomain: "quiz-oldy-sebastien.firebaseapp.com",
-    databaseURL: "https://quiz-oldy-sebastien-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "quiz-oldy-sebastien",
-    storageBucket: "quiz-oldy-sebastien.firebasestorage.app",
-    messagingSenderId: "315241947179",
-    appId: "1:315241947179:web:48c53a445565654e338a6e"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  // ---- Le code d'accès : change-le ici quand tu veux ----
+  const CODE_MUSIQUE = "OLDYMUSIC";
 
-  // Tes 17 pistes d'origine avec tes identifiants Google Drive
+  // ---- Liste des morceaux ----
   const PISTES = [
-    { titre: "Oldy et sébastien", id: "17xFv_YokSOAwEWg3ocfW-z0E1xhi83Vm" },
-    { titre: "Rupture invisible visible", id: "18W4uNybP201XMi9cKXKskhsPfOMB9rP6" },
-    { titre: "FACE a FACE(3)", id: "19HoLOrlb2rj2W-f1P7ucvDlkWKYxOVqo" },
-    { titre: "Non aux jugements", id: "1E4jZpSteaJo1B1A3GU9Ro3bk7-VTPlNK" },
-    { titre: "L'Invisible BIS", id: "1EIi3DdTZQqbhWN4PkqCJq_9bMjO22tPh" },
-    { titre: "la dépression", id: "1GV1ejpp_MKVxoS8drGzK3dx9vPcM_fpv" },
-    { titre: "Je suis encore la", id: "1JfJsfStLqq1KfwmvQqUZdQRj7f5f4ibO" },
-    { titre: "techno trance l'invisible", id: "1M_Xole5_omHmhdf0LNI_wP2h-2sL4I2o" },
-    { titre: "je revis", id: "1NSIaCGVSURFCZNVbulMYnRPXPdpupolI" },
-    { titre: "reconstruction", id: "1NZXMIPk7hyi_4T32yeAZAk96V44q8eV9" },
-    { titre: "silence", id: "1Oc86rZJ6xJ4kvySoCgRWq91Z71YFckvH" },
-    { titre: "L' INVISIBLE VISIBLE", id: "1T6RT6zWQWODOl8xxPHYBcwGOxpDkBgWd" },
-    { titre: "reggae électro invisible", id: "1UMPFhsNKvyyFri7P6eT8zJnqfa_miiVd" },
-    { titre: "FACE a FACE(2)", id: "1VZYliIKwc43QB9LpJj5XGEtAYvwZ1PqN" },
-    { titre: "ma vie", id: "1XitCM6pffS9-wMgRPCqyHL8qm2DNs7Nr" },
-    { titre: "On te voit pas, on te croit pas", id: "1qWvBL5-2lld4cwaQ-VcYVx3yU7Ee-hwx" },
-    { titre: "De quel droit", id: "1uCTVKohK2w6gyeMKoJv1-LbaakpPoQrn" }
+    { titre: "Oldy et sébastien",              id: "17xFv_YokSOAwEWg3ocfW-z0E1xhi83Vm" },
+    { titre: "Rupture invisible visible",       id: "18W4uNybP201XMi9cKXKskhsPfOMB9rP6" },
+    { titre: "Face à face",                     id: "19HoLOrlb2rj2W-f1P7ucvDlkWKYxOVqo" },
+    { titre: "Non aux jugements",               id: "1E4jZpSteaJo1B1A3GU9Ro3bk7-VTPlNK" },
+    { titre: "L'invisible bis",                 id: "1EIi3DdTZQqbhWN4PkqCJq_9bMjO22tPh" },
+    { titre: "La dépression",                   id: "1GV1ejpp_MKVxoS8drGzK3dx9vPcM_fpv" },
+    { titre: "Je suis encore là",                id: "1JfJsfStLqq1KfwmvQqUZdQRj7f5f4ibO" },
+    { titre: "Techno trance l'invisible",       id: "1M_Xole5_omHmhdf0LNI_wP2h-2sL4I2o" },
+    { titre: "Je reviens",                       id: "1NSIaCGVSURFCZNVbulMYnRPXPdpupolI" },
+    { titre: "Reconstruction",                   id: "1NZXMIPk7hyi_4T32yeAZAk96V44q8eV9" },
+    { titre: "Silence",                          id: "1Oc86rZJ6xJ4kvySoCgRWq91Z71YFckvH" },
+    { titre: "L'invisible visible",              id: "1T6RT6zWQWODOl8xxPHYBcwGOxpDkBgWd" },
+    { titre: "Reggae électro invisible",         id: "1UMPFhsNKvyyFri7P6eT8zJnqfa_miiVd" },
+    { titre: "Face à face (2)",                  id: "1VZYliIKwc43QB9LpJj5XGEtAYvwZ1PqN" },
+    { titre: "Ma vie",                           id: "1XitCM6pffS9-wMgRPCqyHL8qm2DNs7Nr" },
+    { titre: "On te voit pas, on te croit pas",  id: "1qWvBL5-2lld4cwaQ-VcYVx3yU7Ee-hwx" },
+    { titre: "De quel droit",                    id: "1uCTVKohK2w6gyeMKoJv1-LbaakpPoQrn" }
   ];
-  
+
   const ecranCode = document.getElementById('ecran-code');
   const ecranLecteur = document.getElementById('ecran-lecteur');
   const input = document.getElementById('code-input');
   const btn = document.getElementById('btn-valider');
-  const erreurmsg = document.getElementById('erreur-msg');
+  const erreurMsg = document.getElementById('erreur-msg');
 
   function afficherLecteur() {
     const liste = document.getElementById('liste-pistes');
@@ -153,53 +140,14 @@
     afficherLecteur();
   }
 
-  function montrerErreur(msg) {
-    erreurmsg.textContent = msg;
-    erreurmsg.style.display = 'block';
-  }
-
-  async function validerCode() {
-    const code = input.value.trim().toUpperCase();
-    erreurmsg.style.display = 'none';
-
-    if (!code) {
-      montrerErreur('Merci de saisir ton code.');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Vérification…';
-
-    try {
-      const ref = db.ref('musique_codes/' + code);
-      const resultat = await ref.transaction(actuel => {
-        if (actuel === null || actuel.used === true) {
-          return;
-        }
-        actuel.used = true;
-        actuel.usedAt = Date.now();
-        return actuel;
-      });
-
-      if (!resultat.committed) {
-        const snap = await ref.once('value');
-        if (!snap.exists()) {
-          montrerErreur('Ce code est introuvable. Vérifie qu\'il est bien recopié.');
-        } else {
-          montrerErreur('Ce code a déjà été utilisé. Chaque code ne fonctionne qu\'une fois.');
-        }
-        btn.disabled = false;
-        btn.textContent = 'Écouter';
-        return;
-      }
-
+  function validerCode() {
+    const saisie = input.value.trim().toUpperCase();
+    if (saisie === CODE_MUSIQUE.toUpperCase()) {
+      erreurMsg.style.display = 'none';
       sessionStorage.setItem('musique_deverrouille', '1');
       afficherLecteur();
-
-    } catch (e) {
-      montrerErreur('Une erreur est survenue. Réessaie dans un instant.');
-      btn.disabled = false;
-      btn.textContent = 'Écouter';
+    } else {
+      erreurMsg.style.display = 'block';
     }
   }
 
