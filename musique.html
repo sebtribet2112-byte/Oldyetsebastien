@@ -157,7 +157,7 @@
         const piste = PISTES[pisteActuelle];
         titreActif.textContent = piste.titre;
         
-        // On recrée proprement l'élément audio pour éviter que le navigateur ne bloque le changement de source
+        // On recrée proprement l'élément audio pour forcer le changement de source
         const audioContainer = document.getElementById('audio-container');
         audioContainer.innerHTML = `<audio id="audio-player" controls autoplay style="width: 100%; max-width: 500px;"></audio>`;
         
@@ -166,7 +166,7 @@
         
         audioPlayer.play().catch(e => console.log("Lecture automatique bloquée :", e));
         
-        // Gestion de l'enchaînement automatique à la fin du morceau
+        // Enchaînement automatique à la fin
         audioPlayer.addEventListener('ended', () => {
             pisteActuelle++;
             if (pisteActuelle < PISTES.length) {
@@ -176,7 +176,7 @@
             }
         });
         
-        // Mise en surbrillance visuelle
+        // Mise en surbrillance de la piste active
         pistesElements.forEach((el, i) => {
             el.style.background = i === pisteActuelle ? '#d1e7dd' : '#f1f1f1';
         });
