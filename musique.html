@@ -51,7 +51,7 @@
       font-size: 12px; text-decoration: none;
       margin-top: 4px;
     }
-
+ 
     .lecteur { display: none; text-align: left; max-height: 80vh; overflow-y: auto; }
     .lecteur .emoji { text-align: center; }
     .lecteur h1 { text-align: center; margin-bottom: 4px; }
@@ -63,15 +63,17 @@
     .piste .titre {
       font-size: 14px; font-weight: 800; color: #1a2440; margin-bottom: 8px;
     }
-    .piste iframe {
-      width: 100%; height: 130px; border: none; border-radius: 8px;
-      background: #fff;
+    .piste audio {
+      width: 100%; height: 38px; border-radius: 8px;
+    }
+    .piste .erreur-fichier {
+      display: none; font-size: 11.5px; color: #c0392b; margin-top: 6px;
     }
     .note-fin {
       margin-top: 18px; font-size: 11.5px; color: #aaa;
       text-align: center; line-height: 1.6;
     }
-
+ 
     .depots { text-align: center; }
     .depots h3 { margin: 0 0 10px; color: #1a2440; font-size: 16px; }
     .depots p { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 14px; }
@@ -82,13 +84,13 @@
     }
     .depots-item strong { display: block; color: #1a2440; font-size: 13.5px; }
     .depots-item span { font-size: 11.5px; color: #888; }
-
+ 
     footer { text-align: center; font-size: 11.5px; color: #b9c2d4; padding: 10px 0 20px; }
     footer a { color: #d4af6a; text-decoration: none; }
   </style>
 </head>
 <body>
-
+ 
   <div class="boite" id="ecran-code">
     <span class="emoji">🎧</span>
     <h1>Ma musique</h1>
@@ -98,7 +100,7 @@
     <button class="btn-valider" id="btn-valider">Écouter</button>
     <a href="/" class="retour">← Retour au site</a>
   </div>
-
+ 
   <div class="boite lecteur" id="ecran-lecteur">
     <span class="emoji">🎶</span>
     <h1>Bonne écoute</h1>
@@ -106,7 +108,7 @@
     <div id="liste-pistes"></div>
     <p class="note-fin">Merci de ne pas rediffuser ces morceaux sans autorisation. © Sébastien TRIBET.</p>
   </div>
-
+ 
   <div class="boite depots">
     <h3>📜 Dépôts Officiels &amp; Propriété</h3>
     <p>Les textes, chansons et créations littéraires associés à cet univers bénéficient d'une protection juridique officielle :</p>
@@ -115,61 +117,62 @@
       <div class="depots-item"><strong>SACEM</strong><span>Œuvres musicales</span></div>
     </div>
   </div>
-
+ 
   <footer>
     <strong>Les aventures d'Oldy et Sébastien</strong><br>
     © 2026 TRIBET Sébastien, Auteur créateur — Tous droits réservés<br>
     <a href="/">← Retour au site</a> · <a href="/mentions_legales.html">⚖️ Mentions légales</a>
   </footer>
-
+ 
 <script>
   // ---- Le code d'accès : change-le ici quand tu veux ----
   const CODE_MUSIQUE = "OLDYMUSIC";
-
+ 
   // ---- Liste des morceaux ----
-  // "id" = identifiant du fichier Google Drive (dans .../file/d/XXXXX/view, c'est le XXXXX)
+  // "fichier" = nom du fichier mp3 dans le dossier /audio/ de ton repo GitHub
   const PISTES = [
-    { titre: "Oldy et Sébastien",               id: "17xFv_YokSOAwEWg3ocfW-z0E1xhi83Vm" },
-    { titre: "Rupture invisible visible",        id: "18W4uNybP201XMi9cKXKskhsPfOMB9rP6" },
-    { titre: "Face à face",                      id: "19HoLOrlb2rj2W-f1P7ucvDlkWKYxOVqo" },
-    { titre: "Non aux jugements",                id: "1E4jZpSteaJo1B1A3GU9Ro3bk7-VTPlNK" },
-    { titre: "L'invisible bis",                  id: "1EIi3DdTZQqbhWN4PkqCJq_9bMjO22tPh" },
-    { titre: "La dépression",                    id: "1GV1ejpp_MKVxoS8drGzK3dx9vPcM_fpv" },
-    { titre: "Je suis encore là",                id: "1JfJsfStLqq1KfwmvQqUZdQRj7f5f4ibO" },
-    { titre: "Techno trance l'invisible",        id: "1M_Xole5_omHmhdf0LNI_wP2h-2sL4I2o" },
-    { titre: "Je reviens",                       id: "1NSIaCGVSURFCZNVbulMYnRPXPdpupolI" },
-    { titre: "Reconstruction",                   id: "1NZXMIPk7hyi_4T32yeAZAk96V44q8eV9" },
-    { titre: "Silence",                          id: "1Oc86rZJ6xJ4kvySoCgRWq91Z71YFckvH" },
-    { titre: "L'invisible visible",              id: "1FkQImkYeTIVPLWZMuOuGZ_6Hh0Jc-7LN" },
-    { titre: "Reggae électro invisible",         id: "1UMPFhsNKvyyFri7P6eT8zJnqfa_miiVd" },
-    { titre: "Face à face (2)",                  id: "1VZYliIKwc43QB9LpJj5XGEtAYvwZ1PqN" },
-    { titre: "Ma vie",                           id: "1rSOD5HNlrTdKnFN3QHQzjTNXVUsLkMlB" },
-    { titre: "On te voit pas, on te croit pas",  id: "1qWvBL5-2lld4cwaQ-VcYVx3yU7Ee-hwx" },
-    { titre: "De quel droit",                    id: "1uCTVKohK2w6gyeMKoJv1-LbaakpPoQrn" }
+    { titre: "Oldy et Sébastien",               fichier: "oldy-et-sebastien.mp3" },
+    { titre: "Rupture invisible visible",        fichier: "rupture-invisible-visible.mp3" },
+    { titre: "Face à face",                      fichier: "face-a-face.mp3" },
+    { titre: "Non aux jugements",                fichier: "non-aux-jugements.mp3" },
+    { titre: "L'invisible bis",                  fichier: "linvisible-bis.mp3" },
+    { titre: "La dépression",                    fichier: "la-depression.mp3" },
+    { titre: "Je suis encore là",                fichier: "je-suis-encore-la.mp3" },
+    { titre: "Techno trance l'invisible",        fichier: "techno-trance-linvisible.mp3" },
+    { titre: "Je reviens",                       fichier: "je-reviens.mp3" },
+    { titre: "Reconstruction",                   fichier: "reconstruction.mp3" },
+    { titre: "Silence",                          fichier: "silence.mp3" },
+    { titre: "L'invisible visible",              fichier: "linvisible-visible.mp3" },
+    { titre: "On te voit pas, on te croit pas",  fichier: "on-te-voit-pas-on-te-croit-pas.mp3" },
+    { titre: "De quel droit",                    fichier: "de-quel-droit.mp3" }
   ];
-
+ 
   const ecranCode = document.getElementById('ecran-code');
   const ecranLecteur = document.getElementById('ecran-lecteur');
   const input = document.getElementById('code-input');
   const btn = document.getElementById('btn-valider');
   const erreurMsg = document.getElementById('erreur-msg');
-
+ 
   function afficherLecteur() {
     const liste = document.getElementById('liste-pistes');
     liste.innerHTML = PISTES.map(p => `
       <div class="piste">
         <div class="titre">${p.titre}</div>
-        <iframe src="https://drive.google.com/file/d/${p.id}/preview" allow="autoplay" scrolling="no"></iframe>
+        <audio controls preload="none" onerror="this.nextElementSibling.style.display='block'">
+          <source src="audio/${p.fichier}" type="audio/mpeg"/>
+          Ton navigateur ne supporte pas la lecture audio intégrée.
+        </audio>
+        <div class="erreur-fichier">⚠️ Fichier introuvable (audio/${p.fichier})</div>
       </div>
     `).join('');
     ecranCode.style.display = 'none';
     ecranLecteur.style.display = 'block';
   }
-
+ 
   if (sessionStorage.getItem('musique_deverrouille') === '1') {
     afficherLecteur();
   }
-
+ 
   function validerCode() {
     const saisie = input.value.trim().toUpperCase();
     if (saisie === CODE_MUSIQUE.toUpperCase()) {
@@ -180,9 +183,10 @@
       erreurMsg.style.display = 'block';
     }
   }
-
+ 
   btn.addEventListener('click', validerCode);
   input.addEventListener('keydown', e => { if (e.key === 'Enter') validerCode(); });
 </script>
 </body>
 </html>
+ 
