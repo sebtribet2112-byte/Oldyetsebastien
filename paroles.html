@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paroles — Les Aventures d'Oldy et Sébastien</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Work+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --ink: #eae5da;
+    --ink-dim: #b9b3a4;
+    --bg: #1b1f2a;
+    --bg-card: #232838;
+    --bg-card-open: #262c3d;
+    --brass: #c9a227;
+    --brass-soft: rgba(201,162,39,0.35);
+    --sage: #5c7268;
+    --rule: rgba(234,229,218,0.12);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.5;
+  }
+
+  /* signature: fil sonore discret en haut de page */
+  .waveline{
+    height:3px;
+    width:100%;
+    background:linear-gradient(90deg, transparent, var(--brass-soft) 20%, var(--brass) 50%, var(--brass-soft) 80%, transparent);
+    background-size:200% 100%;
+    animation:drift 9s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .waveline{animation:none;}
+  }
+  @keyframes drift{
+    0%{background-position:0% 0;}
+    100%{background-position:200% 0;}
+  }
+
+  header{
+    max-width:760px;
+    margin:0 auto;
+    padding:64px 24px 32px;
+  }
+  .eyebrow{
+    font-size:0.75rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:0 0 14px;
+    font-weight:600;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:clamp(2.2rem, 5vw, 3.2rem);
+    margin:0 0 16px;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    color:var(--ink-dim);
+    max-width:52ch;
+    font-size:1rem;
+    margin:0 0 24px;
+  }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    color:var(--brass);
+    text-decoration:none;
+    font-size:0.9rem;
+    font-weight:500;
+    border-bottom:1px solid var(--brass-soft);
+    padding-bottom:2px;
+  }
+  .back-link:hover{border-color:var(--brass);}
+
+  .search-wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 24px 8px;
+  }
+  #search{
+    width:100%;
+    padding:12px 16px;
+    background:var(--bg-card);
+    border:1px solid var(--rule);
+    border-radius:8px;
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:0.95rem;
+  }
+  #search::placeholder{color:var(--ink-dim);}
+  #search:focus{outline:2px solid var(--brass); outline-offset:1px;}
+
+  main{
+    max-width:760px;
+    margin:0 auto;
+    padding:24px 24px 96px;
+  }
+
+  .song{
+    border:1px solid var(--rule);
+    border-radius:10px;
+    margin-bottom:14px;
+    background:var(--bg-card);
+    overflow:hidden;
+  }
+  .song[open]{background:var(--bg-card-open); border-color:var(--brass-soft);}
+
+  .song summary{
+    list-style:none;
+    cursor:pointer;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .song summary::-webkit-details-marker{display:none;}
+
+  .song-title{
+    font-family:'Fraunces', serif;
+    font-size:1.15rem;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .song-meta{
+    font-size:0.78rem;
+    color:var(--ink-dim);
+    letter-spacing:0.02em;
+  }
+  .chevron{
+    flex-shrink:0;
+    width:20px; height:20px;
+    color:var(--brass);
+    transition:transform 0.2s ease;
+  }
+  .song[open] .chevron{transform:rotate(180deg);}
+
+  .song-body{
+    padding:0 20px 24px;
+    border-top:1px solid var(--rule);
+  }
+  .lyrics{
+    font-family:'Fraunces', serif;
+    font-size:1rem;
+    line-height:1.75;
+    white-space:pre-wrap;
+    margin:20px 0 0;
+    color:var(--ink);
+  }
+  .lyrics .section-label{
+    display:block;
+    font-family:'Work Sans', sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:20px 0 6px;
+    font-weight:600;
+  }
+  .lyrics .section-label:first-child{margin-top:20px;}
+
+  .listen-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:20px;
+    font-size:0.85rem;
+    color:var(--sage);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+  }
+  .listen-link:hover{border-color:var(--sage); color:#7c9a8d;}
+
+  .empty-note{
+    color:var(--ink-dim);
+    font-size:0.9rem;
+    text-align:center;
+    padding:40px 0;
+    display:none;
+  }
+
+  footer{
+    text-align:center;
+    padding:32px 24px 64px;
+    color:var(--ink-dim);
+    font-size:0.78rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="waveline" aria-hidden="true"></div>
+
+<header>
+  <p class="eyebrow">Les Aventures d'Oldy et Sébastien</p>
+  <h1>Le recueil de paroles</h1>
+  <p>Chaque chanson porte un morceau de l'invisible : ce qu'on traverse, ce qu'on cache, ce qu'on apprend à vivre avec, en silence.</p>
+  <a class="back-link" href="musique.html">← Retour à la page musique</a>
+</header>
+
+<div class="search-wrap">
+  <input type="text" id="search" placeholder="Rechercher une chanson, un mot, une émotion…" aria-label="Rechercher dans les paroles">
+</div>
+
+<main id="song-list"></main>
+<p class="empty-note" id="empty-note">Aucune chanson ne correspond à cette recherche.</p>
+
+<footer>
+  Paroles protégées — INPI e-Soleau réf. 871696445 / SACEM Musicstart
+</footer>
+
+<script>
+/*
+  ===========================================================
+  COMMENT AJOUTER UNE NOUVELLE CHANSON
+  ===========================================================
+  Copie un bloc { ... } dans le tableau SONGS ci-dessous et
+  remplis les champs. Pas besoin de toucher au reste du fichier.
+
+  - title   : titre de la chanson
+  - style   : le style musical (ex: "Fest-noz électro", "Celtic trad")
+  - bpm     : le tempo, en texte (ex: "145 BPM")
+  - audio   : (optionnel) lien vers l'écoute sur musique.html ou Drive
+  - lyrics  : tableau de sections, chacune avec un "label"
+              (ex: "Couplet 1", "Refrain", "Pont") et un "text"
+              (les paroles de la section, avec des retours à la
+              ligne écrits comme \n)
+  ===========================================================
+*/
+
+const SONGS = [
+  {
+    title: "L'Invisible Visible",
+    style: "Celtic festif trad berrichon (duo voix homme/femme)",
+    bpm: "145 BPM",
+    audio: "musique.html",
+    lyrics: [
+      { label: "Couplet 1 — Voix homme", text: "Je courais dans le vent sans jamais regarder\nMes journées filaient, légères, sans y penser\nJe croyais tout tenir au creux de mes deux mains\nSans savoir que tout pouvait basculer demain" },
+      { label: "Pré-refrain — Voix femme", text: "Puis un jour le silence a frappé dans ma tête\nLe monde a chaviré sans prévenir la tempête" },
+      { label: "Refrain — Duo", text: "Je suis encore là, même si tout a changé\nIl est des blessures que nul ne peut toucher\nJe souris bien souvent pour qu'on n'y voie rien\nMais mes combats à moi resteront les miens" },
+      { label: "Couplet 2 — Voix femme", text: "Des lumières blanches, des voix tout autour\nMon corps qui s'efface, suspendu au jour\nEntre deux mondes je tenais à peine\nChaque souffle fragile me ramenait à la peine" },
+      { label: "Couplet 3 — Voix homme", text: "Je buvais pour aller mieux, c'est c'que je croyais\nChaque verre en plus me faisait oublier\nMais je perdais tout sans m'en rendre compte\nJe noyais mes jours dans une mer trop sombre\n\nC'était un long noir, sans fin et sans retour\nJe faisais des dégâts sans voir autour\nEt dans ce silence que l'alcool dessinait\nJe ne voyais plus rien, même ce que je brisais" },
+      { label: "Couplet 4 — Voix femme", text: "Puis le calme est revenu, mais j'étais différent\nComme perdu moi-même au milieu des gens\nLeurs regards glissaient sans comprendre pourquoi\nJe n'étais plus vraiment moi" },
+      { label: "Refrain — Duo", text: "Je suis encore là, même si tout a changé\nIl est des blessures que nul ne peut toucher\nJe souris bien souvent pour qu'on n'y voie rien\nMais mes combats à moi resteront les miens" },
+      { label: "Pont — Duo alterné", text: "J'ai appris doucement à me reconstruire\nÀ vivre avec ce qu'on ne peut plus fuir\nCe n'est plus la même vie, ni le même reflet\nMais j'avance encore, même imparfait" },
+      { label: "Couplet 5 — Voix femme", text: "On me dit \"ça va\", parce que ça ne se voit pas\nMais il est des tempêtes au fond de moi\nJ'ai changé en silence, sans faire de bruit\nJ'apprends à vivre avec l'invisible aujourd'hui" },
+      { label: "Refrain final — Duo", text: "Je suis encore là, et c'est déjà beaucoup\nMême fragile encore, je tiens toujours debout\nSi rien ne se voit au fond de mon regard\nC'est que j'ai appris à vivre avec mes cicatrices, quelque part" }
+    ]
+  }
+
+  // Ajoute les chansons suivantes ici, séparées par une virgule.
+
+];
+
+function renderSongs(filter = "") {
+  const list = document.getElementById("song-list");
+  const emptyNote = document.getElementById("empty-note");
+  const q = filter.trim().toLowerCase();
+
+  const filtered = SONGS.filter(song => {
+    if (!q) return true;
+    const haystack = (song.title + " " + song.style + " " +
+      song.lyrics.map(s => s.label + " " + s.text).join(" ")).toLowerCase();
+    return haystack.includes(q);
+  });
+
+  list.innerHTML = "";
+  emptyNote.style.display = filtered.length ? "none" : "block";
+
+  filtered.forEach((song, i) => {
+    const details = document.createElement("details");
+    details.className = "song";
+    if (i === 0 && !q) details.open = true;
+
+    const lyricsHTML = song.lyrics.map(sec =>
+      `<span class="section-label">${sec.label}</span>${escapeHTML(sec.text)}`
+    ).join("\n");
+
+    details.innerHTML = `
+      <summary>
+        <div>
+          <p class="song-title">${escapeHTML(song.title)}</p>
+          <p class="song-meta">${escapeHTML(song.style)} · ${escapeHTML(song.bpm)}</p>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+      <div class="song-body">
+        <pre class="lyrics">${lyricsHTML}</pre>
+        ${song.audio ? `<a class="listen-link" href="${song.audio}">♪ Écouter sur la page musique</a>` : ""}
+      </div>
+    `;
+    list.appendChild(details);
+  });
+}
+
+function escapeHTML(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.getElementById("search").addEventListener("input", e => renderSongs(e.target.value));
+renderSongs();
+</script>
+
+</body>
+</html>
