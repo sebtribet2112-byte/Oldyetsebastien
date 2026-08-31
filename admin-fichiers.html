@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Gestion des fichiers - Oldy et Sébastien</title>
+<style>
+  :root{
+    --amber:#e8a33d; --brown:#5c4326; --bg:#fdf6ec; --danger:#c0392b; --ok:#2e7d32;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family: 'Segoe UI', Arial, sans-serif; background:var(--bg); margin:0;
+    padding:20px; color:var(--brown);
+  }
+  .wrap{ max-width:700px; margin:0 auto; }
+  h1{ font-size:22px; margin-bottom:4px; }
+  p.sub{ color:#8a7358; margin-top:0; font-size:14px; }
+  .card{
+    background:#fff; border-radius:14px; padding:20px; margin-bottom:18px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+  }
+  input, select, button{
+    font-size:15px; padding:10px; border-radius:8px; border:1px solid #ddb98a;
+    width:100%; margin-top:6px; margin-bottom:12px; font-family:inherit;
+  }
+  button{
+    background:var(--amber); color:#fff; border:none; font-weight:700;
+    cursor:pointer; transition:opacity .15s;
+  }
+  button:hover{ opacity:.88; }
+  button.danger{ background:var(--danger); width:auto; padding:6px 12px; margin:0; font-size:13px; }
+  button.secondary{ background:#efe1c8; color:var(--brown); }
+  label{ font-weight:700; font-size:13px; display:block; }
+  .file-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid #f0e4cf; font-size:14px;
+  }
+  .file-row:last-child{ border-bottom:none; }
+  .msg{ padding:10px 12px; border-radius:8px; margin-bottom:14px; font-size:14px; display:none; }
+  .msg.ok{ background:#e6f4ea; color:var(--ok); display:block; }
+  .msg.err{ background:#fdecea; color:var(--danger); display:block; }
+  #app{ display:block; }
+  .hint{ font-size:12px; color:#a08a6b; margin-top:-6px; margin-bottom:12px; }
+  .folder-tabs{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .folder-tabs button{ width:auto; margin:0; padding:8px 14px; }
+  .folder-tabs button.active{ background:var(--brown); }
+</style>
+</head>
+<body onload="initApp()">
+
+<div id="app" class="wrap">
+  <h1>🐶 Gestion des fichiers</h1>
+  <p class="sub">Ajoute ou supprime images, musiques, documents — directement sur ton site.</p>
+
+  <div id="tokenCard" class="card" style="display:none;">
+    <label>Clé d'accès GitHub (à coller une seule fois)</label>
+    <input type="password" id="tokenInput" placeholder="ghp_..." />
+    <div class="hint">Cette clé reste uniquement dans ton navigateur, jamais envoyée ailleurs.</div>
+    <button onclick="saveToken()">Enregistrer la clé</button>
+  </div>
+
+  <div class="card">
+    <div class="folder-tabs" id="folderTabs"></div>
+
+    <label>Ajouter un fichier</label>
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFile()">⬆️ Envoyer sur le site</button>
+    <div id="uploadMsg" class="msg"></div>
+
+    <h3 style="margin-top:20px;">Fichiers dans ce dossier</h3>
+    <div id="fileList">Chargement…</div>
+  </div>
+
+  <button class="secondary" onclick="changeToken()">Changer la clé d'accès</button>
+</div>
+
+<script>
+// ============ CONFIGURATION - à adapter une seule fois ============
+const OWNER = "sebtribet2112-byte";
+const REPO  = "Oldyetsebastien";
+const BRANCH = "main";
+const FOLDERS = ["images", "musiques", "audio", "documents"];
+// ====================================================================
+
+let currentFolder = FOLDERS[0];
+let token = "";
+
+function initApp(){
+  token = localStorage.getItem('gh_token') || "";
+  buildTabs();
+  if (!token){
+    document.getElementById('tokenCard').style.display = 'block';
+  } else {
+    loadFiles();
+  }
+}
+
+function buildTabs(){
+  const wrap = document.getElementById('folderTabs');
+  wrap.innerHTML = "";
+  FOLDERS.forEach(f => {
+    const b = document.createElement('button');
+    b.textContent = f;
+    b.className = (f === currentFolder) ? 'active' : 'secondary';
+    b.onclick = () => { currentFolder = f; buildTabs(); loadFiles(); };
+    wrap.appendChild(b);
+  });
+}
+
+function saveToken(){
+  const val = document.getElementById('tokenInput').value.trim();
+  if (!val){ return; }
+  localStorage.setItem('gh_token', val);
+  token = val;
+  document.getElementById('tokenCard').style.display = 'none';
+  loadFiles();
+}
+
+function changeToken(){
+  document.getElementById('tokenCard').style.display = 'block';
+}
+
+function api(path){
+  return `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
+}
+
+async function loadFiles(){
+  const listEl = document.getElementById('fileList');
+  listEl.textContent = "Chargement…";
+  try{
+    const res = await fetch(api(currentFolder), {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.status === 404){
+      listEl.innerHTML = "<em>Dossier vide ou pas encore créé — le premier envoi le créera.</em>";
+      return;
+    }
+    if (!res.ok){ throw new Error("Erreur " + res.status); }
+    const items = await res.json();
+    if (!Array.isArray(items) || items.length === 0){
+      listEl.innerHTML = "<em>Aucun fichier pour l'instant.</em>";
+      return;
+    }
+    listEl.innerHTML = "";
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      row.innerHTML = `<span>${it.name}</span>`;
+      const del = document.createElement('button');
+      del.textContent = "🗑️ Supprimer";
+      del.className = 'danger';
+      del.onclick = () => deleteFile(it.path, it.sha, it.name);
+      row.appendChild(del);
+      listEl.appendChild(row);
+    });
+  } catch(e){
+    listEl.innerHTML = `<span style="color:#c0392b;">Erreur de chargement : ${e.message}. Vérifie ta clé d'accès.</span>`;
+  }
+}
+
+async function uploadFile(){
+  const input = document.getElementById('fileInput');
+  const msg = document.getElementById('uploadMsg');
+  msg.className = 'msg'; msg.style.display = 'none';
+  if (!input.files.length){ return; }
+  const file = input.files[0];
+  const path = `${currentFolder}/${file.name}`;
+
+  try{
+    const base64 = await toBase64(file);
+
+    // vérifie si le fichier existe déjà (pour le remplacer proprement)
+    let sha = undefined;
+    const check = await fetch(api(path), { headers: { Authorization: `Bearer ${token}` } });
+    if (check.ok){
+      const info = await check.json();
+      sha = info.sha;
+    }
+
+    const body = {
+      message: sha ? `Mise à jour de ${file.name}` : `Ajout de ${file.name}`,
+      content: base64,
+      branch: BRANCH
+    };
+    if (sha) body.sha = sha;
+
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.message || res.status);
+    }
+
+    msg.textContent = "✅ Fichier envoyé ! Il sera visible sur le site dans 1-2 minutes.";
+    msg.className = 'msg ok';
+    input.value = "";
+    loadFiles();
+  } catch(e){
+    msg.textContent = "❌ Erreur : " + e.message;
+    msg.className = 'msg err';
+  }
+}
+
+async function deleteFile(path, sha, name){
+  if (!confirm(`Supprimer "${name}" définitivement ?`)) return;
+  try{
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: `Suppression de ${name}`, sha, branch: BRANCH })
+    });
+    if (!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.message || res.status);
+    }
+    loadFiles();
+  } catch(e){
+    alert("Erreur lors de la suppression : " + e.message);
+  }
+}
+
+function toBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+</script>
+</body>
+</html>
