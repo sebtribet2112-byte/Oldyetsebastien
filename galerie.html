@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Galerie - Oldy et Sébastien</title>
+<style>
+  :root{ --amber:#e8a33d; --brown:#5c4326; --bg:#fdf6ec; }
+  *{box-sizing:border-box;}
+  body{
+    font-family: 'Segoe UI', Arial, sans-serif; background:var(--bg); margin:0;
+    padding:20px; color:var(--brown);
+  }
+  .wrap{ max-width:800px; margin:0 auto; }
+  h1{ font-size:24px; margin-bottom:4px; }
+  p.sub{ color:#8a7358; margin-top:0; font-size:14px; }
+  h2{ font-size:18px; margin-top:30px; border-bottom:2px solid #e8dcc4; padding-bottom:6px; }
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:14px; margin-top:14px;
+  }
+  .grid img{ width:100%; height:150px; object-fit:cover; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+  .track{
+    background:#fff; border-radius:12px; padding:14px; margin-bottom:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .track .name{ font-weight:700; margin-bottom:8px; font-size:14px; }
+  audio{ width:100%; }
+  .doc-row{
+    display:flex; justify-content:space-between; align-items:center;
+    background:#fff; padding:12px 16px; border-radius:10px; margin-bottom:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08); font-size:14px;
+  }
+  .doc-row a{ color:var(--amber); font-weight:700; text-decoration:none; }
+  em{ color:#a08a6b; }
+</style>
+</head>
+<body onload="initGalerie()">
+
+<div class="wrap">
+  <h1>🐶 Galerie</h1>
+  <p class="sub">Tout ce qui est ajouté depuis la page d'administration apparaît ici automatiquement.</p>
+
+  <h2>🎵 Musiques</h2>
+  <div id="musiquesList"><em>Chargement…</em></div>
+
+  <h2>🎧 Audio</h2>
+  <div id="audioList"><em>Chargement…</em></div>
+
+  <h2>🖼️ Images</h2>
+  <div id="imagesGrid" class="grid"><em>Chargement…</em></div>
+
+  <h2>📄 Documents</h2>
+  <div id="documentsList"><em>Chargement…</em></div>
+</div>
+
+<script>
+const OWNER = "sebtribet2112-byte";
+const REPO  = "Oldyetsebastien";
+const BRANCH = "main";
+const RAW_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
+
+async function listFolder(folder){
+  try{
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${folder}?ref=${BRANCH}`);
+    if (!res.ok) return [];
+    const items = await res.json();
+    if (!Array.isArray(items)) return [];
+    return items.filter(it => it.type === "file" && it.name !== ".gitkeep");
+  } catch(e){
+    return [];
+  }
+}
+
+async function initGalerie(){
+  // Musiques
+  const musiques = await listFolder("musiques");
+  const mDiv = document.getElementById('musiquesList');
+  if (musiques.length === 0){
+    mDiv.innerHTML = "<em>Aucune musique pour l'instant.</em>";
+  } else {
+    mDiv.innerHTML = "";
+    musiques.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'track';
+      div.innerHTML = `
+        <div class="name">${f.name}</div>
+        <audio controls src="${RAW_BASE}musiques/${encodeURIComponent(f.name)}"></audio>
+      `;
+      mDiv.appendChild(div);
+    });
+  }
+
+  // Audio
+  const audios = await listFolder("audio");
+  const aDiv = document.getElementById('audioList');
+  if (audios.length === 0){
+    aDiv.innerHTML = "<em>Aucun fichier audio pour l'instant.</em>";
+  } else {
+    aDiv.innerHTML = "";
+    audios.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'track';
+      div.innerHTML = `
+        <div class="name">${f.name}</div>
+        <audio controls src="${RAW_BASE}audio/${encodeURIComponent(f.name)}"></audio>
+      `;
+      aDiv.appendChild(div);
+    });
+  }
+
+  // Images
+  const images = await listFolder("images");
+  const iDiv = document.getElementById('imagesGrid');
+  if (images.length === 0){
+    iDiv.innerHTML = "<em>Aucune image pour l'instant.</em>";
+  } else {
+    iDiv.innerHTML = "";
+    images.forEach(f => {
+      const img = document.createElement('img');
+      img.src = `${RAW_BASE}images/${encodeURIComponent(f.name)}`;
+      img.alt = f.name;
+      iDiv.appendChild(img);
+    });
+  }
+
+  // Documents
+  const docs = await listFolder("documents");
+  const dDiv = document.getElementById('documentsList');
+  if (docs.length === 0){
+    dDiv.innerHTML = "<em>Aucun document pour l'instant.</em>";
+  } else {
+    dDiv.innerHTML = "";
+    docs.forEach(f => {
+      const row = document.createElement('div');
+      row.className = 'doc-row';
+      row.innerHTML = `
+        <span>${f.name}</span>
+        <a href="${RAW_BASE}documents/${encodeURIComponent(f.name)}" target="_blank">Ouvrir / Télécharger</a>
+      `;
+      dDiv.appendChild(row);
+    });
+  }
+}
+</script>
+</body>
+</html>
