@@ -40,6 +40,31 @@
   .protection h3{ font-size:16px; margin-bottom:8px; }
   .protection p{ font-size:13px; color:#6b5a4a; line-height:1.6; max-width:520px; margin:0 auto; }
   .protection strong{ color:var(--brown); }
+
+  /* --- Paroles karaoké --- */
+  .lyrics-box{
+    margin-top:10px; background:#fbf3e3; border-radius:10px;
+    padding:14px 16px; max-height:170px; overflow-y:auto;
+    scroll-behavior:smooth; font-size:14px; line-height:1.9;
+    border:1px solid #efe1c4;
+  }
+  .lyrics-box .line{
+    color:#b8a688; transition:color .25s ease, font-weight .25s ease, transform .25s ease;
+    transform-origin:left center;
+  }
+  .lyrics-box .line.active{
+    color:var(--amber); font-weight:700; transform:scale(1.04);
+  }
+  .lyrics-box .line.done{
+    color:#8a7358;
+  }
+  .lyrics-toggle{
+    background:none; border:1px solid var(--amber); color:var(--amber);
+    border-radius:20px; padding:4px 12px; font-size:12px; cursor:pointer;
+    margin-top:8px;
+  }
+  .lyrics-toggle:hover{ background:var(--amber); color:#fff; }
+  .lyrics-empty{ font-size:12px; color:#a08a6b; font-style:italic; margin-top:6px; }
 </style>
 </head>
 <body onload="initGalerie()">
@@ -88,6 +113,135 @@ async function listFolder(folder){
   }
 }
 
+// Retire l'extension d'un nom de fichier ("titre.mp3" -> "titre")
+function baseName(filename){
+  return filename.replace(/\.[^/.]+$/, "");
+}
+
+// Parse un fichier .lrc standard : lignes du type [mm:ss.xx]texte
+// Renvoie un tableau trié [{time: secondes, text: "..."}]
+function parseLRC(raw){
+  const lines = raw.split(/\r?\n/);
+  const out = [];
+  const timeTag = /\[(\d{2}):(\d{2})(?:[.:](\d{1,2}))?\]/g;
+  for (const line of lines){
+    const tags = [...line.matchAll(timeTag)];
+    if (tags.length === 0) continue;
+    const text = line.replace(timeTag, "").trim();
+    if (!text) continue;
+    for (const t of tags){
+      const min = parseInt(t[1], 10);
+      const sec = parseInt(t[2], 10);
+      const cs = t[3] ? parseInt(t[3].padEnd(2, "0"), 10) : 0;
+      const time = min * 60 + sec + cs / 100;
+      out.push({ time, text });
+    }
+  }
+  out.sort((a, b) => a.time - b.time);
+  return out;
+}
+
+// Tente de récupérer le fichier de paroles correspondant à un fichier audio,
+// dans le dossier "paroles" du repo, même nom de base.
+// Essaie d'abord un .txt (paroles simples, sans minutage), puis un .lrc (minuté) en secours.
+async function fetchLyrics(audioFilename){
+  const base = baseName(audioFilename);
+
+  // 1) Paroles simples (texte brut, affichage statique)
+  try {
+    const res = await fetch(`${RAW_BASE}paroles/${encodeURIComponent(base + ".txt")}`);
+    if (res.ok){
+      const text = await res.text();
+      if (text.trim()) return { type: "plain", lines: text.split(/\r?\n/) };
+    }
+  } catch(e){ /* on tente le .lrc ensuite */ }
+
+  // 2) Paroles minutées (karaoké)
+  try {
+    const res = await fetch(`${RAW_BASE}paroles/${encodeURIComponent(base + ".lrc")}`);
+    if (res.ok){
+      const text = await res.text();
+      const parsed = parseLRC(text);
+      if (parsed.length) return { type: "timed", lines: parsed };
+    }
+  } catch(e){ /* rien trouvé */ }
+
+  return null;
+}
+
+// Construit le bloc paroles. Selon le type de fichier trouvé :
+// - "plain" : texte statique, pas de synchro
+// - "timed" : surlignage + défilement en rythme avec l'audio
+function attachLyrics(container, audioEl, lyrics){
+  if (!lyrics){
+    const p = document.createElement('div');
+    p.className = 'lyrics-empty';
+    p.textContent = "Paroles non disponibles pour ce titre.";
+    container.appendChild(p);
+    return;
+  }
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'lyrics-toggle';
+  toggleBtn.textContent = 'Masquer les paroles';
+  container.appendChild(toggleBtn);
+
+  const box = document.createElement('div');
+  box.className = 'lyrics-box';
+  container.appendChild(box);
+
+  toggleBtn.addEventListener('click', () => {
+    const hidden = box.style.display === 'none';
+    box.style.display = hidden ? 'block' : 'none';
+    toggleBtn.textContent = hidden ? 'Masquer les paroles' : 'Afficher les paroles';
+  });
+
+  if (lyrics.type === "plain"){
+    lyrics.lines.forEach(line => {
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.textContent = line.trim() === "" ? "\u00A0" : line;
+      box.appendChild(div);
+    });
+    return; // pas de synchro, affichage statique
+  }
+
+  // type === "timed"
+  const lyricsData = lyrics.lines;
+  lyricsData.forEach((l) => {
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.dataset.time = l.time;
+    div.textContent = l.text;
+    box.appendChild(div);
+  });
+
+  const lineEls = [...box.querySelectorAll('.line')];
+
+  audioEl.addEventListener('timeupdate', () => {
+    const t = audioEl.currentTime;
+    let activeIndex = -1;
+    for (let i = 0; i < lyricsData.length; i++){
+      if (lyricsData[i].time <= t) activeIndex = i;
+      else break;
+    }
+    lineEls.forEach((el, i) => {
+      el.classList.toggle('active', i === activeIndex);
+      el.classList.toggle('done', i < activeIndex);
+    });
+    if (activeIndex >= 0){
+      const activeEl = lineEls[activeIndex];
+      const boxRect = box.getBoundingClientRect();
+      const elRect = activeEl.getBoundingClientRect();
+      box.scrollTop += (elRect.top - boxRect.top) - box.clientHeight / 2 + activeEl.clientHeight / 2;
+    }
+  });
+
+  audioEl.addEventListener('seeked', () => {
+    audioEl.dispatchEvent(new Event('timeupdate'));
+  });
+}
+
 async function initGalerie(){
   // Musiques
   const musiques = await listFolder("musiques");
@@ -96,7 +250,7 @@ async function initGalerie(){
     mDiv.innerHTML = "<em>Aucune musique pour l'instant.</em>";
   } else {
     mDiv.innerHTML = "";
-    musiques.forEach(f => {
+    for (const f of musiques){
       const div = document.createElement('div');
       div.className = 'track';
       div.innerHTML = `
@@ -104,7 +258,11 @@ async function initGalerie(){
         <audio controls src="${RAW_BASE}musiques/${encodeURIComponent(f.name)}"></audio>
       `;
       mDiv.appendChild(div);
-    });
+
+      const audioEl = div.querySelector('audio');
+      const lyricsData = await fetchLyrics(f.name);
+      attachLyrics(div, audioEl, lyricsData);
+    }
   }
 
   // Audio
@@ -114,7 +272,7 @@ async function initGalerie(){
     aDiv.innerHTML = "<em>Aucun fichier audio pour l'instant.</em>";
   } else {
     aDiv.innerHTML = "";
-    audios.forEach(f => {
+    for (const f of audios){
       const div = document.createElement('div');
       div.className = 'track';
       div.innerHTML = `
@@ -122,7 +280,11 @@ async function initGalerie(){
         <audio controls src="${RAW_BASE}audio/${encodeURIComponent(f.name)}"></audio>
       `;
       aDiv.appendChild(div);
-    });
+
+      const audioEl = div.querySelector('audio');
+      const lyricsData = await fetchLyrics(f.name);
+      attachLyrics(div, audioEl, lyricsData);
+    }
   }
 
   // Images
