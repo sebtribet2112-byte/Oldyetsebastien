@@ -6,6 +6,8 @@
   <title>Mes livres – Les aventures d'Oldy et Sébastien</title>
   <meta name="description" content="Lisez en ligne les livres d'Oldy et Sébastien – sensibilisation au handicap invisible"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
   <style>
     :root {
       --vert:       #2d6a4f;
@@ -98,18 +100,25 @@
     .livre-title { font-size: 17px; font-weight: 900; color: var(--texte); }
     .livre-sub { font-size: 12px; color: var(--texte-doux); margin-top: 2px; }
 
-    .livre-frame {
+    /* Aperçu + bouton d'ouverture (remplace l'ancien iframe) */
+    .livre-preview {
       width: 100%;
-      height: 520px;
-      border: none;
+      height: 220px;
       border-radius: 12px;
       background: var(--vert-bg);
-      display: block;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px;
+      border: 2px dashed var(--vert-pale);
     }
-    @media (max-width: 600px) {
-      .livre-frame { height: 420px; }
-      .livre-card { padding: 18px; }
+    .livre-preview-icon { font-size: 40px; }
+    .btn-lire {
+      background: var(--vert); color: white; border: none;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px;
+      padding: 12px 26px; border-radius: 30px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: background 0.2s, transform 0.2s;
     }
+    .btn-lire:hover { background: #1b4332; transform: translateY(-1px); }
 
     .livre-note {
       margin-top: 12px;
@@ -124,6 +133,64 @@
     }
     footer strong { color: white; }
     footer a { color: var(--vert-clair); text-decoration: none; }
+
+    /* ===== LISEUSE PLEIN ECRAN ===== */
+    #readerOverlay {
+      position: fixed; inset: 0; background: #14261d;
+      display: none; z-index: 1000;
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    #readerOverlay.open { display: flex; }
+    .reader-topbar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; z-index: 5;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+    }
+    .reader-title { color: white; font-weight: 800; font-size: 14px; }
+    .reader-actions { display: flex; gap: 10px; }
+    .reader-btn {
+      background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px; padding: 7px 16px; font-family: 'Nunito', sans-serif;
+      font-weight: 700; font-size: 12px; cursor: pointer;
+    }
+    .reader-btn:hover { background: rgba(255,255,255,0.25); }
+
+    #flipbookContainer { touch-action: none; }
+    #flipbookContainer canvas { display: block; }
+
+    .reader-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3);
+      color: white; width: 44px; height: 44px; border-radius: 50%;
+      font-size: 20px; cursor: pointer; z-index: 5;
+    }
+    .reader-nav:hover { background: rgba(255,255,255,0.25); }
+    #prevBtn { left: 18px; }
+    #nextBtn { right: 18px; }
+
+    .reader-pagecount {
+      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 700;
+      background: rgba(0,0,0,0.35); padding: 5px 14px; border-radius: 14px;
+    }
+
+    #readerLoading {
+      color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 700;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .spinner {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25); border-top-color: white;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .livre-preview { height: 180px; }
+      .livre-card { padding: 18px; }
+      .reader-nav { width: 38px; height: 38px; font-size: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -148,7 +215,7 @@
     <p>J'espère que vous saurez regarder au-delà de ces imperfections pour recevoir ce que j'ai vraiment à vous transmettre.<br>Merci de votre bienveillance,<br><strong>Sébastien</strong></p>
   </div>
 
-  <!-- LIVRE 3 -->
+  <!-- LIVRE 1 -->
   <div class="livre-card">
     <div class="livre-header">
       <div class="livre-num">📖</div>
@@ -157,48 +224,10 @@
         <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
       </div>
     </div>
-    <iframe
-      class="livre-frame"
-      src="https://drive.google.com/file/d/1_VNXjpMSxlaDpCaBwQ131jIpibPTHumT/preview"
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
-    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
-  </div>
-
-  <!-- LIVRE 4 -->
-  <div class="livre-card">
-    <div class="livre-header">
-      <div class="livre-num">📖</div>
-      <div>
-        <div class="livre-title">Livre 2</div>
-        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
-      </div>
+    <div class="livre-preview">
+      <div class="livre-preview-icon">📖</div>
+      <button class="btn-lire" onclick="ouvrirLivre('livre1.pdf','Livre 1')">▶ Lire ce livre</button>
     </div>
-    <iframe
-      class="livre-frame"
-      src="https://drive.google.com/file/d/16udFkQlwic6c4SdB92Su9wOVtoqp8naz/preview"
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
-    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
-  </div>
-
-  <!-- LIVRE 1 -->
-  <div class="livre-card">
-    <div class="livre-header">
-      <div class="livre-num">📖</div>
-      <div>
-        <div class="livre-title">Livre 3</div>
-        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
-      </div>
-    </div>
-    <iframe
-      class="livre-frame"
-      src="https://drive.google.com/file/d/1nsvjrPyH75Nxio-0umX8siCGN4Ri3rtp/preview"
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
     <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
   </div>
 
@@ -207,16 +236,46 @@
     <div class="livre-header">
       <div class="livre-num">📖</div>
       <div>
+        <div class="livre-title">Livre 2</div>
+        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+      </div>
+    </div>
+    <div class="livre-preview">
+      <div class="livre-preview-icon">📖</div>
+      <button class="btn-lire" onclick="ouvrirLivre('livre2.pdf','Livre 2')">▶ Lire ce livre</button>
+    </div>
+    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+  </div>
+
+  <!-- LIVRE 3 -->
+  <div class="livre-card">
+    <div class="livre-header">
+      <div class="livre-num">📖</div>
+      <div>
+        <div class="livre-title">Livre 3</div>
+        <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+      </div>
+    </div>
+    <div class="livre-preview">
+      <div class="livre-preview-icon">📖</div>
+      <button class="btn-lire" onclick="ouvrirLivre('livre3.pdf','Livre 3')">▶ Lire ce livre</button>
+    </div>
+    <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+  </div>
+
+  <!-- LIVRE 4 -->
+  <div class="livre-card">
+    <div class="livre-header">
+      <div class="livre-num">📖</div>
+      <div>
         <div class="livre-title">Livre 4</div>
         <div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
       </div>
     </div>
-    <iframe
-      class="livre-frame"
-      src="https://drive.google.com/file/d/1K3lwKSqu1B9Qj3rDOHA9supB6Ii-HIqz/preview"
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
+    <div class="livre-preview">
+      <div class="livre-preview-icon">📖</div>
+      <button class="btn-lire" onclick="ouvrirLivre('livre4.pdf','Livre 4')">▶ Lire ce livre</button>
+    </div>
     <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
   </div>
 
@@ -229,12 +288,10 @@
         <div class="livre-sub">Comprendre et repérer la dépression chez l'autre</div>
       </div>
     </div>
-    <iframe
-      class="livre-frame"
-       src="https://drive.google.com/file/d/1erHENimay69OjTE4CeIyzLejEpPl5__I/preview"
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
+    <div class="livre-preview">
+      <div class="livre-preview-icon">📖</div>
+      <button class="btn-lire" onclick="ouvrirLivre('livre5.pdf','Reconnaître l\'invisible')">▶ Lire ce livre</button>
+    </div>
     <p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
   </div>
 
@@ -244,6 +301,128 @@
   <strong>Les aventures d'Oldy et Sébastien</strong><br>
   Sensibilisation au handicap invisible · TRIBET Sébastien · 2026<br>
 </footer>
+
+<!-- ===== LISEUSE PLEIN ECRAN ===== -->
+<div id="readerOverlay">
+  <div class="reader-topbar">
+    <div class="reader-title" id="readerTitle">Livre</div>
+    <div class="reader-actions">
+      <button class="reader-btn" onclick="toggleFullscreen()">⛶ Plein écran</button>
+      <button class="reader-btn" onclick="fermerLivre()">✕ Fermer</button>
+    </div>
+  </div>
+
+  <div id="readerLoading">
+    <div class="spinner"></div>
+    <div>Chargement du livre…</div>
+  </div>
+
+  <button class="reader-nav" id="prevBtn" onclick="pageFlipInstance && pageFlipInstance.flipPrev()" style="display:none">‹</button>
+  <div id="flipbookContainer"></div>
+  <button class="reader-nav" id="nextBtn" onclick="pageFlipInstance && pageFlipInstance.flipNext()" style="display:none">›</button>
+
+  <div class="reader-pagecount" id="pageCount" style="display:none"></div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let pageFlipInstance = null;
+
+async function ouvrirLivre(url, titre) {
+  document.getElementById('readerTitle').textContent = titre;
+  document.getElementById('readerOverlay').classList.add('open');
+  document.getElementById('readerLoading').style.display = 'flex';
+  document.getElementById('prevBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('pageCount').style.display = 'none';
+
+  const container = document.getElementById('flipbookContainer');
+  container.innerHTML = '';
+
+  try {
+    const pdf = await pdfjsLib.getDocument(url).promise;
+    const totalPages = pdf.numPages;
+    const pageImages = [];
+
+    // taille cible d'affichage
+    const maxW = Math.min(window.innerWidth * 0.42, 480);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const page = await pdf.getPage(i);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const scale = maxW / baseViewport.width;
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      const img = document.createElement('div');
+      img.style.backgroundImage = `url(${canvas.toDataURL('image/jpeg', 0.85)})`;
+      img.style.backgroundSize = 'cover';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      pageImages.push(canvas.toDataURL('image/jpeg', 0.85));
+    }
+
+    document.getElementById('readerLoading').style.display = 'none';
+
+    pageFlipInstance = new St.PageFlip(container, {
+      width: maxW,
+      height: maxW * 1.35,
+      size: 'stretch',
+      minWidth: 250,
+      maxWidth: 700,
+      minHeight: 350,
+      maxHeight: 1000,
+      showCover: true,
+      mobileScrollSupport: true
+    });
+
+    pageFlipInstance.loadFromImages(pageImages);
+
+    document.getElementById('prevBtn').style.display = 'block';
+    document.getElementById('nextBtn').style.display = 'block';
+    const pageCountEl = document.getElementById('pageCount');
+    pageCountEl.style.display = 'block';
+    const updateCount = () => {
+      pageCountEl.textContent = `Page ${pageFlipInstance.getCurrentPageIndex() + 1} / ${totalPages}`;
+    };
+    updateCount();
+    pageFlipInstance.on('flip', updateCount);
+
+  } catch (err) {
+    document.getElementById('readerLoading').innerHTML =
+      "Impossible de charger ce livre pour le moment.<br><span style='font-size:11px;opacity:0.7'>" + err.message + "</span>";
+  }
+}
+
+function fermerLivre() {
+  document.getElementById('readerOverlay').classList.remove('open');
+  if (document.fullscreenElement) document.exitFullscreen();
+  if (pageFlipInstance) { pageFlipInstance.destroy(); pageFlipInstance = null; }
+  document.getElementById('flipbookContainer').innerHTML = '';
+}
+
+function toggleFullscreen() {
+  const el = document.getElementById('readerOverlay');
+  if (!document.fullscreenElement) {
+    el.requestFullscreen && el.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('readerOverlay').classList.contains('open')) return;
+  if (e.key === 'ArrowRight' && pageFlipInstance) pageFlipInstance.flipNext();
+  if (e.key === 'ArrowLeft' && pageFlipInstance) pageFlipInstance.flipPrev();
+  if (e.key === 'Escape') fermerLivre();
+});
+</script>
 
 </body>
 </html>
