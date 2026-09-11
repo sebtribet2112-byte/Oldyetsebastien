@@ -59,6 +59,25 @@
     /* LIVRES */
     .livres-section { padding: 52px 20px; max-width: 860px; margin: 0 auto; }
 
+    /* AVERTISSEMENT */
+    .avertissement {
+      background: white;
+      border: 2px solid var(--or);
+      border-radius: 20px;
+      padding: 24px 28px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 24px rgba(212,168,67,0.15);
+    }
+    .avertissement-titre {
+      font-size: 15px; font-weight: 900; color: var(--vert);
+      margin-bottom: 10px;
+    }
+    .avertissement p {
+      font-size: 14px; line-height: 1.7; color: var(--texte-doux);
+      margin-bottom: 8px;
+    }
+    .avertissement p:last-child { margin-bottom: 0; }
+
     .livre-card {
       background: white; border: 2px solid var(--vert-pale);
       border-radius: 20px; padding: 28px;
@@ -121,6 +140,13 @@
 </div>
 
 <div class="livres-section">
+
+  <!-- AVERTISSEMENT -->
+  <div class="avertissement">
+    <div class="avertissement-titre">✍️ Un mot avant de commencer</div>
+    <p>Ces livres sont écrits avec mes mots, tels qu'ils me viennent. Vous y trouverez peut-être des tournures de phrases un peu maladroites ou quelques fautes d'orthographe. C'est un choix assumé de ma part : ce qui compte pour moi, c'est de partager mon vécu et mon message le plus sincèrement possible, sans que la forme prenne le pas sur le fond.</p>
+    <p>J'espère que vous saurez regarder au-delà de ces imperfections pour recevoir ce que j'ai vraiment à vous transmettre.<br>Merci de votre bienveillance,<br><strong>Sébastien</strong></p>
+  </div>
 
   <!-- LIVRE 3 -->
   <div class="livre-card">
@@ -217,4 +243,7 @@
 <footer>
   <strong>Les aventures d'Oldy et Sébastien</strong><br>
   Sensibilisation au handicap invisible · TRIBET Sébastien · 2026<br>
-  <a href="/cdn-cgi/l/email-protection#ff8c9a9d9e8c8b969a91cdcececdbf989287d19c9092"><span cla
+</footer>
+
+</body>
+</html>
