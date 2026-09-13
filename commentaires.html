@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laissez-moi un commentaire</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f1ea;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    background: #ffffff;
+    max-width: 500px;
+    width: 100%;
+    border-radius: 12px;
+    padding: 30px 25px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 1.5em;
+    color: #2c3e50;
+    margin-top: 0;
+    text-align: center;
+  }
+  p.intro {
+    color: #555;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+  }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1em;
+    font-family: inherit;
+  }
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.05em;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #a5281b;
+  }
+  #message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 600;
+  }
+  #message.success { color: #27ae60; }
+  #message.error { color: #c0392b; }
+  .note {
+    font-size: 0.8em;
+    color: #999;
+    text-align: center;
+    margin-top: 15px;
+  }
+  /* honeypot field hidden from real visitors */
+  .hp { position: absolute; left: -9999px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Un avis, une question, une remarque ?</h1>
+    <p class="intro">Ce message m'est envoyé directement et n'est lu que par moi. N'hésitez pas à être honnête, les bons commentaires comme les moins bons m'aident à avancer.</p>
+
+    <form id="commentForm">
+      <label for="name">Votre nom (facultatif)</label>
+      <input type="text" id="name" name="name" placeholder="Anonyme si vous préférez">
+
+      <label for="message">Votre commentaire</label>
+      <textarea id="message" name="message" required placeholder="Écrivez ici..."></textarea>
+
+      <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
+
+      <button type="submit">Envoyer</button>
+    </form>
+    <div id="message"></div>
+    <p class="note">Vos commentaires restent strictement privés.</p>
+  </div>
+
+<script>
+const form = document.getElementById('commentForm');
+const msg = document.getElementById('message');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const data = new FormData(form);
+
+  fetch('https://formspree.io/f/xvkojrno', {
+    method: 'POST',
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  }).then(response => {
+    if (response.ok) {
+      msg.textContent = "Merci, votre commentaire a bien été envoyé !";
+      msg.className = 'success';
+      form.reset();
+    } else {
+      msg.textContent = "Une erreur est survenue, réessayez un peu plus tard.";
+      msg.className = 'error';
+    }
+  }).catch(() => {
+    msg.textContent = "Une erreur est survenue, réessayez un peu plus tard.";
+    msg.className = 'error';
+  });
+});
+</script>
+</body>
+</html>
