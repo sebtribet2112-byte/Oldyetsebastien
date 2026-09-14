@@ -6,8 +6,6 @@
 <title>Mes livres – Les aventures d'Oldy et Sébastien</title>
 <meta name="description" content="Lisez en ligne les livres d'Oldy et Sébastien – sensibilisation au handicap invisible"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <style>
 :root {
 --vert: #2d6a4f;
@@ -119,17 +117,18 @@ font-size: 12px; line-height: 2;
 }
 footer strong { color: white; }
 footer a { color: var(--vert-clair); text-decoration: none; }
+/* ===== LISEUSE PLEIN ECRAN (lecteur PDF natif) ===== */
 #readerOverlay {
 position: fixed; inset: 0; background: #14261d;
 display: none; z-index: 1000;
-flex-direction: column; align-items: center; justify-content: center;
+flex-direction: column;
 }
 #readerOverlay.open { display: flex; }
 .reader-topbar {
-position: absolute; top: 0; left: 0; right: 0;
 display: flex; align-items: center; justify-content: space-between;
-padding: 14px 20px; z-index: 5;
-background: linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+padding: 12px 20px; z-index: 5;
+background: #1b2e22;
+flex-shrink: 0;
 }
 .reader-title { color: white; font-weight: 800; font-size: 14px; }
 .reader-actions { display: flex; gap: 10px; }
@@ -140,48 +139,11 @@ font-weight: 700; font-size: 12px; cursor: pointer;
 text-decoration: none; display: inline-block;
 }
 .reader-btn:hover { background: rgba(255,255,255,0.25); }
-#flipbookContainer { touch-action: none; }
-.page { width: 100%; height: 100%; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.page canvas { max-width: 100%; max-height: 100%; display: block; }
-.reader-nav {
-position: absolute; top: 50%; transform: translateY(-50%);
-background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3);
-color: white; width: 44px; height: 44px; border-radius: 50%;
-font-size: 20px; cursor: pointer; z-index: 5;
-}
-.reader-nav:hover { background: rgba(255,255,255,0.25); }
-#prevBtn { left: 18px; }
-#nextBtn { right: 18px; }
-.reader-pagecount {
-position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
-color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 700;
-background: rgba(0,0,0,0.35); padding: 5px 14px; border-radius: 14px;
-}
-#readerLoading {
-color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 700;
-display: flex; flex-direction: column; align-items: center; gap: 14px;
-text-align: center;
-padding: 0 24px;
-}
-.spinner {
-width: 34px; height: 34px; border-radius: 50%;
-border: 3px solid rgba(255,255,255,0.25); border-top-color: white;
-animation: spin 0.9s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-#loadingProgressBar {
-width: 220px; height: 8px; border-radius: 6px;
-background: rgba(255,255,255,0.15); overflow: hidden;
-}
-#loadingProgressFill {
-height: 100%; width: 0%; background: var(--vert-clair);
-transition: width 0.2s ease;
-}
-#loadingProgressText { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.75); }
+#pdfFrameWrap { flex: 1; position: relative; background: #fff; }
+#pdfFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 @media (max-width: 600px) {
 .livre-preview { height: 180px; }
 .livre-card { padding: 18px; }
-.reader-nav { width: 38px; height: 38px; font-size: 16px; }
 }
 </style>
 </head>
@@ -287,166 +249,35 @@ transition: width 0.2s ease;
 Sensibilisation au handicap invisible · TRIBET Sébastien · 2026<br>
 </footer>
 
+<!-- ===== LISEUSE PLEIN ECRAN (lecteur PDF natif du navigateur) ===== -->
 <div id="readerOverlay">
 <div class="reader-topbar">
 <div class="reader-title" id="readerTitle">Livre</div>
 <div class="reader-actions">
-<a class="reader-btn" id="fallbackLink" href="#" target="_blank" rel="noopener">⇩ Ouvrir le PDF</a>
-<button class="reader-btn" onclick="toggleFullscreen()">⛶ Plein écran</button>
+<a class="reader-btn" id="fallbackLink" href="#" target="_blank" rel="noopener">⇩ Nouvel onglet</a>
 <button class="reader-btn" onclick="fermerLivre()">✕ Fermer</button>
 </div>
 </div>
-<div id="readerLoading">
-<div class="spinner"></div>
-<div id="loadingMainText">Chargement du livre…</div>
-<div id="loadingProgressBar"><div id="loadingProgressFill"></div></div>
-<div id="loadingProgressText"></div>
+<div id="pdfFrameWrap">
+<iframe id="pdfFrame" title="Lecteur de livre" src=""></iframe>
 </div>
-<button class="reader-nav" id="prevBtn" onclick="pageFlipInstance && pageFlipInstance.flipPrev()" style="display:none">‹</button>
-<div id="flipbookContainer"></div>
-<button class="reader-nav" id="nextBtn" onclick="pageFlipInstance && pageFlipInstance.flipNext()" style="display:none">›</button>
-<div class="reader-pagecount" id="pageCount" style="display:none"></div>
 </div>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-let pageFlipInstance = null;
-const RENDER_AHEAD = 2;
-
-function setLoadingProgress(current, total, label) {
-  const fill = document.getElementById('loadingProgressFill');
-  const text = document.getElementById('loadingProgressText');
-  const main = document.getElementById('loadingMainText');
-  if (main && label) main.textContent = label;
-  if (total > 0) {
-    const pct = Math.round((current / total) * 100);
-    fill.style.width = pct + '%';
-    text.textContent = current + ' / ' + total + ' pages (' + pct + '%)';
-  } else {
-    fill.style.width = '0%';
-    text.textContent = '';
-  }
-}
-
-function buildPageDivs(totalPages) {
-  const container = document.getElementById('flipbookContainer');
-  container.innerHTML = '';
-  const canvases = [];
-  for (let i = 0; i < totalPages; i++) {
-    const div = document.createElement('div');
-    div.className = 'page';
-    const canvas = document.createElement('canvas');
-    div.appendChild(canvas);
-    container.appendChild(div);
-    canvases.push(canvas);
-  }
-  return canvases;
-}
-
-async function renderPageAt(pdf, idx, canvas, maxW, rendered) {
-  if (rendered.has(idx)) return;
-  rendered.add(idx);
-  try {
-    const page = await pdf.getPage(idx + 1);
-    const baseViewport = page.getViewport({ scale: 1 });
-    const scale = maxW / baseViewport.width;
-    const viewport = page.getViewport({ scale });
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    const ctx = canvas.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport }).promise;
-  } catch (e) {
-    rendered.delete(idx);
-    console.error('Erreur au rendu de la page', idx + 1, e);
-  }
-}
-
-async function ouvrirLivre(url, titre) {
+function ouvrirLivre(url, titre) {
   document.getElementById('readerTitle').textContent = titre;
   document.getElementById('fallbackLink').href = url;
+  document.getElementById('pdfFrame').src = url;
   document.getElementById('readerOverlay').classList.add('open');
-  document.getElementById('readerLoading').style.display = 'flex';
-  document.getElementById('loadingProgressBar').style.display = 'block';
-  document.getElementById('prevBtn').style.display = 'none';
-  document.getElementById('nextBtn').style.display = 'none';
-  document.getElementById('pageCount').style.display = 'none';
-  setLoadingProgress(0, 0, 'Ouverture du fichier…');
-
-  try {
-    const pdf = await pdfjsLib.getDocument(url).promise;
-    const totalPages = pdf.numPages;
-    const maxW = Math.min(window.innerWidth * 0.42, 480);
-    const rendered = new Set();
-
-    const canvases = buildPageDivs(totalPages);
-
-    pageFlipInstance = new St.PageFlip(document.getElementById('flipbookContainer'), {
-      width: maxW,
-      height: maxW * 1.35,
-      size: 'stretch',
-      minWidth: 250,
-      maxWidth: 700,
-      minHeight: 350,
-      maxHeight: 1000,
-      showCover: true,
-      mobileScrollSupport: true
-    });
-    pageFlipInstance.loadFromHTML(document.querySelectorAll('#flipbookContainer .page'));
-
-    setLoadingProgress(0, 0, 'Préparation de la première page…');
-    await renderPageAt(pdf, 0, canvases[0], maxW, rendered);
-    if (totalPages > 1) await renderPageAt(pdf, 1, canvases[1], maxW, rendered);
-
-    document.getElementById('readerLoading').style.display = 'none';
-    document.getElementById('prevBtn').style.display = 'block';
-    document.getElementById('nextBtn').style.display = 'block';
-    const pageCountEl = document.getElementById('pageCount');
-    pageCountEl.style.display = 'block';
-
-    function ensureAround(idx) {
-      const start = Math.max(0, idx - 1);
-      const end = Math.min(totalPages - 1, idx + RENDER_AHEAD);
-      for (let i = start; i <= end; i++) {
-        renderPageAt(pdf, i, canvases[i], maxW, rendered);
-      }
-    }
-
-    const updateCount = () => {
-      const idx = pageFlipInstance.getCurrentPageIndex();
-      pageCountEl.textContent = `Page ${idx + 1} / ${totalPages}`;
-      ensureAround(idx);
-    };
-    updateCount();
-    pageFlipInstance.on('flip', updateCount);
-
-  } catch (err) {
-    document.getElementById('loadingProgressBar').style.display = 'none';
-    document.getElementById('loadingProgressText').textContent = '';
-    document.getElementById('loadingMainText').innerHTML =
-      "Impossible d'afficher ce livre dans la liseuse.<br><span style='font-size:11px;opacity:0.7'>" + err.message + "</span><br><br>Utilisez le bouton « Ouvrir le PDF » en haut à droite.";
-  }
 }
 
 function fermerLivre() {
   document.getElementById('readerOverlay').classList.remove('open');
-  if (document.fullscreenElement) document.exitFullscreen();
-  if (pageFlipInstance) { pageFlipInstance.destroy(); pageFlipInstance = null; }
-  document.getElementById('flipbookContainer').innerHTML = '';
-}
-
-function toggleFullscreen() {
-  const el = document.getElementById('readerOverlay');
-  if (!document.fullscreenElement) {
-    el.requestFullscreen && el.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
+  document.getElementById('pdfFrame').src = '';
 }
 
 document.addEventListener('keydown', (e) => {
   if (!document.getElementById('readerOverlay').classList.contains('open')) return;
-  if (e.key === 'ArrowRight' && pageFlipInstance) pageFlipInstance.flipNext();
-  if (e.key === 'ArrowLeft' && pageFlipInstance) pageFlipInstance.flipPrev();
   if (e.key === 'Escape') fermerLivre();
 });
 </script>
