@@ -350,7 +350,15 @@ async function ouvrirLivre(url, titre) {
     const totalPages = pdf.numPages;
     const pageImages = [];
 
-    const maxW = Math.min(window.innerWidth * 0.42, 480);
+    // taille CSS d'affichage d'une page (différente selon mobile/desktop)
+    const isMobile = window.innerWidth < 900;
+    const cssW = isMobile
+      ? Math.min(window.innerWidth * 0.9, 520)
+      : Math.min(window.innerWidth * 0.42, 480);
+    // on rend l'image à une résolution plus élevée que la taille affichée
+    // (jusqu'à 2.5x) pour rester net sur les écrans haute densité (Retina, mobile)
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const maxW = cssW * dpr;
 
     for (let i = 1; i <= totalPages; i++) {
       setLoadingProgress(i - 1, totalPages, 'Préparation des pages…');
@@ -376,8 +384,8 @@ async function ouvrirLivre(url, titre) {
     document.getElementById('readerLoading').style.display = 'none';
 
     pageFlipInstance = new St.PageFlip(container, {
-      width: maxW,
-      height: maxW * 1.35,
+      width: cssW,
+      height: cssW * 1.35,
       size: 'stretch',
       minWidth: 250,
       maxWidth: 700,
