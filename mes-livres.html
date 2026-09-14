@@ -383,14 +383,19 @@ async function ouvrirLivre(url, titre) {
 
     document.getElementById('readerLoading').style.display = 'none';
 
+    // Taille fixe et déterministe (plus de mode "stretch" imprévisible),
+    // pour que la résolution des images corresponde exactement à la taille affichée.
+    container.style.width = cssW + 'px';
+    container.style.height = (cssW * 1.35) + 'px';
+
     pageFlipInstance = new St.PageFlip(container, {
       width: cssW,
       height: cssW * 1.35,
-      size: 'stretch',
-      minWidth: 250,
-      maxWidth: 700,
-      minHeight: 350,
-      maxHeight: 1000,
+      size: 'fixed',
+      minWidth: cssW,
+      maxWidth: cssW,
+      minHeight: cssW * 1.35,
+      maxHeight: cssW * 1.35,
       showCover: true,
       mobileScrollSupport: true
     });
