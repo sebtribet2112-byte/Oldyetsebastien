@@ -1,244 +1,434 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="noindex" />
-<title>Gestion des fichiers - Oldy et Sébastien</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mes livres – Les aventures d'Oldy et Sébastien</title>
+<meta name="description" content="Lisez en ligne les livres d'Oldy et Sébastien – sensibilisation au handicap invisible"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <style>
-  :root{
-    --amber:#e8a33d; --brown:#5c4326; --bg:#fdf6ec; --danger:#c0392b; --ok:#2e7d32;
-  }
-  *{box-sizing:border-box;}
-  body{
-    font-family: 'Segoe UI', Arial, sans-serif; background:var(--bg); margin:0;
-    padding:20px; color:var(--brown);
-  }
-  .wrap{ max-width:700px; margin:0 auto; }
-  h1{ font-size:22px; margin-bottom:4px; }
-  p.sub{ color:#8a7358; margin-top:0; font-size:14px; }
-  .card{
-    background:#fff; border-radius:14px; padding:20px; margin-bottom:18px;
-    box-shadow:0 3px 12px rgba(0,0,0,.08);
-  }
-  input, select, button{
-    font-size:15px; padding:10px; border-radius:8px; border:1px solid #ddb98a;
-    width:100%; margin-top:6px; margin-bottom:12px; font-family:inherit;
-  }
-  button{
-    background:var(--amber); color:#fff; border:none; font-weight:700;
-    cursor:pointer; transition:opacity .15s;
-  }
-  button:hover{ opacity:.88; }
-  button.danger{ background:var(--danger); width:auto; padding:6px 12px; margin:0; font-size:13px; }
-  button.secondary{ background:#efe1c8; color:var(--brown); }
-  label{ font-weight:700; font-size:13px; display:block; }
-  .file-row{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:10px 0; border-bottom:1px solid #f0e4cf; font-size:14px;
-  }
-  .file-row:last-child{ border-bottom:none; }
-  .msg{ padding:10px 12px; border-radius:8px; margin-bottom:14px; font-size:14px; display:none; }
-  .msg.ok{ background:#e6f4ea; color:var(--ok); display:block; }
-  .msg.err{ background:#fdecea; color:var(--danger); display:block; }
-  #app{ display:block; }
-  .hint{ font-size:12px; color:#a08a6b; margin-top:-6px; margin-bottom:12px; }
-  .folder-tabs{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-  .folder-tabs button{ width:auto; margin:0; padding:8px 14px; }
-  .folder-tabs button.active{ background:var(--brown); }
+:root {
+--vert: #2d6a4f;
+--vert-clair: #52b788;
+--vert-pale: #d8f3dc;
+--vert-bg: #f0faf4;
+--beige: #fefae0;
+--or: #d4a843;
+--texte: #1b2a1b;
+--texte-doux: #4a5c4a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Nunito', sans-serif; background: var(--beige); color: var(--texte); }
+nav {
+background: var(--vert);
+padding: 0 24px;
+display: flex; align-items: center; justify-content: space-between;
+height: 60px; position: sticky; top: 0; z-index: 100;
+box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+}
+.nav-logo { font-size: 17px; font-weight: 900; color: white; text-decoration: none; }
+.nav-logo span { color: var(--or); }
+.nav-back {
+color: rgba(255,255,255,0.85); text-decoration: none;
+font-size: 13px; font-weight: 700;
+padding: 7px 16px; border-radius: 24px;
+border: 1.5px solid rgba(255,255,255,0.3);
+transition: all 0.2s;
+}
+.nav-back:hover { background: rgba(255,255,255,0.15); color: white; }
+.hero {
+background: linear-gradient(135deg, var(--vert) 0%, #1b4332 100%);
+padding: 52px 24px 44px; text-align: center;
+}
+.hero-tag {
+display: inline-block;
+background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+color: var(--vert-clair); padding: 6px 18px; border-radius: 24px;
+font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+margin-bottom: 16px;
+}
+.hero h1 { font-size: clamp(24px,5vw,40px); font-weight: 900; color: white; margin-bottom: 10px; }
+.hero h1 span { color: var(--or); }
+.hero p { font-size: 15px; color: rgba(255,255,255,0.72); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+.livres-section { padding: 52px 20px; max-width: 860px; margin: 0 auto; }
+.avertissement {
+background: white;
+border: 2px solid var(--or);
+border-radius: 20px;
+padding: 24px 28px;
+margin-bottom: 40px;
+box-shadow: 0 4px 24px rgba(212,168,67,0.15);
+}
+.avertissement-titre {
+font-size: 15px; font-weight: 900; color: var(--vert);
+margin-bottom: 10px;
+}
+.avertissement p {
+font-size: 14px; line-height: 1.7; color: var(--texte-doux);
+margin-bottom: 8px;
+}
+.avertissement p:last-child { margin-bottom: 0; }
+.livre-card {
+background: white; border: 2px solid var(--vert-pale);
+border-radius: 20px; padding: 28px;
+margin-bottom: 40px;
+box-shadow: 0 4px 24px rgba(45,106,79,0.08);
+}
+.livre-header {
+display: flex; align-items: center; gap: 14px;
+margin-bottom: 20px;
+}
+.livre-num {
+width: 44px; height: 44px; border-radius: 12px;
+background: var(--vert); color: white;
+font-size: 20px; font-weight: 900;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+}
+.livre-title { font-size: 17px; font-weight: 900; color: var(--texte); }
+.livre-sub { font-size: 12px; color: var(--texte-doux); margin-top: 2px; }
+.livre-preview {
+width: 100%;
+height: 220px;
+border-radius: 12px;
+background: var(--vert-bg);
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+gap: 14px;
+border: 2px dashed var(--vert-pale);
+}
+.livre-preview-icon { font-size: 40px; }
+.btn-lire {
+background: var(--vert); color: white; border: none;
+font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px;
+padding: 12px 26px; border-radius: 30px; cursor: pointer;
+display: inline-flex; align-items: center; gap: 8px;
+transition: background 0.2s, transform 0.2s;
+}
+.btn-lire:hover { background: #1b4332; transform: translateY(-1px); }
+.livre-note {
+margin-top: 12px;
+font-size: 11px; color: #aaa; font-style: italic; text-align: center;
+}
+footer {
+background: var(--vert); color: rgba(255,255,255,0.7);
+text-align: center; padding: 24px;
+font-size: 12px; line-height: 2;
+}
+footer strong { color: white; }
+footer a { color: var(--vert-clair); text-decoration: none; }
+#readerOverlay {
+position: fixed; inset: 0; background: #14261d;
+display: none; z-index: 1000;
+flex-direction: column; align-items: center; justify-content: center;
+}
+#readerOverlay.open { display: flex; }
+.reader-topbar {
+position: absolute; top: 0; left: 0; right: 0;
+display: flex; align-items: center; justify-content: space-between;
+padding: 14px 20px; z-index: 5;
+background: linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+}
+.reader-title { color: white; font-weight: 800; font-size: 14px; }
+.reader-actions { display: flex; gap: 10px; }
+.reader-btn {
+background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.3);
+border-radius: 20px; padding: 7px 16px; font-family: 'Nunito', sans-serif;
+font-weight: 700; font-size: 12px; cursor: pointer;
+}
+.reader-btn:hover { background: rgba(255,255,255,0.25); }
+#flipbookContainer { touch-action: none; }
+#flipbookContainer canvas { display: block; }
+.reader-nav {
+position: absolute; top: 50%; transform: translateY(-50%);
+background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3);
+color: white; width: 44px; height: 44px; border-radius: 50%;
+font-size: 20px; cursor: pointer; z-index: 5;
+}
+.reader-nav:hover { background: rgba(255,255,255,0.25); }
+#prevBtn { left: 18px; }
+#nextBtn { right: 18px; }
+.reader-pagecount {
+position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 700;
+background: rgba(0,0,0,0.35); padding: 5px 14px; border-radius: 14px;
+}
+#readerLoading {
+color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 700;
+display: flex; flex-direction: column; align-items: center; gap: 14px;
+text-align: center;
+padding: 0 24px;
+}
+.spinner {
+width: 34px; height: 34px; border-radius: 50%;
+border: 3px solid rgba(255,255,255,0.25); border-top-color: white;
+animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loadingProgressBar {
+width: 220px; height: 8px; border-radius: 6px;
+background: rgba(255,255,255,0.15); overflow: hidden;
+}
+#loadingProgressFill {
+height: 100%; width: 0%; background: var(--vert-clair);
+transition: width 0.2s ease;
+}
+#loadingProgressText { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.75); }
+@media (max-width: 600px) {
+.livre-preview { height: 180px; }
+.livre-card { padding: 18px; }
+.reader-nav { width: 38px; height: 38px; font-size: 16px; }
+}
 </style>
 </head>
-<body onload="initApp()">
+<body>
+<nav>
+<a href="/" class="nav-logo">🐶 Oldy <span>&</span> Sébastien</a>
+<a href="/" class="nav-back">← Retour au site</a>
+</nav>
 
-<div id="app" class="wrap">
-  <h1>🐶 Gestion des fichiers</h1>
-  <p class="sub">Ajoute ou supprime images, musiques, documents — directement sur ton site.</p>
+<div class="hero">
+<div class="hero-tag">📚 Bibliothèque en ligne</div>
+<h1>Mes <span>Livres</span></h1>
+<p>Lisez directement en ligne les publications d'Oldy et Sébastien — sensibilisation au handicap invisible.</p>
+</div>
 
-  <div id="tokenCard" class="card" style="display:none;">
-    <label>Clé d'accès GitHub (à coller une seule fois)</label>
-    <input type="password" id="tokenInput" placeholder="ghp_..." />
-    <div class="hint">Cette clé reste uniquement dans ton navigateur, jamais envoyée ailleurs.</div>
-    <button onclick="saveToken()">Enregistrer la clé</button>
-  </div>
+<div class="livres-section">
 
-  <div class="card">
-    <div class="folder-tabs" id="folderTabs"></div>
+<div class="avertissement">
+<div class="avertissement-titre">✍️ Un mot avant de commencer</div>
+<p>Ces livres sont écrits avec mes mots, tels qu'ils me viennent. Vous y trouverez peut-être des tournures de phrases un peu maladroites ou quelques fautes d'orthographe. C'est un choix assumé de ma part : ce qui compte pour moi, c'est de partager mon vécu et mon message le plus sincèrement possible, sans que la forme prenne le pas sur le fond.</p>
+<p>J'espère que vous saurez regarder au-delà de ces imperfections pour recevoir ce que j'ai vraiment à vous transmettre.<br>Merci de votre bienveillance,<br><strong>Sébastien</strong></p>
+</div>
 
-    <label>Ajouter un fichier</label>
-    <input type="file" id="fileInput" />
-    <button onclick="uploadFile()">⬆️ Envoyer sur le site</button>
-    <div id="uploadMsg" class="msg"></div>
+<div class="livre-card">
+<div class="livre-header">
+<div class="livre-num">📖</div>
+<div>
+<div class="livre-title">Livre 1</div>
+<div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+</div>
+</div>
+<div class="livre-preview">
+<div class="livre-preview-icon">📖</div>
+<button class="btn-lire" onclick="ouvrirLivre('livre1.pdf','Livre 1')">▶ Lire ce livre</button>
+</div>
+<p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+</div>
 
-    <h3 style="margin-top:20px;">Fichiers dans ce dossier</h3>
-    <div id="fileList">Chargement…</div>
-  </div>
+<div class="livre-card">
+<div class="livre-header">
+<div class="livre-num">📖</div>
+<div>
+<div class="livre-title">Livre 2</div>
+<div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+</div>
+</div>
+<div class="livre-preview">
+<div class="livre-preview-icon">📖</div>
+<button class="btn-lire" onclick="ouvrirLivre('livre2.pdf','Livre 2')">▶ Lire ce livre</button>
+</div>
+<p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+</div>
 
-  <button class="secondary" onclick="changeToken()">Changer la clé d'accès</button>
+<div class="livre-card">
+<div class="livre-header">
+<div class="livre-num">📖</div>
+<div>
+<div class="livre-title">Livre 3</div>
+<div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+</div>
+</div>
+<div class="livre-preview">
+<div class="livre-preview-icon">📖</div>
+<button class="btn-lire" onclick="ouvrirLivre('livre3.pdf','Livre 3')">▶ Lire ce livre</button>
+</div>
+<p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+</div>
+
+<div class="livre-card">
+<div class="livre-header">
+<div class="livre-num">📖</div>
+<div>
+<div class="livre-title">Livre 4</div>
+<div class="livre-sub">Les aventures d'Oldy et Sébastien</div>
+</div>
+</div>
+<div class="livre-preview">
+<div class="livre-preview-icon">📖</div>
+<button class="btn-lire" onclick="ouvrirLivre('livre4.pdf','Livre 4')">▶ Lire ce livre</button>
+</div>
+<p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+</div>
+
+<div class="livre-card">
+<div class="livre-header">
+<div class="livre-num">📖</div>
+<div>
+<div class="livre-title">Reconnaître l'invisible</div>
+<div class="livre-sub">Comprendre et repérer la dépression chez l'autre</div>
+</div>
+</div>
+<div class="livre-preview">
+<div class="livre-preview-icon">📖</div>
+<button class="btn-lire" onclick="ouvrirLivre('livre5.pdf','Reconnaître l\'invisible')">▶ Lire ce livre</button>
+</div>
+<p class="livre-note">🔒 Lecture en ligne uniquement · © TRIBET Sébastien 2026</p>
+</div>
+
+</div>
+
+<footer>
+<strong>Les aventures d'Oldy et Sébastien</strong><br>
+Sensibilisation au handicap invisible · TRIBET Sébastien · 2026<br>
+</footer>
+
+<div id="readerOverlay">
+<div class="reader-topbar">
+<div class="reader-title" id="readerTitle">Livre</div>
+<div class="reader-actions">
+<button class="reader-btn" onclick="toggleFullscreen()">⛶ Plein écran</button>
+<button class="reader-btn" onclick="fermerLivre()">✕ Fermer</button>
+</div>
+</div>
+<div id="readerLoading">
+<div class="spinner"></div>
+<div id="loadingMainText">Chargement du livre…</div>
+<div id="loadingProgressBar"><div id="loadingProgressFill"></div></div>
+<div id="loadingProgressText"></div>
+</div>
+<button class="reader-nav" id="prevBtn" onclick="pageFlipInstance && pageFlipInstance.flipPrev()" style="display:none">‹</button>
+<div id="flipbookContainer"></div>
+<button class="reader-nav" id="nextBtn" onclick="pageFlipInstance && pageFlipInstance.flipNext()" style="display:none">›</button>
+<div class="reader-pagecount" id="pageCount" style="display:none"></div>
 </div>
 
 <script>
-// ============ CONFIGURATION - à adapter une seule fois ============
-const OWNER = "sebtribet2112-byte";
-const REPO  = "Oldyetsebastien";
-const BRANCH = "main";
-const FOLDERS = ["images", "musiques", "audio", "documents"];
-// ====================================================================
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let pageFlipInstance = null;
 
-let currentFolder = FOLDERS[0];
-let token = "";
-
-function initApp(){
-  token = localStorage.getItem('gh_token') || "";
-  buildTabs();
-  if (!token){
-    document.getElementById('tokenCard').style.display = 'block';
+function setLoadingProgress(current, total, label) {
+  const fill = document.getElementById('loadingProgressFill');
+  const text = document.getElementById('loadingProgressText');
+  const main = document.getElementById('loadingMainText');
+  if (main && label) main.textContent = label;
+  if (total > 0) {
+    const pct = Math.round((current / total) * 100);
+    fill.style.width = pct + '%';
+    text.textContent = current + ' / ' + total + ' pages (' + pct + '%)';
   } else {
-    loadFiles();
+    fill.style.width = '0%';
+    text.textContent = '';
   }
 }
 
-function buildTabs(){
-  const wrap = document.getElementById('folderTabs');
-  wrap.innerHTML = "";
-  FOLDERS.forEach(f => {
-    const b = document.createElement('button');
-    b.textContent = f;
-    b.className = (f === currentFolder) ? 'active' : 'secondary';
-    b.onclick = () => { currentFolder = f; buildTabs(); loadFiles(); };
-    wrap.appendChild(b);
-  });
-}
+async function ouvrirLivre(url, titre) {
+  document.getElementById('readerTitle').textContent = titre;
+  document.getElementById('readerOverlay').classList.add('open');
+  document.getElementById('readerLoading').style.display = 'flex';
+  document.getElementById('prevBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('pageCount').style.display = 'none';
+  setLoadingProgress(0, 0, 'Téléchargement du livre…');
 
-function saveToken(){
-  const val = document.getElementById('tokenInput').value.trim();
-  if (!val){ return; }
-  localStorage.setItem('gh_token', val);
-  token = val;
-  document.getElementById('tokenCard').style.display = 'none';
-  loadFiles();
-}
+  const container = document.getElementById('flipbookContainer');
+  container.innerHTML = '';
 
-function changeToken(){
-  document.getElementById('tokenCard').style.display = 'block';
-}
-
-function api(path){
-  return `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
-}
-
-async function loadFiles(){
-  const listEl = document.getElementById('fileList');
-  listEl.textContent = "Chargement…";
-  try{
-    const res = await fetch(api(currentFolder), {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.status === 404){
-      listEl.innerHTML = "<em>Dossier vide ou pas encore créé — le premier envoi le créera.</em>";
-      return;
-    }
-    if (!res.ok){ throw new Error("Erreur " + res.status); }
-    const items = await res.json();
-    if (!Array.isArray(items) || items.length === 0){
-      listEl.innerHTML = "<em>Aucun fichier pour l'instant.</em>";
-      return;
-    }
-    listEl.innerHTML = "";
-    items.forEach(it => {
-      const row = document.createElement('div');
-      row.className = 'file-row';
-      row.innerHTML = `<span>${it.name}</span>`;
-      const del = document.createElement('button');
-      del.textContent = "🗑️ Supprimer";
-      del.className = 'danger';
-      del.onclick = () => deleteFile(it.path, it.sha, it.name);
-      row.appendChild(del);
-      listEl.appendChild(row);
-    });
-  } catch(e){
-    listEl.innerHTML = `<span style="color:#c0392b;">Erreur de chargement : ${e.message}. Vérifie ta clé d'accès.</span>`;
-  }
-}
-
-async function uploadFile(){
-  const input = document.getElementById('fileInput');
-  const msg = document.getElementById('uploadMsg');
-  msg.className = 'msg'; msg.style.display = 'none';
-  if (!input.files.length){ return; }
-  const file = input.files[0];
-  const path = `${currentFolder}/${file.name}`;
-
-  try{
-    const base64 = await toBase64(file);
-
-    // vérifie si le fichier existe déjà (pour le remplacer proprement)
-    let sha = undefined;
-    const check = await fetch(api(path), { headers: { Authorization: `Bearer ${token}` } });
-    if (check.ok){
-      const info = await check.json();
-      sha = info.sha;
-    }
-
-    const body = {
-      message: sha ? `Mise à jour de ${file.name}` : `Ajout de ${file.name}`,
-      content: base64,
-      branch: BRANCH
+  try {
+    const loadingTask = pdfjsLib.getDocument(url);
+    loadingTask.onProgress = function (p) {
+      if (p.total) {
+        const pct = Math.round((p.loaded / p.total) * 100);
+        setLoadingProgress(0, 0, 'Téléchargement du livre… ' + pct + '%');
+      } else {
+        setLoadingProgress(0, 0, 'Téléchargement du livre…');
+      }
     };
-    if (sha) body.sha = sha;
+    const pdf = await loadingTask.promise;
+    const totalPages = pdf.numPages;
+    const pageImages = [];
 
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
+    const maxW = Math.min(window.innerWidth * 0.42, 480);
 
-    if (!res.ok){
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err.message || res.status);
+    for (let i = 1; i <= totalPages; i++) {
+      setLoadingProgress(i - 1, totalPages, 'Préparation des pages…');
+      const page = await pdf.getPage(i);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const scale = maxW / baseViewport.width;
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      pageImages.push(canvas.toDataURL('image/jpeg', 0.8));
+      setLoadingProgress(i, totalPages, 'Préparation des pages…');
+
+      // Laisse le navigateur respirer entre chaque page pour éviter
+      // l'impression de blocage sur les gros livres.
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
 
-    msg.textContent = "✅ Fichier envoyé ! Il sera visible sur le site dans 1-2 minutes.";
-    msg.className = 'msg ok';
-    input.value = "";
-    loadFiles();
-  } catch(e){
-    msg.textContent = "❌ Erreur : " + e.message;
-    msg.className = 'msg err';
+    document.getElementById('readerLoading').style.display = 'none';
+
+    pageFlipInstance = new St.PageFlip(container, {
+      width: maxW,
+      height: maxW * 1.35,
+      size: 'stretch',
+      minWidth: 250,
+      maxWidth: 700,
+      minHeight: 350,
+      maxHeight: 1000,
+      showCover: true,
+      mobileScrollSupport: true
+    });
+    pageFlipInstance.loadFromImages(pageImages);
+
+    document.getElementById('prevBtn').style.display = 'block';
+    document.getElementById('nextBtn').style.display = 'block';
+    const pageCountEl = document.getElementById('pageCount');
+    pageCountEl.style.display = 'block';
+    const updateCount = () => {
+      pageCountEl.textContent = `Page ${pageFlipInstance.getCurrentPageIndex() + 1} / ${totalPages}`;
+    };
+    updateCount();
+    pageFlipInstance.on('flip', updateCount);
+
+  } catch (err) {
+    document.getElementById('loadingProgressBar').style.display = 'none';
+    document.getElementById('loadingProgressText').textContent = '';
+    document.getElementById('loadingMainText').innerHTML =
+      "Impossible de charger ce livre pour le moment.<br><span style='font-size:11px;opacity:0.7'>" + err.message + "</span>";
   }
 }
 
-async function deleteFile(path, sha, name){
-  if (!confirm(`Supprimer "${name}" définitivement ?`)) return;
-  try{
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message: `Suppression de ${name}`, sha, branch: BRANCH })
-    });
-    if (!res.ok){
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err.message || res.status);
-    }
-    loadFiles();
-  } catch(e){
-    alert("Erreur lors de la suppression : " + e.message);
+function fermerLivre() {
+  document.getElementById('readerOverlay').classList.remove('open');
+  if (document.fullscreenElement) document.exitFullscreen();
+  if (pageFlipInstance) { pageFlipInstance.destroy(); pageFlipInstance = null; }
+  document.getElementById('flipbookContainer').innerHTML = '';
+  document.getElementById('loadingProgressBar').style.display = 'block';
+}
+
+function toggleFullscreen() {
+  const el = document.getElementById('readerOverlay');
+  if (!document.fullscreenElement) {
+    el.requestFullscreen && el.requestFullscreen();
+  } else {
+    document.exitFullscreen();
   }
 }
 
-function toBase64(file){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('readerOverlay').classList.contains('open')) return;
+  if (e.key === 'ArrowRight' && pageFlipInstance) pageFlipInstance.flipNext();
+  if (e.key === 'ArrowLeft' && pageFlipInstance) pageFlipInstance.flipPrev();
+  if (e.key === 'Escape') fermerLivre();
+});
 </script>
 </body>
 </html>
